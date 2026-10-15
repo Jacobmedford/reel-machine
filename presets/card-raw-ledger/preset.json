@@ -1,0 +1,150 @@
+{
+  "name": "card-raw-ledger",
+  "kind": "card",
+  "layer": "card",
+  "ground": "light",
+  "block": "index.html",
+  "from": "kit fx/file-drop (the raw takes and their bad takes), as a full-screen card on kit/CARD_BRIEF.md",
+  "source": ["kit fx/file-drop", "kit/CARD_BRIEF.md"],
+  "does": "Light full-screen card: every raw take of this video as a ledger row true to scale (thumbnail, name and length, its real waveform), the bad takes struck and quoted, the discards fall away, the kept lines light in the accent and slide under a sum line into the cut, then the camera zooms into the cut until it fills the width, a playhead on the line being spoken, an accent title over it and the readout typed under it.",
+  "use_when": "'every take goes in, the mistakes come out', 'this is all that's left of an hour of footage': raw against the cut, how much was thrown away; best with several takes (one take still reads)",
+  "what": "the raw takes true to scale, the bad takes struck, collapsing into the kept cut",
+  "inputs": [
+    "nothing by hand for the numbers: gen.py writes data.js and thumbs/ from edit.py (SRC, KEEP), timeline.json and the source's audio and frames (rerun it when the cut changes)",
+    "the retakes to quote (BAD: the take's name, the span in seconds into the take, the words as said) and the beats (T: card seconds or spoken words, 2-3 frames early)",
+    "render the card to cards/<id>.mp4"
+  ],
+  "constants": {
+    "KICK": "Raw footage · {clips} clips · {raw}",
+    "READ": "{lines} lines kept · {final} of {raw} raw",
+    "TITLE": "this video.",
+    "BAD": [],
+    "T": {
+      "strike": 0.861,
+      "quotes": 1.126,
+      "drop": 1.855,
+      "pick": 2.292,
+      "slide": 2.589,
+      "zoom": 3.527,
+      "title": 3.727,
+      "read": 3.86
+    },
+    "SLIDE": {
+      "dur": 0.54,
+      "stagger": 0.012
+    }
+  },
+  "notes": {
+    "KICK": "{clips} and {raw} come from data.js",
+    "READ": "{lines}, {final} and {raw} come from data.js (true numbers)",
+    "BAD": "take = a take's name in data.js (the raw file without its extension); a, b = seconds into that take; text = the words as said; up to three read well; [] = none",
+    "T": "card seconds (0 = the cut to the card): strike (the discards are struck), quotes (each quote pops, 0.2 s apart), drop (the discards fall away), pick (the kept lines light), slide (they slide into the cut), zoom, title, read; beats can be spoken words (preset.py resolves them); the waveforms draw in from 0",
+    "SLIDE": "the lines' slide (s) and stagger (s per line); the stagger tightens on its own so every line is home before the zoom"
+  },
+  "cues": [
+    "T"
+  ],
+  "generators": [
+    {
+      "run": "{py} gen.py {project}",
+      "when": "the cut changes (KEEP, the takes)",
+      "required": true
+    }
+  ],
+  "needs": [
+    "render it: the printed command, then cards/{id}.mp4 is picked up by the build (CARDS entry above)"
+  ],
+  "sfx": [
+    {
+      "at": 0.0,
+      "name": "clicks-run",
+      "db": -19,
+      "max_len": 0.45,
+      "what": "the waveforms draw in"
+    },
+    {
+      "at": "T.strike+0.002",
+      "name": "tick",
+      "db": -15,
+      "what": "the strike starts down the rows"
+    },
+    {
+      "at": "T.strike+0.082",
+      "name": "tick",
+      "db": -15,
+      "what": "the strike"
+    },
+    {
+      "at": "T.strike+0.241",
+      "name": "tick",
+      "db": -15,
+      "what": "the strike"
+    },
+    {
+      "at": "T.strike+0.281",
+      "name": "tick",
+      "db": -15,
+      "what": "the strike reaches the last rows"
+    },
+    {
+      "at": "T.quotes+0.002",
+      "name": "pop",
+      "db": -20,
+      "if": "BAD",
+      "what": "the first quote pops"
+    },
+    {
+      "at": "T.quotes+0.201",
+      "name": "pop",
+      "db": -20,
+      "if": "BAD",
+      "what": "the second quote (drop it with one quote)"
+    },
+    {
+      "at": "T.quotes+0.4",
+      "name": "pop",
+      "db": -20,
+      "if": "BAD",
+      "what": "the third quote (drop it with fewer than three)"
+    },
+    {
+      "at": "T.drop+0.089",
+      "name": "whoosh-soft",
+      "db": -19,
+      "what": "the discards fall away"
+    },
+    {
+      "at": "T.slide+0.254",
+      "name": "whoosh",
+      "db": -17,
+      "what": "the kept lines slide into the cut"
+    },
+    {
+      "at": "T.zoom+0.151",
+      "name": "whoosh-deep",
+      "db": -16,
+      "what": "the zoom"
+    },
+    {
+      "at": "T.title+0.221",
+      "name": "ding",
+      "db": -20,
+      "what": "the title lands"
+    }
+  ],
+  "examples": {
+    "two quotes": {
+      "BAD": [
+        {"take": "take-1", "a": 1.0, "b": 2.4, "text": "So the... so the first thing"},
+        {"take": "take-2", "a": 0.6, "b": 3.1, "text": "Wait, let me start over."}
+      ]
+    }
+  },
+  "typical_length": "4.3 s (129 frames)",
+  "modes": [
+    "hifi",
+    "showcase"
+  ],
+  "signature": null,
+  "pairs_with": null
+}

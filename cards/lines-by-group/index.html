@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>lines-by-group</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* lines-by-group: a callback to cards/scissors. The falling line from that card is already on screen; the groups
+     that make up everything else are named one by one, their line climbs with its value riding the head, a quiet
+     average draws alongside, and a bracket gathers the groups and points at their line.
+     Shares its chart system with cards/scissors (same plot geometry, axis, line weights, labels, end dots). */
+  #cam { transform-origin:520px 700px; }
+  .t { position:absolute; }
+  .yr { position:absolute; top:1030px; width:140px; margin-left:-70px; text-align:center; font-size:28px; color:var(--c-muted-dark); }
+  .yl { position:absolute; right:952px; width:80px; margin-top:-17px; text-align:right; font-size:28px; line-height:34px; color:var(--c-muted-dark); }
+  .endlab { position:absolute; display:flex; align-items:baseline; gap:14px; white-space:nowrap; }
+  .nm { font-size:30px; color:color-mix(in srgb, var(--c-light) 84%, transparent); white-space:nowrap; }
+  .val { font-size:56px; line-height:1; letter-spacing:-.02em; white-space:nowrap; }
+  .c-loss { color:var(--c-neg); }
+  .c-gain { color:var(--c-pos); }
+  #cnt { position:absolute; left:0; top:0; }
+  /* quiet average label: two short lines stacked above its end dot */
+  #lab-avg { position:absolute; text-align:right; }
+  #lab-avg .nm { font-size:28px; color:var(--c-muted-dark); line-height:34px; }
+  #lab-avg .v2 { font-size:30px; line-height:34px; color:color-mix(in srgb, var(--c-light) 72%, transparent); }
+  /* group tags: a text label on a hairline box with a gain-coloured dot (the line they join), ground-filled so lines pass behind */
+  .tag { position:absolute; left:150px; height:50px; display:flex; align-items:center; padding:0 18px 0 16px;
+         border:1.5px solid var(--c-hair-dark); border-radius:var(--radius); background:var(--c-dark); }
+  .tag::before { content:''; flex:none; width:12px; height:12px; margin-right:12px; border-radius:50%; background:var(--c-pos); }
+  .tag span { font-size:30px; line-height:1; color:var(--c-light); white-space:nowrap; }
+  #cap { position:absolute; }
+
+  /* chart paint: the gain is positive, the loss negative, the average and the bracket are the light ink at a strength */
+  #p-gain, #pg-gain { stroke:var(--c-pos); }
+  #p-loss { stroke:var(--c-neg); }
+  #p-avg { stroke:color-mix(in srgb, var(--c-light) 50%, transparent); }
+  #brk { stroke:color-mix(in srgb, var(--c-light) 60%, transparent); }
+  #d-gain { fill:var(--c-pos); }
+  #d-loss { fill:var(--c-neg); }
+  #origin, #d-avg { fill:var(--c-light); }
+  #origin, #d-avg, #d-loss, #d-gain { stroke:var(--c-dark); }   /* end dots cut out of their line in the ground colour */
+  #axis .grid { stroke:color-mix(in srgb, var(--c-hair-dark) 70%, transparent); }
+  #axis .rule-ax { stroke:var(--c-hair-dark); }
+  #axis .tick { stroke:color-mix(in srgb, var(--c-light) 40%, transparent); }
+  #axis .zero { stroke:color-mix(in srgb, var(--c-light) 42%, transparent); }
+</style>
+</head>
+<body>
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="4.3666" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker t" style="left:70px;top:252px;">Income per view vs. 2021 · by stream</div>
+
+    <svg id="plot" class="layer" viewBox="0 0 1080 1920" width="1080" height="1920">
+      <g id="axis"></g>
+      <path id="p-avg" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path id="p-loss" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <path id="p-gain" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <g id="brk" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path id="brk-up" />
+        <path id="brk-dn" />
+        <path id="arm" />
+        <path id="chev" opacity="0" />
+      </g>
+      <circle id="pg-gain" r="11" fill="none" stroke-width="2.5" opacity="0" />
+      <circle id="origin" r="9" stroke-width="4" />
+      <circle id="d-avg" r="7.5" stroke-width="3.5" opacity="0" />
+      <circle id="d-loss" r="11" stroke-width="4" />
+      <circle id="d-gain" r="11" stroke-width="4" opacity="0" />
+    </svg>
+
+    <div id="years"></div>
+    <div id="ylabs"></div>
+
+    <div id="tag1" class="tag"><span class="text">sponsorships</span></div>
+    <div id="tag2" class="tag"><span class="text">courses</span></div>
+    <div id="tag3" class="tag"><span class="text">digital products</span></div>
+    <div id="cap" class="nm text">all other streams</div>
+
+    <div id="cnt" class="val mono c-gain">+0.0%</div>
+    <div id="lab-avg"><div class="nm text">average</div><div class="v2 mono">+9.7%</div></div>
+    <div id="lab-loss" class="endlab">
+      <span class="nm text">ad revenue</span>
+      <span class="val mono c-loss">−11.5%</span>
+    </div>
+
+    <div id="foot" class="foot t" style="left:70px;top:1118px;">Source: sample channel data, 2021 to 2025</div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30, D = 131 / 30;      // 131 frames (renderer frames = ceil(duration x fps))
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------- example data: end values (% vs. the first year) and the first year on the axis ---------- */
+  var GAIN = 33.6, AVG = 9.7, LOSS = -11.5, YEAR0 = 2021;     // LOSS is the falling line from scissors
+
+  /* ---------- shared chart geometry (identical in scissors) ---------- */
+  var X0 = 150, X1 = 890, Y0 = 790, S = 11.4;          // 0% at y790, 11.4px per point; +40 -> 334, -20 -> 1018
+  var AXIS_Y = Y0 + 20 * S;                              // bottom axis sits at the -20 level
+  function xOf(u) { return X0 + (X1 - X0) * u; }
+  function yOf(v) { return Y0 - S * v; }
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+  /* where a 56px mono value's baseline sits in its line box, measured from the pack's mono font */
+  function baselineOf(cls, px) {
+    var box = document.createElement('div'), mark = document.createElement('span'), root = $('root');
+    box.className = cls; box.style.cssText = 'position:absolute;left:0;top:0;font-size:' + px + 'px;line-height:1;';
+    mark.style.cssText = 'display:inline-block;width:0;height:0;';
+    box.appendChild(mark); box.appendChild(document.createTextNode('0')); root.appendChild(box);
+    var b = mark.offsetTop; root.removeChild(box); return b;
+  }
+
+  /* line shapes: the loss is the same line as in scissors; the gain and the average accelerate to their end values */
+  function lossV(u) { return LOSS * (0.04 * u + 0.96 * Math.pow(Math.max(0, u - 0.42) / 0.58, 1.8)); }
+  function gainV(u) { return GAIN * (Math.exp(3.6 * u) - 1) / (Math.exp(3.6) - 1); }
+  function avgV(u) { return AVG * (Math.exp(2.6 * u) - 1) / (Math.exp(2.6) - 1); }
+
+  var N = 240;
+  function curve(fn) {
+    var pts = [], cum = [0], i;
+    for (i = 0; i <= N; i++) { var u = i / N; pts.push([xOf(u), yOf(fn(u))]); }
+    for (i = 1; i <= N; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return { fn: fn, pts: pts, cum: cum, L: cum[N], d: 'M' + pts.map(function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); }).join(' L') };
+  }
+  function arcAt(c, u) { var f = u * N, i = Math.min(N - 1, Math.floor(f)), r = f - i; return c.cum[i] + (c.cum[i + 1] - c.cum[i]) * r; }
+  function yAtX(c, x) { var u = (x - X0) / (X1 - X0); return yOf(c.fn(Math.max(0, Math.min(1, u)))); }
+  function xAtY(c, y) { var lo = 0, hi = 1; for (var i = 0; i < 40; i++) { var m = (lo + hi) / 2; if (yOf(c.fn(m)) > y) lo = m; else hi = m; } return xOf((lo + hi) / 2); }
+
+  var GN = curve(gainV), AV = curve(avgV), LS = curve(lossV);
+  var pGain = $('p-gain'), pAvg = $('p-avg'), pLoss = $('p-loss');
+  pGain.setAttribute('d', GN.d); pAvg.setAttribute('d', AV.d); pLoss.setAttribute('d', LS.d);
+  [[pGain, GN], [pAvg, AV]].forEach(function (a) { a[0].style.strokeDasharray = a[1].L + ' ' + (a[1].L + 40); a[0].style.strokeDashoffset = a[1].L; a[0].style.opacity = 0; });
+
+  /* ---------- axis: light y scale, bottom rule + year ticks, dashed zero baseline ---------- */
+  var ax = $('axis'), ylabs = $('ylabs'), years = $('years');
+  [40, 20].forEach(function (v) { el('line', { x1: X0 - 6, y1: yOf(v), x2: X1, y2: yOf(v), 'stroke-width': 1.5, 'class': 'grid' }, ax); });
+  el('line', { x1: X0 - 6, y1: AXIS_Y, x2: X1, y2: AXIS_Y, 'stroke-width': 1.5, 'class': 'rule-ax' }, ax);
+  [[40, '+40'], [20, '+20'], [0, '0'], [-20, '−20']].forEach(function (g) {
+    var d = document.createElement('div'); d.className = 'yl mono'; d.style.top = yOf(g[0]) + 'px'; d.textContent = g[1]; ylabs.appendChild(d);
+  });
+  for (var yi = 0; yi <= 4; yi++) {
+    var xx = xOf(yi / 4);
+    el('line', { x1: xx, y1: AXIS_Y, x2: xx, y2: AXIS_Y + 10, 'stroke-width': 1.5, 'class': 'tick' }, ax);
+    var yl = document.createElement('div'); yl.className = 'yr mono'; yl.style.left = xx + 'px'; yl.textContent = String(YEAR0 + yi);
+    if (yi === 0) { yl.style.marginLeft = '-2px'; yl.style.textAlign = 'left'; } if (yi === 4) { yl.style.marginLeft = '-138px'; yl.style.textAlign = 'right'; }
+    years.appendChild(yl);
+  }
+  el('line', { x1: X0, y1: Y0, x2: X1, y2: Y0, 'stroke-width': 2, 'stroke-dasharray': '10 10', 'class': 'zero' }, ax);
+  $('origin').setAttribute('cx', X0); $('origin').setAttribute('cy', Y0);
+  $('d-loss').setAttribute('cx', X1); $('d-loss').setAttribute('cy', yOf(LOSS));
+
+  /* ---------- static labels ---------- */
+  var labL = $('lab-loss'); labL.style.right = (1080 - 899) + 'px'; labL.style.top = (yOf(LOSS) + 22) + 'px';
+  var labA = $('lab-avg'); labA.style.right = (1080 - 899) + 'px'; labA.style.top = (yOf(AVG) - 16 - 68) + 'px';
+
+  /* ---------- beat times (seconds from card start), snapped to frames ---------- */
+  var T = {
+    tag1: q(0.50), tag2: q(1.20), tag3: q(1.88),          // each group named on its word: 0.60, 1.30, 1.98
+    g0: q(2.58), g1: q(3.86),                             // gain: starts on its word (2.64), climbs to the payoff (3.78), lands ~3.85
+    a0: q(2.64), a1: q(3.92),                             // average, quietly alongside
+    tuck: q(3.74), brk: q(3.80), arm: q(3.92), cap: q(4.00), alab: q(3.94)
+  };
+  function clamp(p) { return p < 0 ? 0 : p > 1 ? 1 : p; }
+  function p2o(p) { return 1 - Math.pow(1 - p, 2); }
+  function p3o(p) { return 1 - Math.pow(1 - p, 3); }
+  /* accelerate like the curve itself, then a short landing */
+  function riseLand(p) { var a = 0.8, k = 1.25; return p <= a ? k * p * p : 1 - (1 - k * a * a) * Math.pow(1 - (p - a) / (1 - a), 2); }
+  function uOf(t, t0, t1) { if (t < t0) return -1; return riseLand(clamp((t - t0) / (t1 - t0))); }
+
+  var dGain = $('d-gain'), dAvg = $('d-avg'), pgGain = $('pg-gain'), cnt = $('cnt');
+  function drawLine(path, C, dot, u, t0, t, r) {
+    if (u < 0) { path.style.opacity = 0; dot.setAttribute('opacity', 0); return; }
+    path.style.opacity = 1;
+    path.style.strokeDashoffset = (C.L - arcAt(C, u)).toFixed(2);
+    var s = 0.4 + 0.6 * p3o(clamp((t - t0) / 0.14));
+    dot.setAttribute('opacity', 1); dot.setAttribute('cx', xOf(u).toFixed(2)); dot.setAttribute('cy', yOf(C.fn(u)).toFixed(2));
+    dot.setAttribute('r', (r * s).toFixed(2));
+  }
+  function ping(ring, x, y, t, t0) {
+    var p = (t - t0) / 0.5;
+    if (p <= 0 || p >= 1) { ring.setAttribute('opacity', 0); return; }
+    ring.setAttribute('cx', x); ring.setAttribute('cy', y);
+    ring.setAttribute('r', (11 + 24 * p2o(p)).toFixed(2));
+    ring.setAttribute('opacity', (0.85 * (1 - p)).toFixed(3));
+    ring.setAttribute('stroke-width', (2.5 - 1.2 * p).toFixed(2));
+  }
+
+  /* everything that needs measured text is built once the pack's fonts are in */
+  var FONTS = ['600 30px ' + tok('--font-text'), '500 56px ' + tok('--font-mono'), '400 24px ' + tok('--font-mono')];
+  Promise.all(FONTS.map(function (f) { return document.fonts.load(f); })).then(build, build);
+
+  function build() {
+    var BASE = baselineOf('mono', 56);                       // baseline of a 56px mono value in its line box
+    /* tags: stacked in the +20..+40 band, left-aligned; on landing they tuck right against a bracket */
+    var tags = [$('tag1'), $('tag2'), $('tag3')], TH = 50, TG = 10;
+    var top0 = Math.round((yOf(40) + yOf(20)) / 2 - (3 * TH + 2 * TG) / 2);
+    var W = tags.map(function (t) { return t.offsetWidth; }), WM = Math.max.apply(null, W);
+    tags.forEach(function (t, i) { t.style.top = (top0 + i * (TH + TG)) + 'px'; });
+    var yTop = top0 + 3, yBot = top0 + 3 * TH + 2 * TG - 3, yMid = (yTop + yBot) / 2;
+    var xb = X0 + WM + 16;                                   // bracket spine
+    var xTip = xAtY(GN, yMid) - 16;                          // arm stops just short of the gain line
+    $('brk-up').setAttribute('d', 'M' + xb + ' ' + yMid + ' V' + yTop + ' H' + (xb - 10));
+    $('brk-dn').setAttribute('d', 'M' + xb + ' ' + yMid + ' V' + yBot + ' H' + (xb - 10));
+    $('arm').setAttribute('d', 'M' + xb + ' ' + yMid + ' H' + xTip);
+    $('chev').setAttribute('d', 'M' + (xTip - 11) + ' ' + (yMid - 9) + ' L' + xTip + ' ' + yMid + ' L' + (xTip - 11) + ' ' + (yMid + 9));
+    var BR = ['brk-up', 'brk-dn', 'arm'].map(function (id) { var p = $(id), L = p.getTotalLength() + 2; p.style.strokeDasharray = L + ' ' + (L + 20); p.style.strokeDashoffset = L; return { p: p, L: L }; });
+    var cap = $('cap'); cap.style.left = (xb + 18) + 'px'; cap.style.top = (yMid + 12) + 'px';
+    cnt.textContent = '+' + GAIN.toFixed(1) + '%'; var ADV = cnt.offsetWidth / cnt.textContent.length;   // tabular mono: one advance per character, measured once
+
+    function render(t) {
+      var ug = uOf(t, T.g0, T.g1), ua = uOf(t, T.a0, T.a1);
+      drawLine(pGain, GN, dGain, ug, T.g0, t, 11);
+      drawLine(pAvg, AV, dAvg, ua, T.a0, t, 7.5);
+      ping(pgGain, X1, yOf(GAIN), t, T.g1 - 0.03);
+      /* counter rides the head: parked flush with the origin while the head crawls under it,
+         then trailing just behind the head, settling beside the end dot */
+      if (ug < 0) { cnt.style.opacity = 0; }
+      else {
+        cnt.textContent = '+' + gainV(ug).toFixed(1) + '%';
+        var w = cnt.textContent.length * ADV, hx = xOf(ug), hy = yOf(GN.fn(ug));
+        var R = Math.max(X0 - 4 + w, hx - 40);
+        var beta = clamp((R - (hx - 60)) / 40);                 // 1 while the box sits over the head
+        var bl = Math.min(yAtX(GN, Math.min(R + 26, X1)) - 16, hy - 24 + (1 - beta) * 200);
+        cnt.style.opacity = clamp((t - T.g0) / 0.12);
+        cnt.style.transform = 'translate(' + R.toFixed(2) + 'px,' + (bl - BASE).toFixed(2) + 'px) translateX(-100%)';
+      }
+      /* bracket closes from its middle, then the arm reaches for the gain line */
+      var pb = p3o(clamp((t - T.brk) / 0.22)), pa = p2o(clamp((t - T.arm) / 0.24));
+      BR[0].p.style.strokeDashoffset = (BR[0].L * (1 - pb)).toFixed(2);
+      BR[1].p.style.strokeDashoffset = (BR[1].L * (1 - pb)).toFixed(2);
+      BR[2].p.style.strokeDashoffset = (BR[2].L * (1 - pa)).toFixed(2);
+      $('chev').setAttribute('opacity', clamp((t - T.arm - 0.18) / 0.06).toFixed(3));
+    }
+
+    /* tag pops on their words (back.out 1.4 at most), then the tuck */
+    tags.forEach(function (tg, i) {
+      var t0 = [T.tag1, T.tag2, T.tag3][i];
+      gsap.set(tg, { opacity: 0, scale: 0.86, transformOrigin: '0% 50%' });
+      tl.fromTo(tg, { opacity: 0, scale: 0.86 }, { opacity: 1, scale: 1, duration: 0.32, ease: 'back.out(1.4)', immediateRender: false }, t0);
+      tl.fromTo(tg, { x: 0 }, { x: WM - W[i], duration: 0.36, ease: 'power3.inOut', immediateRender: false }, T.tuck + i * 0.03);
+    });
+    gsap.set(cap, { opacity: 0, y: 8 });
+    tl.fromTo(cap, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out', immediateRender: false }, T.cap);
+    gsap.set(labA, { opacity: 0, y: 8 });
+    tl.fromTo(labA, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out', immediateRender: false }, T.alab);
+
+    var clock = { t: 0 };
+    render(0);
+    tl.fromTo(clock, { t: 0 }, { t: D, duration: D, ease: 'none', immediateRender: false, onUpdate: function () { render(clock.t); } }, 0);
+    tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: D, ease: 'none' }, 0);
+
+    window.__timelines['main'] = tl;
+    if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+  }
+})();
+</script>
+</body>
+</html>

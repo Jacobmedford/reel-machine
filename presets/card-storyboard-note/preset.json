@@ -1,0 +1,65 @@
+{
+  "name": "card-storyboard-note",
+  "kind": "card",
+  "layer": "card",
+  "ground": "dark",
+  "block": "index.html",
+  "from": "kit fx/comment-thread, as a full-screen card on kit/CARD_BRIEF.md",
+  "source": ["kit fx/comment-thread", "kit/CARD_BRIEF.md"],
+  "does": "Dark full-screen card: a real storyboard page as seen on a monitor, close on one beat; its 'Comment on this beat' button takes the hover and presses, a pin with the creator's face drops onto the frame's caption, the note types into a comment and sends, the answer comes back, the old frame dims while the edit works, the new frame lands with its caption grown, and a version badge stamps. Laid out from the capture's own boxes, so any beat of any storyboard page works.",
+  "use_when": "'I leave a note on the storyboard and it changes', the storyboard and notes loop; any 'I ask for a change and there it is' beat",
+  "what": "a real storyboard beat: the note types into its comment box, the answer comes back, the beat updates",
+  "inputs": [
+    "the storyboard to capture and its three beats, the focus beat in the middle (CAPTURE: \"\" for this project's own storyboard, another project's folder name, or a path to a storyboard index.html); the capture runs a headless browser (heavy)",
+    "the focus beat's source frame for the new picture (FRAME: the project, \"\" for this one, and a time on its output timeline)",
+    "the note, the answer, the badge and the new frame's caption (NOTE, REPLY, BADGE, CAPTION) and the beats (T: card seconds or spoken words)",
+    "square face crops dropped into img/ and named in HEADSHOT (else a neutral glyph); render the card to cards/<id>.mp4"
+  ],
+  "constants": {
+    "KICK": "Storyboard · Beat {n}",
+    "NOTE": ["Make the captions", "bigger here."],
+    "PLACEHOLDER": "What should change?",
+    "NAME": "You",
+    "REPLY_NAME": "Claude",
+    "REPLY": "On it.",
+    "BADGE": "v2",
+    "CAPTION": {"words": ["this", "line."], "lit": 0, "size": 72, "grow": 124, "y": 1318},
+    "HEADSHOT": {"pin": "", "avatar": ""},
+    "WINDOW": {"x0": 18, "x1": 371.8, "top": 8.86, "h": 307},
+    "CAPTURE": {"page": "", "beats": ["p01", "p02", "p03"]},
+    "FRAME": {"project": "", "t": 1.0},
+    "T": {"hover": 0.56, "press": 0.73, "release": 0.8, "unhover": 1.36, "pin": 0.86, "open": 0.92, "blink": [1.03, 1.33, 1.63], "type0": 1.74, "type1": 2.8, "send": 2.83, "sent": 2.9, "reply": 2.97, "work": 3.18, "grow": 3.34, "grown": 3.7, "badge": 3.66}
+  },
+  "notes": {
+    "NOTE": "two lines as the comment breaks them; it types from T.type0 to T.type1 across the spoken words",
+    "NAME": "the commenter's name on the note: the creator's first name reads best",
+    "REPLY_NAME": "who answers (its avatar is its first letter): the agent that edits",
+    "CAPTION": "the new frame's caption: words, the lit (spoken) one, size before and after the change (72 and 124 are the kit's lo-fi and huge sizes), its top on the reel",
+    "WINDOW": "page px: the window shows x0..x1 of the page (cut in the gap after the beat's duration) from `top` above the focus beat, h tall; the default fits the kit's storyboard page",
+    "CAPTURE": "page: \"\" = this project's storyboard/index.html, a name = another project folder beside it, or a path; beats: three beat ids (p01...), the focus in the middle",
+    "FRAME": "the reel (project, \"\" = this one) and output time the focus beat's frame comes from; its grade at that time is baked in",
+    "T": "card seconds (0 = the cut to the card); any can be a spoken word (preset.py resolves it); press lands 2 frames before contact"
+  },
+  "cues": ["T"],
+  "generators": [
+    {"run": "node capture-storyboard.mjs {project}", "when": "the storyboard, the focus beat or its frames change", "required": true, "heavy": true},
+    {"run": "{py} frame.py {project}", "when": "FRAME changes or that reel's cut or grade changes", "required": true}
+  ],
+  "needs": [
+    "render it: the printed command, then cards/{id}.mp4 is picked up by the build (CARDS entry above)",
+    "the storyboard it captures must exist (storyboard.py builds this video's)"
+  ],
+  "sfx": [
+    {"at": "T.release", "name": "click", "db": -16, "what": "the button presses"},
+    {"at": "T.pin+0.14", "name": "pop", "db": -19, "what": "the pin lands"},
+    {"at": "T.type0-0.007", "name": "typing", "db": -14, "max_len": "T.type1 - T.type0", "what": "the note types (placed by its start)"},
+    {"at": "T.send+0.05", "name": "key", "db": -18, "what": "Send"},
+    {"at": "T.reply+0.13", "name": "pop", "db": -19, "what": "the answer comes back"},
+    {"at": "T.grow-0.01", "name": "shutter", "db": -16, "what": "the new frame lands"},
+    {"at": "T.badge+0.12", "name": "stamp", "db": -16, "what": "the badge stamps"}
+  ],
+  "typical_length": "4.6 s (138 frames)",
+  "modes": ["hifi", "showcase"],
+  "signature": null,
+  "pairs_with": null
+}

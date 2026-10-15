@@ -1,0 +1,58 @@
+<!-- odometer-recursion. Part 1: a mechanical counter rolls the raw take's length down to the finished video's, drum by
+     drum. Part 2: the frame shrinks into a framed inset of itself, four levels deep (every level the same synced
+     footage, in the live grade), then the camera dives through one level so the last frame looks like the first.
+     Words, numbers and times: fx.js. The five footage copies are timed by the build from the effect's window and
+     staggered a frame apart ({{START+0.033}} with {{SYNC+0.033}}) so no two share a start. -->
+<div id="{{ID}}-stack" data-layout-allow-overflow>
+  <video id="{{ID}}-v0" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video>
+  <div id="{{ID}}-n1" class="{{ID}}-lv">
+    <video id="{{ID}}-v1" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.033}}" data-media-start="{{SYNC+0.033}}" data-duration="{{DUR-0.033}}" data-track-index="{{T1}}"></video>
+    <div id="{{ID}}-f1" class="{{ID}}-fr"></div>
+    <div id="{{ID}}-n2" class="{{ID}}-lv">
+      <video id="{{ID}}-v2" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.067}}" data-media-start="{{SYNC+0.067}}" data-duration="{{DUR-0.067}}" data-track-index="{{T2}}"></video>
+      <div id="{{ID}}-f2" class="{{ID}}-fr"></div>
+      <div id="{{ID}}-n3" class="{{ID}}-lv">
+        <video id="{{ID}}-v3" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.1}}" data-media-start="{{SYNC+0.1}}" data-duration="{{DUR-0.1}}" data-track-index="{{T3}}"></video>
+        <div id="{{ID}}-f3" class="{{ID}}-fr"></div>
+        <div id="{{ID}}-n4" class="{{ID}}-lv">
+          <video id="{{ID}}-v4" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.133}}" data-media-start="{{SYNC+0.133}}" data-duration="{{DUR-0.133}}" data-track-index="{{T4}}"></video>
+          <div id="{{ID}}-f4" class="{{ID}}-fr"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="{{ID}}-odo" data-layout-allow-overlap data-layout-allow-occlusion>
+  <div id="{{ID}}-lab"><div id="{{ID}}-lab-in"><span id="{{ID}}-l0"></span><span id="{{ID}}-l1"></span></div></div>
+  <div id="{{ID}}-row">
+    <div class="{{ID}}-drum"><div id="{{ID}}-dm" class="{{ID}}-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div>
+    <div class="{{ID}}-colon">:</div>
+    <div class="{{ID}}-drum"><div id="{{ID}}-dt" class="{{ID}}-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>0</span></div></div>
+    <div class="{{ID}}-drum"><div id="{{ID}}-du" class="{{ID}}-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div>
+  </div>
+</div>
+
+<style>
+#{{ID}}-stack { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}} .{{ID}}-lv { position:absolute; left:0; top:0; width:1080px; height:1920px;
+  box-shadow:0 30px 70px color-mix(in srgb, var(--c-dark) 34%, transparent); }
+#{{ID}} .{{ID}}-vid { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+#{{ID}} .{{ID}}-fr { position:absolute; left:0; top:0; width:1080px; height:1920px; box-sizing:border-box; border:0 solid var(--c-light); }
+
+/* the counter: a dark plate, recessed drums, digits in the display face, the label in the accent */
+#{{ID}}-odo { position:absolute; left:250px; top:240px; width:580px; padding:22px 26px 26px; box-sizing:border-box;
+  background:color-mix(in srgb, var(--c-dark) 90%, var(--c-light)); border-radius:var(--radius);
+  box-shadow:0 18px 40px color-mix(in srgb, var(--c-dark) 24%, transparent); }
+#{{ID}}-lab { height:36px; overflow:hidden; text-align:center; }
+#{{ID}}-lab-in span { display:block; height:36px; line-height:36px; font:500 28px var(--font-mono); letter-spacing:.24em;
+  text-transform:uppercase; white-space:nowrap; color:var(--c-accent); }
+#{{ID}}-row { display:flex; justify-content:center; align-items:center; margin-top:12px; }
+#{{ID}} .{{ID}}-drum { width:142px; height:200px; overflow:hidden; background:var(--c-dark); border-radius:var(--radius); margin:0 5px; position:relative; }
+#{{ID}} .{{ID}}-strip { position:absolute; left:0; top:-35px; width:142px; }
+#{{ID}} .{{ID}}-strip span { display:block; height:270px; line-height:270px; text-align:center; color:var(--c-light);
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight); font-size:168px;
+  font-variant-numeric:tabular-nums lining-nums; }
+#{{ID}} .{{ID}}-colon { width:40px; text-align:center; color:var(--c-light); line-height:200px; margin-top:-16px;
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight); font-size:150px; }
+</style>

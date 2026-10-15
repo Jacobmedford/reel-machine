@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "creator": {
+    "name": "",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "League Gothic",
+      "italic": false,
+      "weight": 400
+    },
+    "text": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 700
+    }
+  },
+  "colors": {
+    "light": "#EBDFBF",
+    "dark": "#232A22",
+    "ink": "#232A22",
+    "muted_light": "#5B6350",
+    "muted_dark": "rgba(235,223,191,.6)",
+    "hair_light": "#C6BB8E",
+    "hair_dark": "rgba(235,223,191,.22)",
+    "accent": "#E2744D",
+    "accent_on_light": "#A3471F",
+    "negative": "#B5739D",
+    "negative_on_light": "#7E3F6A",
+    "positive": "#8F9A79",
+    "positive_on_light": "#3B5549",
+    "series": [
+      "#E2744D",
+      "#8F9A79",
+      "#C6BB8E"
+    ],
+    "caption_box": "rgba(47,67,58,.94)",
+    "caption_ink": "#EBDFBF",
+    "caption_dim": "rgba(235,223,191,.45)",
+    "textbox_bg": "#EBDFBF",
+    "textbox_ink": "#232A22"
+  },
+  "grounds": {
+    "grid": true,
+    "radius": 4
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": false,
+      "size": 64,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "uppercase": false,
+      "size": 72,
+      "y": 1318
+    }
+  },
+  "modes": {
+    "hifi": {
+      "hook": "two-line",
+      "captions": "phrases",
+      "emphasis": [
+        "thesis",
+        "big",
+        "strike"
+      ],
+      "behind_head": "often",
+      "cards": "often",
+      "camera": "settle",
+      "bw": true,
+      "j_lead": 0.3
+    },
+    "lofi": {
+      "captions": "word-by-word",
+      "max_words": 4,
+      "max_chars": 26,
+      "text_boxes": true,
+      "overlays": "often",
+      "backdrops": "often",
+      "zooms": true,
+      "bw": false,
+      "j_lead": 0.2
+    },
+    "showcase": {
+      "emphasis_word": "stamp",
+      "transitions": [
+        "push",
+        "reveal",
+        "zoom",
+        "drop"
+      ],
+      "density": "high",
+      "motif": "the Harbor ridge: layered dithered mountain silhouettes in cream, sage and deep green that rise behind the head on the hook and settle back for the CTA",
+      "j_lead": 0.3
+    }
+  },
+  "grade": "sepia(.06) saturate(.92) contrast(1.08)",
+  "motion": "punchy",
+  "sound": {
+    "sfx": "normal",
+    "music": "none"
+  },
+  "end_card": false
+}

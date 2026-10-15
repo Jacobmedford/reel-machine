@@ -1,0 +1,56 @@
+<!-- grid-collapse: "lots of people do this". The frame shrinks into the centre tile of a 3x3 grid, eight tiles of
+     other people doing it pop in around it from the centre out, then on the cue word they fall away and the speaker
+     snaps back to full frame. The centre is a synced copy of the footage. Tiles 341.33 x 606.81, gutters 14.
+     PLACEHOLDERS: the eight tiles below are token-built stand-ins, not real screenshots. Replace the inside of each
+     .{{ID}}-t with one real screenshot of someone else doing what you describe, cropped 9:16, headline readable:
+       <img class="{{ID}}-i" src="fx/{{ID}}/shot1.jpg" alt="">       (the file goes in this folder)
+     Words and times: fx.js. The centre copy is timed by the build from the effect's window ({{START}}, {{SYNC}}, {{DUR}}). -->
+<div id="{{ID}}-bg"></div>
+<div id="{{ID}}-grid" data-layout-allow-overlap data-layout-allow-occlusion>
+  <div id="{{ID}}-t00" class="{{ID}}-t" style="left:14.00px; top:35.78px;"><div class="{{ID}}-ph {{ID}}-gl {{ID}}-la"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b"></i><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t01" class="{{ID}}-t" style="left:369.33px; top:35.78px;"><div class="{{ID}}-ph {{ID}}-gd {{ID}}-lb"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t02" class="{{ID}}-t" style="left:724.67px; top:35.78px;"><div class="{{ID}}-ph {{ID}}-gm {{ID}}-lc"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t10" class="{{ID}}-t" style="left:14.00px; top:656.59px;"><div class="{{ID}}-ph {{ID}}-gt {{ID}}-ld"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-b"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t12" class="{{ID}}-t" style="left:724.67px; top:656.59px;"><div class="{{ID}}-ph {{ID}}-gl {{ID}}-lb"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t20" class="{{ID}}-t" style="left:14.00px; top:1277.41px;"><div class="{{ID}}-ph {{ID}}-gm {{ID}}-la"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b"></i><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t21" class="{{ID}}-t" style="left:369.33px; top:1277.41px;"><div class="{{ID}}-ph {{ID}}-gt {{ID}}-lc"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b"></i><i class="{{ID}}-b"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t22" class="{{ID}}-t" style="left:724.67px; top:1277.41px;"><div class="{{ID}}-ph {{ID}}-gd {{ID}}-ld"><span class="{{ID}}-n" data-layout-allow-overlap></span><i class="{{ID}}-b {{ID}}-x"></i><i class="{{ID}}-b"></i><i class="{{ID}}-hd"></i><i class="{{ID}}-sh"></i></div></div>
+  <div id="{{ID}}-t11" class="{{ID}}-t" style="left:369.33px; top:656.59px;"><video id="{{ID}}-v" class="{{ID}}-v g" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video></div>
+</div>
+<style>
+#{{ID}}-bg { position:absolute; left:0; top:0; width:1080px; height:1920px; background:var(--c-dark); }
+#{{ID}}-grid { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}} .{{ID}}-t { position:absolute; width:341.33px; height:606.81px; overflow:hidden; border-radius:var(--radius); background:var(--c-dark); }
+#{{ID}} .{{ID}}-i { position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; display:block; }
+#{{ID}} .{{ID}}-v { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; transform-origin:0 0; transform:scale(0.316049); }
+
+/* placeholder "screenshot" cards: a ground, a figure, a headline as bars, a label. Replace them with real ones. */
+#{{ID}} .{{ID}}-ph { position:absolute; inset:0; --fg:var(--c-light); --fig:color-mix(in srgb, var(--c-light) 20%, var(--c-dark)); --hl:var(--c-accent); }
+#{{ID}} .{{ID}}-gl { background:var(--c-light); --fg:var(--c-ink); --fig:color-mix(in srgb, var(--c-dark) 80%, var(--c-light)); --hl:var(--c-accent-light); }
+#{{ID}} .{{ID}}-gd { background:color-mix(in srgb, var(--c-dark) 90%, var(--c-light)); }
+#{{ID}} .{{ID}}-gm { background:color-mix(in srgb, var(--c-light) 62%, var(--c-dark)); --fg:var(--c-ink); --fig:color-mix(in srgb, var(--c-dark) 85%, var(--c-light)); --hl:var(--c-light); }
+#{{ID}} .{{ID}}-gt { --tint:color-mix(in srgb, var(--c-accent) 24%, var(--c-dark)); background:var(--tint);
+  --fig:color-mix(in srgb, var(--c-light) 20%, var(--tint)); --hl:var(--c-light); }
+#{{ID}} .{{ID}}-n { position:absolute; left:20px; top:18px; font:500 15px/1 var(--font-mono); letter-spacing:.16em; text-transform:uppercase;
+  white-space:nowrap; color:var(--fg); opacity:.62; z-index:2; }
+#{{ID}} .{{ID}}-b { position:absolute; left:26px; height:30px; border-radius:var(--radius); background:var(--fg); z-index:2; }
+#{{ID}} .{{ID}}-b.{{ID}}-x { background:var(--hl); }
+#{{ID}} .{{ID}}-hd, #{{ID}} .{{ID}}-sh { position:absolute; left:50%; background:var(--fig); }
+#{{ID}} .{{ID}}-hd { border-radius:50%; }
+#{{ID}} .{{ID}}-sh { border-radius:999px 999px 0 0; }
+/* four layouts: headline at the top over a medium figure (a), low over a close-up (b), small over a wide shot (c),
+   at the foot over a medium figure (d) */
+#{{ID}} .{{ID}}-la .{{ID}}-b:nth-of-type(1) { top:74px; width:78%; } #{{ID}} .{{ID}}-la .{{ID}}-b:nth-of-type(2) { top:116px; width:62%; }
+#{{ID}} .{{ID}}-la .{{ID}}-b:nth-of-type(3) { top:158px; width:44%; }
+#{{ID}} .{{ID}}-la .{{ID}}-hd { top:268px; width:110px; height:140px; margin-left:-55px; }
+#{{ID}} .{{ID}}-la .{{ID}}-sh { top:394px; width:280px; height:260px; margin-left:-140px; }
+#{{ID}} .{{ID}}-lb .{{ID}}-hd { top:150px; width:170px; height:216px; margin-left:-85px; }
+#{{ID}} .{{ID}}-lb .{{ID}}-sh { top:350px; width:400px; height:300px; margin-left:-200px; }
+#{{ID}} .{{ID}}-lb .{{ID}}-b:nth-of-type(1) { top:430px; width:70%; left:15%; } #{{ID}} .{{ID}}-lb .{{ID}}-b:nth-of-type(2) { top:472px; width:52%; left:24%; }
+#{{ID}} .{{ID}}-lc .{{ID}}-b:nth-of-type(1) { top:64px; width:58%; height:24px; } #{{ID}} .{{ID}}-lc .{{ID}}-b:nth-of-type(2) { top:98px; width:40%; height:24px; }
+#{{ID}} .{{ID}}-lc .{{ID}}-hd { top:366px; width:72px; height:92px; margin-left:-36px; }
+#{{ID}} .{{ID}}-lc .{{ID}}-sh { top:450px; width:190px; height:200px; margin-left:-95px; }
+#{{ID}} .{{ID}}-ld .{{ID}}-hd { top:190px; width:124px; height:158px; margin-left:-62px; }
+#{{ID}} .{{ID}}-ld .{{ID}}-sh { top:330px; width:300px; height:320px; margin-left:-150px; }
+#{{ID}} .{{ID}}-ld .{{ID}}-b:nth-of-type(1) { top:478px; width:74%; left:13%; } #{{ID}} .{{ID}}-ld .{{ID}}-b:nth-of-type(2) { top:520px; width:56%; left:22%; }
+</style>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>dollar split follow-up</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<link rel="preload" as="image" href="bill.jpg" />
+<style>
+  #cam { transform-origin:540px 640px; }
+  #kick { position:absolute; left:70px; top:262px; }
+  #kick .x { color:var(--c-neg-light); }
+  .ground-dark #kick .x { color:var(--c-neg); }
+</style>
+</head>
+<body>
+<!-- Dollar split, part 2 of 2: starts on index.html's last frame (same drawing, same camera), then the cut slides
+     from 60 to 45, the cents the left share loses turn negative, and the accent share inks them. -->
+<div id="root" class="ground-light" data-composition-id="main" data-start="0" data-duration="1.300" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker"><span class="x">Worst case</span> · Next year</div>
+    <svg id="dollar" class="layer" viewBox="0 0 1080 1920"></svg>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script src="dollar.js"></script>
+<script>
+(function () {
+  var FPS = 30, DUR = 1.3;
+  var RATE = 0.0045, T0 = 4.9;                // continue index.html's camera push from its last frame (t=4.9)
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  var D = window.Dollar, clamp = D.clamp;
+
+  D.ready(function () {
+    var tl = gsap.timeline({ paused: true });
+    var E = { p1io: gsap.parseEase('power1.inOut'), p2i: gsap.parseEase('power2.in'), p2o: gsap.parseEase('power2.out'), p3o: gsap.parseEase('power3.out'), p2io: gsap.parseEase('power2.inOut') };
+    function P(t, t0, d, e) { var x = (t - q(t0)) / d; x = x < 0 ? 0 : (x > 1 ? 1 : x); return e ? e(x) : x; }
+    D.build(document.getElementById('dollar'));
+
+    var W = 4;                                    // width of the tint front, in cents (as in index.html)
+    function state(t) {
+      var pb = P(t, 0.17, 0.55, E.p1io);          // 0.17: the cut slides 60 -> 45, reads 45 from 0.667
+      var B = 60 - 15 * pb;
+      var G = P(t, 0.74, 0.36, E.p2io) * (14 + W);  // 0.74: the accent inks the lost cents, sweeping in from its side
+      var dip = 7 * E.p2i(P(t, 0.17, 0.52)) * (1 - E.p3o(P(t, 0.69, 0.32)));   // the 45 lands and settles
+      return {
+        div: function () { return 1; },
+        ink: function (i) { return i < 60 ? 1 : 0; },
+        acc: function (i) { return i >= 60 ? 1 : (i >= 45 ? E.p2o(clamp((G - (59 - i)) / W)) : 0); },
+        neg: null, negSpan: [B, 60],              // cents that cross the cut turn negative (lost by the left share)
+        B: B, cut: 1, g: D.L.gap,
+        lNum: Math.round(B), rNum: 100 - Math.round(B),
+        lA: 1, lY: dip, rA: 1, rY: 0, lTag: 1, rTag: 1,
+        rLabA: 1, rLabY: 0, lLabA: 1, lLabY: 0, br: 1, brA: 1
+      };
+    }
+    var T = { t: 0 };
+    D.paint(state(0));
+    tl.fromTo(T, { t: 0 }, { t: DUR, duration: DUR, ease: 'none', onUpdate: function () { D.paint(state(T.t)); } }, 0);
+    tl.fromTo('#cam', { scale: 1 + RATE * T0 }, { scale: 1 + RATE * (T0 + DUR), duration: DUR, ease: 'none' }, 0);
+
+    window.__timelines['main'] = tl;
+    if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+  });
+})();
+</script>
+</body>
+</html>

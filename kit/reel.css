@@ -1,0 +1,75 @@
+/* The composition's structure. Every colour and font is a token from brand.css (the creator's style pack, inlined
+   before this file by pipeline/build.py). Sizes, positions and motion live here; the look lives in the pack. */
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:1080px; height:1920px; overflow:hidden; background:#000; }
+#root { position:relative; width:1080px; height:1920px; overflow:hidden; background:#000; font-family:var(--font-text); }
+.layer { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+.full { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+#foot { overflow:hidden; }
+#cam { transform-origin:540px 760px; }
+.ph { display:flex; align-items:center; justify-content:center; font:500 40px var(--font-mono); letter-spacing:.1em; }
+.ph.light { background:var(--c-light); color:var(--c-muted-light); } .ph.dark { background:var(--c-dark); color:var(--c-muted-dark); }
+
+/* hook: an eyebrow, a plain line, an expressive line */
+#hook { position:absolute; left:0; width:1080px; top:226px; text-align:center; }
+#hook .eb { font:500 23px var(--font-mono); letter-spacing:.2em; color:color-mix(in srgb, var(--c-light) 78%, transparent); text-transform:uppercase; }
+#hook .h1 { margin-top:12px; font:800 60px/1 var(--font-text); letter-spacing:-.035em; color:var(--c-light); text-shadow:0 2px 18px rgba(0,0,0,.45); }
+#hook .h2 { margin-top:-2px; font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight); font-size:94px; line-height:1;
+            letter-spacing:-.03em; color:var(--c-accent); text-shadow:0 2px 18px rgba(0,0,0,.5); }
+.hw { display:inline-block; }
+#hook-tag { position:absolute; left:0; top:0; font:500 26px var(--font-mono); letter-spacing:.12em; color:var(--c-light); white-space:nowrap; }
+
+/* behind-head type */
+.bh { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:var(--font-display); font-style:var(--display-style);
+      font-weight:var(--display-weight); letter-spacing:-.03em; line-height:1; font-variant-numeric:lining-nums; font-feature-settings:'lnum' 1; }
+.job { font-size:132px; color:var(--c-light); }
+.wt { position:absolute; font:500 26px var(--font-mono); letter-spacing:.04em; color:var(--c-muted-dark); white-space:nowrap; }
+.num { font-size:350px; }
+.plate { position:absolute; object-fit:cover; border-radius:var(--radius); }
+/* a wall of real screenshots behind the speaker, dropping in as a deck (BEHIND kind "stack") */
+.stack { position:absolute; left:0; top:0; width:1080px; }
+.stk-k { position:absolute; left:70px; top:262px; font:500 26px/1 var(--font-mono);
+  letter-spacing:.14em; text-transform:uppercase; color:var(--c-muted-dark); white-space:nowrap; }
+.stk-w { position:absolute; border:1.5px solid var(--c-hair-dark); border-radius:var(--radius); overflow:hidden; background:var(--c-dark); }
+.stk-w img { display:block; }
+.stk-b { height:58px; display:flex; align-items:center; gap:12px; padding:0 20px; background:var(--c-light); color:var(--c-ink);
+  font:600 27px/1 var(--font-text); letter-spacing:-.02em; white-space:nowrap; }
+.stk-n { font:500 26px/1 var(--font-mono); color:var(--c-accent-light); letter-spacing:.06em; }
+
+/* real videos floating behind the speaker (BEHIND kind "float") */
+.flt { position:absolute; object-fit:cover; border:1.5px solid color-mix(in srgb, var(--c-light) 70%, transparent); border-radius:var(--radius); background:var(--c-dark); }
+/* a magazine cover behind the head (BEHIND kind "cover"): masthead, dateline, coverlines */
+.cover { position:absolute; left:0; top:0; width:100%; height:100%; }
+.cv-m { position:absolute; left:0; width:100%; text-align:center; white-space:nowrap; font-family:var(--font-display); font-weight:var(--display-weight);
+        font-size:250px; line-height:.8; letter-spacing:-.045em; color:var(--c-light); }
+.cv-d { position:absolute; left:0; width:100%; text-align:center; white-space:nowrap; font:500 21px/1 var(--font-mono); letter-spacing:.24em; text-transform:uppercase; color:var(--c-muted-dark); }
+.cv-l { position:absolute; width:300px; font:700 36px/1.04 var(--font-text); letter-spacing:-.025em; color:var(--c-light); }
+.cv-t { display:block; white-space:nowrap; }
+.cv-k { display:block; margin-bottom:9px; font:500 19px/1 var(--font-mono); letter-spacing:.16em; text-transform:uppercase; color:var(--c-accent); }
+
+/* captions (hi-fi): a box on footage, plain type on cards */
+.capw { position:absolute; left:0; top:1236px; width:1080px; height:200px; display:flex; justify-content:center; align-items:flex-start; }
+.cap { opacity:0; white-space:nowrap; font-family:var(--font-text); font-weight:var(--text-weight); font-size:56px; line-height:1.1; letter-spacing:-.02em;
+       padding:12px 24px 15px; border-radius:var(--radius); }
+.cap.onfoot { background:var(--c-box); color:var(--c-box-ink); }
+.cap.onlight { color:var(--c-ink); } .cap.ondark { color:var(--c-light); }
+.cap .em { color:var(--c-accent); } .cap.onlight .em { color:var(--c-accent-light); }
+.cap.big { font-size:84px; font-weight:800; letter-spacing:-.035em; padding:10px 28px 14px; }
+.cap.thesis { font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight); font-size:112px; line-height:1;
+              letter-spacing:-.03em; color:var(--c-accent); padding:6px 30px 18px; }
+.cap.onlight.thesis { color:var(--c-accent-light); }
+.cap.strike { font-size:84px; font-weight:800; letter-spacing:-.035em; padding:10px 28px 14px; }
+.cap.huge { font-size:150px; font-weight:800; letter-spacing:-.05em; padding:6px 36px 16px; }
+.sx { position:relative; display:inline-block; }
+.strk { position:absolute; left:-6px; right:-6px; top:54%; height:9px; background:var(--c-accent); border-radius:2px; transform-origin:0 50%; }
+
+/* a line above the head */
+.above { position:absolute; left:0; width:1080px; top:236px; text-align:center; font:700 54px var(--font-text); letter-spacing:-.02em; color:var(--c-light); white-space:nowrap; }
+
+/* end card (opt-in) */
+#end { opacity:0; }
+#end .q1, #end .q2 { position:absolute; left:0; width:1080px; text-align:center; font-family:var(--font-display); font-style:var(--display-style);
+                     font-weight:var(--display-weight); font-size:150px; line-height:1; letter-spacing:-.035em; color:var(--c-ink); white-space:nowrap; }
+#end .q1 { top:560px; } #end .q2 { top:720px; color:var(--c-accent-light); }
+#end .src { position:absolute; left:0; width:1080px; text-align:center; font:400 22px var(--font-mono); letter-spacing:.04em; color:var(--c-muted-light); white-space:nowrap; }
+#end .mark { position:absolute; left:0; width:1080px; top:1010px; text-align:center; font-family:var(--font-display); font-style:var(--display-style); font-size:50px; color:var(--c-ink); }

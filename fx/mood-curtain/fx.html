@@ -1,0 +1,20 @@
+<!-- mood-curtain: the dark look falls from the top like a curtain. edit.GRADES already has the moody look on the main
+     picture from A; this holds a copy of the footage in the previous look over it and lifts that copy away top-down,
+     a light hem riding its edge. Under it, film grain (one self-made tile, moved every frame) and a vignette hold
+     until B. Times and the looks: fx.js. The copy is timed by the build from the effect's
+     window ({{START}}, {{SYNC}}, {{DUR}}). grain.png comes from make_grain.py. -->
+<div id="{{ID}}-grain" data-layout-allow-overlap data-layout-allow-occlusion><div id="{{ID}}-gt" style="background-image:url(fx/{{ID}}/grain.png)"></div></div>
+<div id="{{ID}}-vig" data-layout-allow-overlap data-layout-allow-occlusion></div>
+<video id="{{ID}}-v" class="full" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video>
+<div id="{{ID}}-hem" data-layout-allow-overlap data-layout-allow-occlusion></div>
+<style>
+#{{ID}}-grain { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:hidden; mix-blend-mode:overlay; opacity:.22; }
+#{{ID}}-gt { position:absolute; left:0; top:0; width:1592px; height:2432px; background-repeat:repeat; background-size:512px 512px; }
+/* the vignette: an inset shadow inside an ellipse bigger than the frame (dark at the rim, clear over the face), and
+   the same dark outside it. Desaturated: a lens darkens, it doesn't tint */
+#{{ID}}-vig { position:absolute; left:-302px; top:-345px; width:1684px; height:2380px; border-radius:50%; filter:grayscale(1);
+  box-shadow:inset 0 0 340px 150px color-mix(in srgb, var(--c-dark) 66%, transparent),
+             0 0 0 1600px color-mix(in srgb, var(--c-dark) 66%, transparent); }
+#{{ID}}-v { clip-path:inset(0px 0px 0px 0px); }
+#{{ID}}-hem { position:absolute; left:0; top:-3px; width:1080px; height:5px; background:var(--c-light); }
+</style>

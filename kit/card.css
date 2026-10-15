@@ -1,0 +1,28 @@
+/* Shared card utilities. Every value comes from brand.css (the creator's style pack); this file has no colours or
+   fonts of its own. A card folder links both: <link rel="stylesheet" href="brand.css"><link rel="stylesheet" href="card.css">
+   Three voices: .display (the expressive face: big figures, titles), .text (labels), .mono (numbers, units, kickers). */
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { width:1080px; height:1920px; overflow:hidden; background:var(--c-dark); }
+#root { position:relative; width:1080px; height:1920px; overflow:hidden; font-family:var(--font-text); -webkit-font-smoothing:antialiased; }
+.layer { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+
+/* type voices */
+.display { font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+           font-variant-numeric:lining-nums; font-feature-settings:'lnum' 1; letter-spacing:-.02em; line-height:1; white-space:nowrap; }
+.text    { font-family:var(--font-text); font-weight:600; letter-spacing:-.01em; white-space:nowrap; }
+.mono    { font-family:var(--font-mono); font-weight:500; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.kicker  { font-family:var(--font-mono); font-weight:500; font-size:26px; letter-spacing:.14em; text-transform:uppercase; white-space:nowrap; }
+.foot    { font-family:var(--font-mono); font-weight:400; font-size:24px; letter-spacing:.04em; white-space:nowrap; }
+.ground-light .kicker, .ground-light .foot { color:var(--c-muted-light); }
+.ground-dark .kicker, .ground-dark .foot { color:var(--c-muted-dark); }
+
+/* the only container devices: a hairline box and a rule, corners from the pack */
+.box { border:1.5px solid var(--c-hair-light); border-radius:var(--radius); }
+.ground-dark .box { border-color:var(--c-hair-dark); }
+.rule { position:absolute; height:0; border-top:1.5px solid var(--c-hair-light); }
+.ground-dark .rule { border-top-color:var(--c-hair-dark); }
+
+/* SAFE ZONES (debug only: add class "debug" on #root for snapshots, never in the final render)
+   content in x 70..1010, y 250..1150; y 1170..1430 is the caption band (keep it empty); nothing to read below 1470 */
+#root.debug::after { content:''; position:absolute; left:0; right:0; top:1170px; height:260px; background:rgba(255,0,0,.22); z-index:999; }
+#root.debug::before { content:''; position:absolute; left:0; right:0; top:1470px; bottom:0; background:rgba(255,0,0,.35); z-index:999; }

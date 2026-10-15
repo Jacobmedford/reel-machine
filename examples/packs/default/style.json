@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "creator": {
+    "name": "reel-machine",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "Inter Tight",
+      "italic": false,
+      "weight": 800
+    },
+    "text": {
+      "family": "Inter",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "JetBrains Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Inter",
+      "italic": false,
+      "weight": 800
+    }
+  },
+  "colors": {
+    "light": "#F6F5F1",
+    "dark": "#121314",
+    "ink": "#121314",
+    "muted_light": "#6E6D69",
+    "muted_dark": "rgba(246,245,241,.58)",
+    "hair_light": "#D6D4CE",
+    "hair_dark": "rgba(246,245,241,.22)",
+    "accent": "#4F7BFF",
+    "accent_on_light": "#2A57E0",
+    "negative": "#FF5A5F",
+    "negative_on_light": "#C42B31",
+    "positive": "#35C47C",
+    "positive_on_light": "#1C8A52",
+    "series": [
+      "#4F7BFF",
+      "#35C47C",
+      "#FF5A5F"
+    ],
+    "caption_box": "rgba(18,19,20,.86)",
+    "caption_ink": "#FFFFFF",
+    "caption_dim": "rgba(255,255,255,.45)",
+    "textbox_bg": "#FFFFFF",
+    "textbox_ink": "#111111"
+  },
+  "grounds": {
+    "grid": false,
+    "radius": 6
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": false,
+      "size": 56,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "size": 66,
+      "y": 1318
+    }
+  },
+  "grade": "contrast(1.04) saturate(1.0)",
+  "motion": "calm",
+  "sound": {
+    "sfx": "normal",
+    "music": "none"
+  },
+  "end_card": false
+}

@@ -1,0 +1,111 @@
+{
+  "creator": {
+    "name": "Sample bold",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "Archivo Black",
+      "italic": false,
+      "weight": 400
+    },
+    "text": {
+      "family": "Archivo",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Archivo Black",
+      "italic": false,
+      "weight": 400
+    }
+  },
+  "colors": {
+    "light": "#FAFAFA",
+    "dark": "#0B0B0B",
+    "ink": "#0B0B0B",
+    "muted_light": "#6B6B6B",
+    "muted_dark": "rgba(250,250,250,.55)",
+    "hair_light": "#CFCFCF",
+    "hair_dark": "rgba(250,250,250,.2)",
+    "accent": "#FFD400",
+    "accent_on_light": "#8A6D00",
+    "negative": "#FF4D4D",
+    "negative_on_light": "#C21F1F",
+    "positive": "#3DDC84",
+    "positive_on_light": "#16904D",
+    "series": [
+      "#FFD400",
+      "#3DDC84",
+      "#FF4D4D"
+    ],
+    "caption_box": "rgba(11,11,11,.92)",
+    "caption_ink": "#FFFFFF",
+    "caption_dim": "rgba(255,255,255,.42)",
+    "textbox_bg": "#FFD400",
+    "textbox_ink": "#0B0B0B"
+  },
+  "grounds": {
+    "grid": false,
+    "radius": 0
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": true,
+      "size": 58,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "size": 70,
+      "y": 1318
+    }
+  },
+  "grade": "contrast(1.12) saturate(1.1)",
+  "motion": "punchy",
+  "modes": {
+    "hifi": {
+      "hook": "one-line",
+      "captions": "phrases",
+      "emphasis": [
+        "big",
+        "strike"
+      ],
+      "behind_head": "often",
+      "cards": "sometimes",
+      "camera": "zooms",
+      "bw": false,
+      "j_lead": 0.15
+    },
+    "lofi": {
+      "captions": "single",
+      "max_words": 1,
+      "max_chars": 14,
+      "text_boxes": true,
+      "overlays": "often",
+      "backdrops": "sometimes",
+      "zooms": true,
+      "bw": false,
+      "j_lead": 0.15
+    },
+    "showcase": {
+      "emphasis_word": "slam",
+      "transitions": [
+        "whip",
+        "zoom",
+        "spin",
+        "drop"
+      ],
+      "density": "high",
+      "motif": "",
+      "j_lead": 0.15
+    }
+  }
+}

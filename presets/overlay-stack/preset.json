@@ -1,0 +1,89 @@
+{
+  "name": "overlay-stack",
+  "kind": "device",
+  "layer": "OVERLAYS",
+  "list": "OVERLAYS",
+  "from": "the kit's lo-fi overlays (edit.OVERLAYS)",
+  "source": [
+    "kit modes/LOFI.md OVERLAYS",
+    "kit examples/lofi/edit.py OVERLAYS"
+  ],
+  "does": "Real pages (screenshots, a screen recording, a photo) dropped flat on top of the speaker in one slot in the upper half, each popping in on the word that names it and handing over to the next in the same place, the bottom edge kept above the eyes.",
+  "use_when": "lo-fi: proof on screen (the definition, the brand's own page, the post itself) while the speaker keeps talking; one slot, one item at a time",
+  "inputs": [
+    "the real captures in public/media/ (ITEMS: src, height h in px at the slot's width, a true note: what it is and where it came from)",
+    "when each next item takes over (HANDOFF: one beat per hand-off, seconds after the window start or spoken words)",
+    "the eye line for each window: every item's bottom (SLOT.y + h) at least 15 px above the eyes (measure on the cut)"
+  ],
+  "constants": {
+    "SLOT": {
+      "x": 100,
+      "y": 262,
+      "w": 880
+    },
+    "ITEMS": [
+      {
+        "src": "media/page-1.png",
+        "h": 508,
+        "note": "the source's own page, its headline (captured on the day)"
+      },
+      {
+        "src": "media/page-2.png",
+        "h": 392,
+        "x": 90,
+        "w": 900,
+        "note": "the same page: the line the speaker quotes"
+      }
+    ],
+    "HANDOFF": [
+      3.82
+    ]
+  },
+  "notes": {
+    "SLOT": "px: x, top, width; pages sit well at x 90-100, y 262, 880-900 wide (inside x 70-1010, above the caption band)",
+    "ITEMS": "src under public/, h at the slot's width (keep the aspect), note = what it is, who published it, when it was captured; an item's own x, y or w overrides SLOT",
+    "HANDOFF": "beats where item k+1 takes over item k (len = items - 1); seconds after the window start or spoken words"
+  },
+  "cues": [
+    "HANDOFF"
+  ],
+  "each": "ITEMS",
+  "chain": "HANDOFF",
+  "entry": {
+    "src": "@item.src",
+    "at": "@item.at",
+    "end": "@item.end",
+    "x": "@item.x",
+    "y": "@item.y",
+    "w": "@item.w",
+    "h": "@item.h",
+    "note": "@item.note"
+  },
+  "generators": [],
+  "needs": [
+    "STYLE \"lofi\" or \"showcase\"; the files under public/media/ (real captures only)",
+    "each bottom (SLOT.y + h) at least 15 px above the speaker's eyes in its window"
+  ],
+  "sfx": [
+    {
+      "at": "@at",
+      "name": "pop",
+      "db": -14,
+      "what": "the first page lands"
+    },
+    {
+      "at": "HANDOFF.*",
+      "name": "pop",
+      "db": -15,
+      "what": "the next page takes its place"
+    }
+  ],
+  "typical_length": "1.7-3.8 s an item",
+  "modes": [
+    "lofi",
+    "showcase"
+  ],
+  "signature": null,
+  "pairs_with": null,
+  "item_defaults": "SLOT"
+}

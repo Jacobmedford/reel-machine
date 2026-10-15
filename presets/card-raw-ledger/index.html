@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>card-raw-ledger</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* card-raw-ledger: the raw takes of this video as a ledger, true to scale (one px/s for every take and for the cut,
+     one origin). The bad takes get struck, the discards fall away, the kept lines light up and settle under a sum
+     line as the cut itself, the finished length against the outline of what was shot. On the zoom cue the camera
+     zooms into that cut until it fills the width: TITLE, with a playhead on the line being spoken. Every number comes
+     from data.js (gen.py, from the project's own files); the words and beats are the constants below. Light ground. */
+  #cam { transform-origin:540px 700px; }
+  #kick { position:absolute; left:70px; top:262px; }
+  .thumb { position:absolute; left:70px; width:39.375px; height:70px; object-fit:cover; border-radius:var(--radius); }
+  .lab { position:absolute; left:123px; font-size:26px; line-height:26px; color:var(--c-muted-light); }
+  #plot { overflow:visible; }
+  .track { fill:color-mix(in srgb, var(--c-ink) 5%, var(--c-light)); stroke:var(--c-hair-light); stroke-width:1.5; }
+  .w-ink { fill:var(--c-ink); }
+  .w-neg { fill:var(--c-neg-light); fill-opacity:.5; }
+  .erase { fill:color-mix(in srgb, var(--c-ink) 5%, var(--c-light)); }
+  .strike { fill:var(--c-neg-light); }
+  .p-coral { fill:var(--c-accent-light); }
+  .mk { fill:none; stroke:var(--c-neg-light); stroke-linecap:round; }
+  .sum { stroke:var(--c-ink); stroke-width:2; stroke-linecap:butt; }
+  .ph { fill:var(--c-ink); }
+  .ph-l { stroke:var(--c-ink); stroke-width:2.5; stroke-linecap:butt; }
+  .tag { position:absolute; left:372px; height:34px; padding:0 8px; border:1.5px solid var(--c-neg-light); border-radius:var(--radius);
+         background:var(--c-light); color:var(--c-ink); font-size:26px; line-height:31px; transform-origin:0 50%; }
+  .tag i { position:absolute; left:8px; right:8px; top:16.5px; height:2.5px; background:var(--c-neg-light); transform-origin:0 50%; }
+  .w-cream { fill:var(--c-light); }
+  /* the payoff after the zoom: a title in the accent face over the cut, a mono readout under it */
+  #title { position:absolute; font-size:108px; line-height:1; color:var(--c-accent-light); white-space:nowrap; }
+  /* the accent face: the pack's --font-accent when it has one, else its display face */
+  #title.accent-serif { font-family:var(--font-accent, var(--font-display)); font-style:normal; font-weight:400; text-transform:none; }
+  #title span { display:inline-block; }
+  #readout { position:absolute; font-size:32px; line-height:32px; color:var(--c-ink); text-transform:uppercase; letter-spacing:.02em; }
+</style>
+</head>
+<body>
+<div id="root" class="ground-light" data-composition-id="main" data-start="0" data-duration="[[@DUR]]" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker"></div>
+    <div id="thumbs"></div>
+    <div id="labs"></div>
+    <svg id="plot" class="layer" viewBox="0 0 1080 1920" width="1080" height="1920">
+      <defs id="defs"></defs>
+      <g id="zw">
+        <g id="tracks"></g>
+        <g id="rows"></g>
+        <g id="marks"></g>
+        <line id="sumline" class="sum" />
+        <g id="pieces"></g>
+      </g>
+      <g id="ph"><path id="ph-head" class="ph" /><line id="ph-line" class="ph-l" /></g>
+    </svg>
+    <div id="tags"></div>
+    <div id="title" class="accent-serif"></div>
+    <div id="readout" class="mono"></div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script src="data.js"></script>
+<script src="ledger-lib.js"></script>
+<script>
+(function () {
+  var FPS = 30, FRAMES = [[@FRAMES]], D = FRAMES / FPS;   // the card's window, frames
+  // PRESET CONSTANTS START
+  var KICK = "Raw footage · {clips} clips · {raw}";                 // the kicker: {clips}, {raw} from data.js
+  var READ = "{lines} lines kept · {final} of {raw} raw";           // the readout under the cut: {lines}, {final}, {raw}
+  var TITLE = "this video.";                                         // the accent title over the zoomed cut
+  // the retakes to quote, each on the row of its take: the take's name (data.js), the span in seconds into that take,
+  // and the words, as said (true quotes from the raw: the first words are enough, end a cut-off quote with "...");
+  // [] = no quotes, e.g. [{"take": "take-2", "a": 4.2, "b": 6.0, "text": "So the... so the first thing"}]
+  var BAD = [];
+  // card seconds (or spoken words, which preset.py turns into card seconds; land them 2-3 frames early: 'cut-0.083'):
+  // the waveforms draw in from 0; strike (the discards are struck), quotes (the quotes pop, 0.2 s apart), drop (the
+  // discards fall away), pick (the kept lines light), slide (they slide into the cut), zoom (into the cut), title, read
+  var T = {"strike": 0.861, "quotes": 1.126, "drop": 1.855, "pick": 2.292, "slide": 2.589, "zoom": 3.527, "title": 3.727, "read": 3.86};
+  var SLIDE = {"dur": 0.54, "stagger": 0.012};   // the lines' slide into the cut (s) and the stagger between lines (s, tightened when the zoom comes early)
+  // PRESET CONSTANTS END
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function tok(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+  function $(id) { return document.getElementById(id); }
+  var L = window.LEDGER_LIB, cl = L.cl, p2o = L.p2o, p3o = L.p3o, p2i = L.p2i, p3io = L.p3io, sio = L.sio, back = L.back, mmss = L.mmss, baseline = L.baseline;
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n; }
+
+  var E = window.EDIT, CL = E.clips;
+  var RAD = parseFloat(tok('--radius')) || 0;
+
+  /* ---------- geometry: one scale and one origin for every take and for the cut ---------- */
+  var X0 = 123, XM = 1008;
+  var MAXS = Math.max.apply(null, CL.map(function (c) { return c.sec; }));
+  var S = (XM - X0) / MAXS;                             // px per second (the longest take fills the width)
+  var K = Math.min(1, 10 / Math.max(1, CL.length));    // up to ten takes at full size; more set every row smaller
+  var RY0 = 308, PITCH = 76 * K, RH = 70 * K, TW = RH * 9 / 16;   // rows: 9:16 frame, label line, track
+  var BY = 32 * K, BH = 38 * K, AMP = 16 * K;           // track offset in the row, height, waveform half height
+  var SUMY = RY0 + (CL.length - 1) * PITCH + RH + 14;   // the sum line under the last take
+  var SCY = SUMY + 20 + BH / 2;                         // the cut sits under it, a take's height, same scale
+  var OUT0 = [[@AT]];                                   // this card's start on the output timeline (the playhead is real time)
+
+  function rowTop(i) { return RY0 + i * PITCH; }
+
+
+  /* the real loudness envelope (4 points a second) as a mirrored shape, at this card's scale */
+  function waveD(w, t0, t1, ox, oy, minH, pad, amp) { return L.wave(w, t0, t1, ox, oy, minH, pad, amp || AMP, S); }
+
+  function facts(s) { return s.replace('{clips}', E.clipCount).replace('{raw}', E.rawLabel).replace('{lines}', E.segCount).replace('{final}', E.finalLabel); }
+  $('kick').textContent = facts(KICK);
+  READ = facts(READ);
+
+  /* ---------- rows: frame, label, track, and the part of the waveform that never made the cut ---------- */
+  var defs = $('defs'), rows = [];
+  CL.forEach(function (c, i) {
+    var y0 = rowTop(i), cy = y0 + BY + BH / 2, w = c.sec * S, dead = c.kept.length === 0;
+    var im = document.createElement('img'); im.className = 'thumb'; im.src = c.thumb; im.alt = '';
+    im.style.top = y0 + 'px'; im.style.height = RH + 'px'; im.style.width = TW + 'px'; $('thumbs').appendChild(im);
+    var lb = document.createElement('div'); lb.className = 'lab mono'; lb.style.top = y0 + 'px';
+    if (K < 1) { lb.style.fontSize = lb.style.lineHeight = Math.max(16, 26 * K).toFixed(1) + 'px'; }
+    lb.textContent = c.name + ' · ' + mmss(c.sec); $('labs').appendChild(lb);
+    var tr = el('rect', { x: X0, y: y0 + BY, width: w.toFixed(2), height: BH, rx: RAD, 'class': 'track' }, $('tracks'));
+
+    var spans = [], t = 0;                                // discarded = everything this take did not give the cut
+    c.kept.forEach(function (k) { if (k[0] > t) spans.push([t, k[0]]); t = k[1]; });
+    if (t < c.sec) spans.push([t, c.sec]);
+    var cpD = el('clipPath', { id: 'dc' + i }, defs);
+    spans.forEach(function (sp) { el('rect', { x: (X0 + sp[0] * S).toFixed(2), y: y0, width: ((sp[1] - sp[0]) * S).toFixed(2), height: RH }, cpD); });
+    var rv = el('rect', { x: X0 - 2, y: y0, width: 0, height: RH }, el('clipPath', { id: 'rv' + i }, defs));
+    var pl = el('rect', { x: X0 - 2, y: y0, width: 0, height: RH }, el('clipPath', { id: 'pl' + i }, defs));
+    var g = el('g', {}, $('rows'));
+    var gd = el('g', { 'clip-path': 'url(#dc' + i + ')' }, el('g', { 'clip-path': 'url(#rv' + i + ')' }, g));
+    el('path', { d: waveD(c.wave, 0, c.sec, X0, cy, 0.75, 0), 'class': 'w-ink' }, gd);
+    var gp = el('g', { 'clip-path': 'url(#pl' + i + ')' }, gd);     // behind the sweep front: the ink gives way to the strike
+    el('path', { d: waveD(c.wave, 0, c.sec, X0, cy, 1.4, 0.8), 'class': 'erase' }, gp);
+    el('rect', { x: X0, y: (cy - 1.25).toFixed(2), width: w.toFixed(2), height: 2.5, 'class': 'strike' }, gp);
+    el('path', { d: waveD(c.wave, 0, c.sec, X0, cy, 0, 0.6), 'class': 'w-neg' }, gp);
+    rows.push({ i: i, c: c, y0: y0, cy: cy, w: w, dead: dead, im: im, lb: lb, tr: tr, g: g, rv: rv, pl: pl, marks: [] });
+  });
+
+  /* ---------- the kept lines, in the order they play in the cut ---------- */
+  var pieces = [];
+  CL.forEach(function (c, i) { c.kept.forEach(function (k) { pieces.push({ row: i, li: k[0], lo: k[1], out: k[2] }); }); });
+  pieces.sort(function (a, b) { return a.out - b.out; });
+  pieces.forEach(function (p, k) {
+    var r = rows[p.row], w = (p.lo - p.li) * S;
+    p.k = k; p.w = w;
+    p.xa = X0 + p.li * S; p.ya = r.cy;                    // where it sits in its take
+    p.xb = X0 + p.out * S; p.yb = SCY;                    // where it plays in the cut: same origin, same scale
+    p.g = el('g', {}, $('pieces'));
+    p.rv = el('rect', { x: -2, y: -BH, width: 0, height: BH * 2 }, el('clipPath', { id: 'pc' + k }, defs));
+    var gi = el('g', { 'clip-path': 'url(#pc' + k + ')' }, p.g);
+    p.ink = el('path', { d: waveD(r.c.wave, p.li, p.lo, 0, 0, 0.75, 0), 'class': 'w-ink' }, gi);
+    // the selection: a solid accent block with a hairline cut either side, so every line reads in the finished strip
+    p.coral = el('rect', { x: 0.6, y: -BH / 2, width: Math.max(0.6, w - 1.2).toFixed(2), height: BH, 'class': 'p-coral', opacity: 0 }, gi);
+    // zooming in shows the detail: this video's own waveform, knocked out of the accent
+    p.cream = el('path', { d: waveD(r.c.wave, p.li, p.lo, 0, 0, 0.6, 0, 8), 'class': 'w-cream', opacity: 0 }, gi);
+  });
+
+  /* ---------- bad takes: real retakes (BAD), quoted on the row they came from ---------- */
+  var tags = [];
+  BAD.forEach(function (b, j) {
+    var ri = CL.map(function (c) { return c.name; }).indexOf(b.take), r = rows[ri];
+    if (!r) { console.error('card-raw-ledger: no take ' + b.take + ' in data.js'); return; }
+    var tg = document.createElement('div'); tg.className = 'tag mono'; tg.style.top = (r.y0 - 4) + 'px';
+    tg.appendChild(document.createTextNode(b.text));
+    var st = document.createElement('i'); tg.appendChild(st); $('tags').appendChild(tg);
+    var bx = el('rect', { x: (X0 + b.a * S - 3).toFixed(2), y: r.y0 + BY - 4, width: ((b.b - b.a) * S + 6).toFixed(2), height: BH + 8,
+                          rx: RAD, 'class': 'mk', 'stroke-width': 2 }, $('marks'));
+    tags.push({ row: ri, t0: q(T.quotes + 0.2 * j), el: tg, st: st, bx: bx, cx: X0 + (b.a + b.b) / 2 * S, cy: r.cy });
+  });
+
+  /* ---------- straight marks, drawn with stroke-dashoffset (length from the coordinates, never measured) ---------- */
+  function mark(x1, y1, x2, y2, w) {
+    var n = el('line', { x1: x1, y1: y1, x2: x2, y2: y2, 'class': 'mk', 'stroke-width': w }, $('marks'));
+    n._L = Math.ceil(Math.hypot(x2 - x1, y2 - y1)) + 2; n.setAttribute('stroke-dasharray', n._L + ' ' + n._L);
+    return n;
+  }
+  function dash(n, p) { n.setAttribute('stroke-dashoffset', (n._L * (1 - p)).toFixed(2)); }
+  var sum = $('sumline');
+  sum.setAttribute('x1', 70); sum.setAttribute('x2', XM); sum.setAttribute('y1', SUMY); sum.setAttribute('y2', SUMY);
+  sum._L = XM - 70 + 2; sum.setAttribute('stroke-dasharray', sum._L + ' ' + sum._L);
+
+  var stripClip = el('rect', { rx: RAD }, el('clipPath', { id: 'stripclip' }, defs));
+  var DROP = 22;                                        // how far a thing falls as it goes
+  function fall(t, t0) { var p = cl((t - t0) / 0.32); return { dy: DROP * p2i(p), op: 1 - p3o(p) }; }
+
+  function render(t, tn) {
+    if (tn === undefined) tn = t;
+    var i, r, p, j;
+    for (i = 0; i < rows.length; i++) {
+      r = rows[i];
+      // from 0: the waveforms draw in, a fast cascade down the takes
+      var pd = p2o(cl((t - (-0.06 + 0.026 * i)) / 0.32));
+      r.front = X0 + pd * (XM - X0 + 4);
+      r.rv.setAttribute('width', (r.front - X0 + 2).toFixed(2));
+      // strike: the discards are struck in the negative, a wave across and down
+      var m = T.strike + 0.04 * i, ps = sio(cl((t - m) / 0.44));
+      r.pl.setAttribute('width', (ps * (XM - X0 + 4) + 2).toFixed(2));
+      // drop: the discards fall away
+      var f = fall(t, T.drop + 0.02 * i);
+      r.dy = f.dy; r.op = f.op;
+      r.g.setAttribute('transform', 'translate(0,' + f.dy.toFixed(2) + ')'); r.g.setAttribute('opacity', f.op.toFixed(3));
+      // frame and label: a dead take goes with its discards, the rest once their lines are chosen
+      var ff = r.dead ? f : fall(t, T.pick + 0.16 + 0.015 * i), dim = 1;
+      if (r.dead) {
+        dim = 1 - 0.45 * p2o(cl((t - m) / 0.2));
+        dash(r.marks[0], p2o(cl((t - m) / 0.12)));
+        dash(r.marks[1], p2o(cl((t - m - 0.08) / 0.12)));
+        dash(r.marks[2], p2o(cl((t - m - 0.04) / 0.18)));
+        for (j = 0; j < 3; j++) { r.marks[j].setAttribute('transform', 'translate(0,' + f.dy.toFixed(2) + ')'); r.marks[j].setAttribute('opacity', f.op.toFixed(3)); }
+      }
+      r.im.style.transform = 'translateY(' + ff.dy.toFixed(2) + 'px)'; r.im.style.opacity = (ff.op * dim).toFixed(3);
+      r.lb.style.transform = 'translateY(' + ff.dy.toFixed(2) + 'px)'; r.lb.style.opacity = ff.op.toFixed(3);
+    }
+    for (j = 0; j < tags.length; j++) {
+      var tg = tags[j], rr = rows[tg.row], a = cl((t - tg.t0) / 0.3);
+      var sc = 0.86 + 0.14 * back(a), op = cl((t - tg.t0) / 0.08) * rr.op;
+      tg.el.style.opacity = op.toFixed(3);
+      tg.el.style.transform = 'translateY(' + rr.dy.toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')';
+      tg.st.style.transform = 'scaleX(' + p2o(cl((t - tg.t0 - 0.14) / 0.2)).toFixed(4) + ')';
+      var bs = 0.7 + 0.3 * back(a);
+      tg.bx.setAttribute('opacity', op.toFixed(3));
+      tg.bx.setAttribute('transform', 'translate(' + tg.cx.toFixed(2) + ',' + (tg.cy + rr.dy).toFixed(2) + ') scale(' + bs.toFixed(4) + ') translate(' + (-tg.cx).toFixed(2) + ',' + (-tg.cy).toFixed(2) + ')');
+    }
+    // the sum line rules off the takes just before the lines come down
+    dash(sum, p3o(cl((t - (T.pick + 0.2)) / 0.34)));
+
+    // zoom: the camera zooms into the cut. One uniform scale about one fixed point, so the ledger rushes out
+    // of frame with it (a zoom, never a swap); the playhead, the cuts and the corners keep their screen weight.
+    var z = p3io(cl((t - TZ) / ZD)), zs = Math.pow(Z1, z);
+    var zx = function (v) { return FX + zs * (v - FX); }, zy = function (v) { return FY + zs * (v - FY); };
+    zw.setAttribute('transform', 'translate(' + FX.toFixed(3) + ' ' + FY.toFixed(3) + ') scale(' + zs.toFixed(5) + ') translate(' + (-FX).toFixed(3) + ' ' + (-FY).toFixed(3) + ')');
+    var wf = 1 - p2o(cl((z - 0.1) / 0.6));
+    tracksG.setAttribute('opacity', wf.toFixed(3)); sum.setAttribute('opacity', wf.toFixed(3));
+    kick.style.transform = 'scale(' + zs.toFixed(5) + ')'; kick.style.opacity = wf.toFixed(3);
+    var lock = 1 + (SH1 / BH - 1) * z, det = cl((z - 0.45) / 0.4);
+    for (j = 0; j < pieces.length; j++) {
+      p = pieces[j]; r = rows[p.row];
+      p.rv.setAttribute('width', Math.max(0, Math.min(p.w + 4, r.front - p.xa + 2)).toFixed(2));
+      // pick: the kept lines are selected in the accent, one after another in the order they play
+      var c0 = T.pick + 0.0067 * p.k, pc = p2o(cl((t - c0) / 0.12));
+      p.coral.setAttribute('opacity', pc.toFixed(3)); p.ink.setAttribute('opacity', (1 - pc).toFixed(3));
+      p.cream.setAttribute('opacity', det.toFixed(3));
+      var pop = Math.sin(Math.PI * cl((t - c0) / 0.22)) * 0.18;
+      // slide: they slide together under the sum line, in order, into the cut
+      var g0 = T.slide + STAG * p.k;
+      var py = p3io(cl((t - g0) / SLIDE.dur)), px = p3io(cl((t - g0 - 0.05) / (SLIDE.dur - 0.02)));
+      var x = p.xa + (p.xb - p.xa) * px, y = p.ya + (p.yb - p.ya) * py;
+      p.g.setAttribute('transform', 'translate(' + x.toFixed(2) + ',' + y.toFixed(2) + ') scale(1,' + ((1 + pop) * lock).toFixed(4) + ')');
+    }
+    // once every line is home the strip is one object: the pack's corners at its two ends, on screen
+    var sh = BH * lock;
+    if (t >= T.home) {
+      stripClip.setAttribute('x', (X0 + 0.6).toFixed(2)); stripClip.setAttribute('width', (STRIPW - 1.2).toFixed(2));
+      stripClip.setAttribute('y', (SCY - sh / 2).toFixed(2)); stripClip.setAttribute('height', sh.toFixed(2));
+      stripClip.setAttribute('rx', (RAD / zs).toFixed(3));
+      piecesG.setAttribute('clip-path', 'url(#stripclip)');
+    } else { piecesG.removeAttribute('clip-path'); }
+    // the playhead: this video right now (output OUT0 + t), on the line being spoken, riding the zoom at 1x
+    var top = zy(SCY - sh / 2), bot = zy(SCY + sh / 2), phx = zx(X0 + (OUT0 + tn) * S);
+    var hg = p3o(cl((t - T.zoom) / 0.16)), pg = p3o(cl((t - T.zoom - 0.04) / 0.22)), hy = top - 3 - 11;
+    phHead.setAttribute('d', 'M' + (phx - 7 * hg).toFixed(2) + ' ' + hy.toFixed(2) + ' L' + (phx + 7 * hg).toFixed(2) + ' ' + hy.toFixed(2) + ' L' + phx.toFixed(2) + ' ' + (hy + 11 * hg).toFixed(2) + ' Z');
+    phLine.setAttribute('x1', phx.toFixed(2)); phLine.setAttribute('x2', phx.toFixed(2));
+    phLine.setAttribute('y1', (top - 3).toFixed(2)); phLine.setAttribute('y2', (top - 3 + (bot + 8 - (top - 3)) * pg).toFixed(2));
+    phLine.setAttribute('opacity', pg > 0 ? 1 : 0); phHead.setAttribute('opacity', hg > 0 ? 1 : 0);
+    // the title sets over the cut, its letters landing in order the way the lines did
+    for (j = 0; j < letters.length; j++) {
+      var l0 = T.title + 0.012 * j, lp = p3o(cl((t - l0) / 0.22));
+      letters[j].style.opacity = cl((t - l0) / 0.1).toFixed(3);
+      letters[j].style.transform = 'translateY(' + (-26 * (1 - lp)).toFixed(2) + 'px)';
+    }
+    // and the readout types itself under it
+    var n = Math.floor(READ.length * cl((t - T.read) / 0.22) + 1e-6), txt = READ.slice(0, n);
+    if (readout.textContent !== txt) readout.textContent = txt;
+  }
+
+  /* ---------- the zoom: the true-scale cut grows to the content width (x 70-1010 on the last frame), 120px tall,
+     centred on y 900, solved through the card's slow push so the final frame lands exactly there ---------- */
+  var last = pieces[pieces.length - 1], STRIPW = last.xb + last.w - X0;
+  // the lines are home before the zoom: the stagger tightens (never the slide itself) when the zoom comes early
+  var STAG = SLIDE.stagger, ROOM = q(T.zoom - 1 / FPS) - T.slide - 0.05 - (SLIDE.dur - 0.02) - 2 / FPS;
+  if (last.k > 0 && ROOM / last.k < STAG) STAG = Math.max(0.004, ROOM / last.k);
+  T.home = q(T.slide + STAG * last.k + 0.05 + (SLIDE.dur - 0.02) + 1 / FPS);   // the frame after the last line lands
+  var PUSH = 1.03, PO = { x: 540, y: 700 };                       // #cam: scale 1 to PUSH across the card about PO
+  var PE = 1 + (PUSH - 1) * ((FRAMES - 1) / FPS) / D;            // the push on the last frame
+  function cX(sx) { return PO.x + (sx - PO.x) / PE; }              // a last-frame screen position, in cam space
+  function cY(sy) { return PO.y + (sy - PO.y) / PE; }
+  var ZW = 940, ZH = 120, ZCY = 900;
+  var Z1 = (ZW / PE) / STRIPW;                                    // the zoom
+  var SH1 = ZH / PE / Z1;                                         // the cut's own height once it locks (world units)
+  var FX = (cX(70) - Z1 * X0) / (1 - Z1), FY = (cY(ZCY) - Z1 * SCY) / (1 - Z1);   // its fixed point
+  var TZ = q(T.zoom - 1 / FPS), ZD = 0.36;           // the zoom starts a frame before its cue
+
+  var zw = $('zw'), tracksG = $('tracks'), piecesG = $('pieces'), kick = $('kick');
+  var phHead = $('ph-head'), phLine = $('ph-line'), titleEl = $('title'), readout = $('readout'), letters = [];
+  kick.style.transformOrigin = (FX - 70).toFixed(3) + 'px ' + (FY - 262).toFixed(3) + 'px';
+  var FONTS = ['500 26px ' + tok('--font-mono'), '500 32px ' + tok('--font-mono'), '400 108px ' + (tok('--font-accent') || tok('--font-display'))];
+  Promise.all(FONTS.map(function (f) { return document.fonts.load(f); })).then(build, build);
+
+  function build() {
+    // dead takes: a cross on the frame and a strike through the label, measured once the mono face is in
+    rows.forEach(function (r) {
+      if (!r.dead) return;
+      var xa = 70 + 5, xb = 70 + TW - 5, ya = r.y0 + 8, yb = r.y0 + RH - 8, lw = r.lb.offsetWidth;
+      r.marks.push(mark(xa, ya, xb, yb, 2.5));
+      r.marks.push(mark(xb, ya, xa, yb, 2.5));
+      r.marks.push(mark(X0 - 3, r.y0 + 13.5, X0 + lw + 3, r.y0 + 13.5, 2.5));
+    });
+    // the payoff type: the title's baseline 34px over the cut, the readout's 52px under it (last-frame screen px)
+    TITLE.split('').forEach(function (ch) {
+      var sp = document.createElement('span'); sp.textContent = ch === ' ' ? ' ' : ch; titleEl.appendChild(sp); letters.push(sp);
+    });
+    titleEl.style.left = cX(70).toFixed(2) + 'px';
+    titleEl.style.top = (cY(ZCY - ZH / 2 - 34) - baseline(titleEl)).toFixed(2) + 'px';
+    readout.textContent = READ;
+    readout.style.left = cX(70).toFixed(2) + 'px';
+    readout.style.top = (cY(ZCY + ZH / 2 + 52) - baseline(readout)).toFixed(2) + 'px';
+    readout.textContent = '';
+
+    var clock = { t: 0 };
+    render(0, 0);
+    tl.fromTo(clock, { t: 0 }, { t: D, duration: D, ease: 'none', immediateRender: false, onUpdate: function () { render(clock.t, clock.t); } }, 0);
+    tl.fromTo('#cam', { scale: 1 }, { scale: PUSH, duration: D, ease: 'none' }, 0);   // one slow push across the card
+
+    window.__timelines = window.__timelines || {};
+    window.__timelines['main'] = tl;
+    if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+  }
+})();
+</script>
+</body>
+</html>

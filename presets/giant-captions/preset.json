@@ -1,0 +1,55 @@
+{
+  "name": "giant-captions",
+  "kind": "fx",
+  "layer": "over",
+  "from": "kit fx/giant-captions",
+  "source": ["kit fx/giant-captions"],
+  "does": "The caption does what the line says: two normal hi-fi captions, then the box crouches and launches into a giant slab above the head, a display line in the accent slams onto the chest, the box falls over the whole frame and the cover words rise in it, then it shrinks back into the next caption's box and hands over. One box all the way.",
+  "use_when": "a payoff line about the captions or about size ('the captions get huge', 'bigger captions', 'it takes over the screen'); hi-fi only",
+  "inputs": [
+    "the words of the beat (CAP1, CAP2, BIG, SLAM, COVER) as spoken, and their beats (T: seconds after A or the spoken words)",
+    "NEXT: the exact text of the edit.CAPS caption that follows (the cover shrinks into it), or \"\" to fold shut",
+    "no CAPS lines between T.cap1 and T.shut (this effect carries the words); NEXT's CAPS line starts just before T.shut",
+    "places measured on the shot: SLAB_TOP above the head, SLAM_TOP across the chest, COVER_TOP"
+  ],
+  "constants": {
+    "CAP1": "Watch the *captions*",
+    "CAP2": "grow",
+    "BIG": "really big,",
+    "BIG_PX": 220,
+    "SLAB_TOP": 240,
+    "SLAM": "THEN HUGE",
+    "SLAM_PX": 450,
+    "SLAM_TOP": 930,
+    "COVER": ["until they", "TAKE", "OVER."],
+    "COVER_PX": [110, 640],
+    "COVER_TOP": 560,
+    "NEXT": "Back to normal",
+    "T": {"cap1": 0.07, "cap2": 0.87, "crouch": 1.709, "big": 1.874, "slam": 2.765, "cover": 3.748, "w1": 3.801, "w2": 4.01, "w3": 4.172, "shut": 4.435, "gone": 4.608}
+  },
+  "notes": {
+    "CAP1": "*word* sets the accent word, the same as edit.CAPS",
+    "BIG_PX": "the slab is the caption box scaled by BIG_PX / the pack's caption size, its line in the pack's caption face one weight up, with the caption's case, line height and tracking; a slab wider than 1060 px sets its line smaller; keep BIG to two short words",
+    "SLAM": "the display face in the accent; one or two words (a wider display face sets them smaller to fit 1060 px)",
+    "COVER": "the small line in the caption face, then two display words on one row, each rising on its word; the row sets smaller to fit 1060 px",
+    "NEXT": "must match the next CAPS caption's text exactly (it is looked up in #caps)",
+    "T": "all beats (seconds after A or words): crouch sits in the silence before big; w1, w2, w3 are the cover's three words; gone is when the hand-over is complete, before B"
+  },
+  "cues": ["T"],
+  "generators": [],
+  "needs": [
+    "CAPS: no caption from {@T.cap1} to {@T.shut}; the caption NEXT starts at about {@T.shut-0.03}",
+    "end the window just after T.gone; a picture cut may sit under the cover"
+  ],
+  "sfx": [
+    {"at": "T.big+0.033", "name": "whoosh", "db": -16, "what": "the box launches"},
+    {"at": "T.slam+0.03", "name": "impact-low", "db": -13, "what": "the display line slams"},
+    {"at": "T.cover+0.126", "name": "whoosh-deep", "db": -15, "what": "the cover falls"},
+    {"at": "T.w2+0.036", "name": "impact-low", "db": -17, "what": "the big cover word lands"},
+    {"at": "T.shut+0.086", "name": "whoosh-soft", "db": -19, "what": "back to the caption box"}
+  ],
+  "typical_length": "4.7 s",
+  "modes": ["hifi"],
+  "signature": null,
+  "pairs_with": null
+}

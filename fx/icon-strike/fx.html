@@ -1,0 +1,42 @@
+<!-- icon-strike: app icons pop in above the head on their names, a hand-drawn stroke strikes through each, on the
+     last word they hop and drop out of frame with gravity and one word rises where they were. The icons are built by
+     fx.js from ICONS: generic placeholder tiles drawn from tokens, or real app icons fetched with icons.py. -->
+<div class="is-word"><span></span></div>
+<div class="is-apps"></div>
+<style>
+#{{ID}} .is-apps { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}} .is-app { position:absolute; top:262px; width:220px; height:290px; transform-origin:110px 110px; }
+#{{ID}} .is-tile { position:absolute; left:0; top:0; width:220px; height:220px; overflow:hidden;
+  border-radius:min(49px, calc(var(--radius) * 8));
+  box-shadow:0 14px 30px color-mix(in srgb, var(--c-dark) 32%, transparent), 0 2px 6px color-mix(in srgb, var(--c-dark) 18%, transparent); }
+#{{ID}} .is-tile svg, #{{ID}} .is-tile img { position:absolute; left:0; top:0; width:220px; height:220px; display:block; }
+/* placeholder glyphs, all tokens */
+#{{ID}} .is-g-timeline { background:var(--c-dark); box-shadow:inset 0 0 0 2px var(--c-hair-dark),
+  0 14px 30px color-mix(in srgb, var(--c-dark) 32%, transparent), 0 2px 6px color-mix(in srgb, var(--c-dark) 18%, transparent); }
+#{{ID}} .is-g-timeline .k1 { fill:var(--c-light); }
+#{{ID}} .is-g-timeline .k2 { fill:color-mix(in srgb, var(--c-light) 40%, var(--c-dark)); }
+#{{ID}} .is-g-timeline .ph { fill:none; stroke:var(--c-accent); stroke-width:6; stroke-linecap:round; }
+#{{ID}} .is-g-timeline .phh { fill:var(--c-accent); }
+#{{ID}} .is-g-presets { background:var(--c-light); }
+#{{ID}} .is-g-presets .tr { fill:none; stroke:color-mix(in srgb, var(--c-ink) 18%, var(--c-light)); stroke-width:9; stroke-linecap:round; }
+#{{ID}} .is-g-presets .fl { fill:none; stroke:var(--c-ink); stroke-width:9; stroke-linecap:round; }
+#{{ID}} .is-g-presets .kn { fill:var(--c-light); stroke:var(--c-ink); stroke-width:7; }
+#{{ID}} .is-g-presets .ka { fill:var(--c-accent-light); stroke:var(--c-accent-light); }
+#{{ID}} .is-g-grid { background:var(--c-accent-light); }
+#{{ID}} .is-g-grid .k1 { fill:var(--c-light); }
+#{{ID}} .is-g-grid .k2 { fill:color-mix(in srgb, var(--c-light) 55%, var(--c-accent-light)); }
+/* the strike: a light under-stroke so the line reads on any tile, the "no" colour on top */
+#{{ID}} .is-strike { position:absolute; left:0; top:0; width:220px; height:220px; overflow:visible; }
+#{{ID}} .is-strike path { fill:none; stroke-linecap:round; stroke-linejoin:round; }
+#{{ID}} .is-under { stroke:var(--c-light); stroke-width:23; }
+#{{ID}} .is-ink-stroke { stroke:var(--c-neg); stroke-width:17; }
+/* names and the word: light type over dark footage, dark type over bright footage (INK in fx.js) */
+#{{ID}} .is-name { position:absolute; left:-30px; width:280px; top:238px; text-align:center; white-space:nowrap;
+  font-family:var(--font-text); font-weight:600; font-size:30px; line-height:36px; letter-spacing:-.005em; }
+#{{ID}} .is-word { position:absolute; left:0; width:1080px; top:300px; height:160px; overflow:hidden; text-align:center; }
+#{{ID}} .is-word span { display:inline-block; white-space:nowrap; font-family:var(--font-display); font-style:var(--display-style);
+  font-weight:var(--display-weight); font-size:128px; line-height:160px; letter-spacing:-.02em; }
+#{{ID}} .is-light .is-name, #{{ID}} .is-light.is-word span { color:var(--c-light);
+  text-shadow:0 2px 14px color-mix(in srgb, var(--c-dark) 45%, transparent); }
+#{{ID}} .is-dark .is-name, #{{ID}} .is-dark.is-word span { color:var(--c-ink); }
+</style>

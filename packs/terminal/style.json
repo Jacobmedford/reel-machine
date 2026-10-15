@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "creator": {
+    "name": "",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "League Gothic",
+      "italic": false,
+      "weight": 400
+    },
+    "text": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    }
+  },
+  "colors": {
+    "light": "#EBDFBF",
+    "dark": "#232A22",
+    "ink": "#232A22",
+    "muted_light": "#5B6350",
+    "muted_dark": "rgba(235,223,191,.6)",
+    "hair_light": "#C6BB8E",
+    "hair_dark": "rgba(235,223,191,.22)",
+    "accent": "#E2744D",
+    "accent_on_light": "#A3471F",
+    "negative": "#B5739D",
+    "negative_on_light": "#7E3F6A",
+    "positive": "#8F9A79",
+    "positive_on_light": "#3B5549",
+    "series": [
+      "#E2744D",
+      "#8F9A79",
+      "#C6BB8E"
+    ],
+    "caption_box": "rgba(35,42,34,.92)",
+    "caption_ink": "#EBDFBF",
+    "caption_dim": "rgba(235,223,191,.42)",
+    "textbox_bg": "rgba(35,42,34,.94)",
+    "textbox_ink": "#EBDFBF"
+  },
+  "grounds": {
+    "grid": true,
+    "radius": 4
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": false,
+      "size": 46,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "uppercase": false,
+      "size": 52,
+      "y": 1318
+    }
+  },
+  "modes": {
+    "hifi": {
+      "hook": "two-line",
+      "captions": "phrases",
+      "emphasis": [
+        "thesis",
+        "strike"
+      ],
+      "behind_head": "sometimes",
+      "cards": "often",
+      "camera": "settle",
+      "bw": false,
+      "j_lead": 0.3
+    },
+    "lofi": {
+      "captions": "word-by-word",
+      "max_words": 4,
+      "max_chars": 22,
+      "text_boxes": true,
+      "overlays": "often",
+      "backdrops": "sometimes",
+      "zooms": true,
+      "bw": false,
+      "j_lead": 0.2
+    },
+    "showcase": {
+      "emphasis_word": "stamp",
+      "transitions": [
+        "push",
+        "reveal",
+        "zoom"
+      ],
+      "density": "high",
+      "motif": "the session: the hook's terminal window comes back whenever a step runs, a new command typed under the last one, and its output lands as the B-roll",
+      "j_lead": 0.3
+    }
+  },
+  "grade": "sepia(0) contrast(1.05) saturate(.8) brightness(1) hue-rotate(0deg)",
+  "motion": "normal",
+  "sound": {
+    "sfx": "normal",
+    "music": "none"
+  },
+  "end_card": false
+}

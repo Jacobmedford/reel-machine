@@ -1,0 +1,22 @@
+<!-- grade-slider: a before/after comparison slider for a look change. A copy of the footage in the new look slides in
+     from the right behind a tilted line with a handle, holds as a split through the face (BEFORE / AFTER), then sweeps
+     the new look across the frame. edit.GRADES switches the main picture to the same look at B. Words, times and the
+     look: fx.js. The copy is timed by the build from the effect's window ({{START}}, {{SYNC}}, {{DUR}}). -->
+<video id="{{ID}}-v" class="full" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video>
+<div id="{{ID}}-lb" class="{{ID}}-side" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-tb" class="{{ID}}-tag"></span></div>
+<div id="{{ID}}-la" class="{{ID}}-side" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-ta" class="{{ID}}-tag"></span></div>
+<div id="{{ID}}-line" data-layout-allow-overlap data-layout-allow-occlusion><div id="{{ID}}-knob"><svg viewBox="0 0 64 64"><path d="M26 22 L16 32 L26 42 M38 22 L48 32 L38 42"/></svg></div></div>
+<style>
+#{{ID}}-v { clip-path: polygon(1300px 0px, 1300px 0px, 1300px 1920px, 1300px 1920px); }
+#{{ID}} .{{ID}}-side { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}} .{{ID}}-tag { position:absolute; top:262px; padding:11px 16px 10px; border-radius:var(--radius); white-space:nowrap;
+  background:color-mix(in srgb, var(--c-dark) 62%, transparent); color:var(--c-light);
+  font:500 24px/1 var(--font-mono); letter-spacing:.18em; text-transform:uppercase; }
+#{{ID}}-tb { left:56px; }
+#{{ID}}-ta { right:56px; }
+#{{ID}}-line { position:absolute; left:-3px; top:-90px; width:6px; height:2100px; background:var(--c-light); transform-origin:3px 1050px; }
+#{{ID}}-knob { position:absolute; left:-33px; top:1014px; width:72px; height:72px; border-radius:50%; background:var(--c-light);
+  box-shadow:0 4px 14px color-mix(in srgb, var(--c-dark) 30%, transparent); }
+#{{ID}}-knob svg { width:72px; height:72px; display:block; }
+#{{ID}}-knob path { fill:none; stroke:var(--c-ink); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+</style>

@@ -1,0 +1,70 @@
+<!-- comment-thread: a storyboard beat card pops in above the head, a pin with the speaker's headshot drops onto a
+     word in its line, their note types into a comment, a reply slides in under it and an underline lands on the word.
+     Generic comment UI from tokens; the card, the words and the headshot are constants at the top of fx.js. Everything
+     sits in the band y 232-565, above the head. -->
+<div class="ct-wrap">
+  <div class="ct-card">
+    <div class="ct-frames"><div class="ct-frame"></div><div class="ct-frame"></div></div>
+    <div class="ct-col">
+      <div class="ct-meta"><b class="ct-no"></b><span class="ct-tc"></span><span class="ct-kind"></span></div>
+      <p class="ct-line"></p>
+    </div>
+  </div>
+  <div class="ct-popw">
+    <div class="ct-pop">
+      <div class="ct-msg">
+        <div class="ct-head"><div class="ct-av ct-me"></div><span class="ct-name ct-myname"></span><span class="ct-time"></span></div>
+        <p class="ct-text ct-note"></p>
+      </div>
+      <div class="ct-reply">
+        <div class="ct-head"><div class="ct-av ct-ed"><svg viewBox="0 0 48 48"><circle cx="17.5" cy="33" r="4.6"/><circle cx="30.5" cy="33" r="4.6"/><path d="M20.2 29.4 L31.5 12.5 M27.8 29.4 L16.5 12.5"/></svg></div><span class="ct-name ct-edname"></span></div>
+        <p class="ct-text ct-rtext"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+#{{ID}} .ct-wrap { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+/* the beat card: a storyboard row (frames left, the beat's line right) on the dark ground */
+#{{ID}} .ct-card { position:absolute; left:40px; top:232px; width:680px; height:186px; box-sizing:border-box; padding:18px;
+  display:flex; gap:22px; background:var(--c-dark); border-radius:calc(var(--radius) * 0.7);
+  box-shadow:0 18px 44px color-mix(in srgb, var(--c-dark) 40%, transparent), 0 0 0 1px var(--c-hair-dark); }
+#{{ID}} .ct-frames { display:flex; gap:8px; flex:none; }
+#{{ID}} .ct-frame { position:relative; width:84px; height:150px; overflow:hidden; border-radius:min(4px, var(--radius));
+  background:color-mix(in srgb, var(--c-light) 9%, var(--c-dark)); box-shadow:inset 0 0 0 1px var(--c-hair-dark); }
+#{{ID}} .ct-frame svg, #{{ID}} .ct-frame img { position:absolute; left:0; top:0; width:84px; height:150px; display:block; object-fit:cover; }
+#{{ID}} .ct-frame svg * { fill:color-mix(in srgb, var(--c-light) 22%, var(--c-dark)); }
+#{{ID}} .ct-col { min-width:0; flex:1; }
+#{{ID}} .ct-meta { display:flex; align-items:center; gap:16px; height:24px; white-space:nowrap;
+  font-family:var(--font-mono); font-weight:500; font-size:19px; letter-spacing:.06em; color:var(--c-muted-dark); }
+#{{ID}} .ct-no { font-weight:500; color:var(--c-light); }
+#{{ID}} .ct-kind { margin-left:auto; letter-spacing:.14em; }
+#{{ID}} .ct-line { margin:16px 0 0; white-space:nowrap; font-family:var(--font-display); font-style:var(--display-style);
+  font-weight:var(--display-weight); font-size:34px; line-height:44px; letter-spacing:-.01em; color:var(--c-light); }
+#{{ID}} .ct-mark { position:relative; display:inline-block; }
+#{{ID}} .ct-under { position:absolute; left:0; right:0; bottom:1px; height:4px; transform-origin:0 50%; background:var(--c-accent); }
+/* the pin: a teardrop holding the headshot, its tip on the word */
+#{{ID}} .ct-pin { display:block; position:absolute; left:-6px; bottom:calc(100% - 4px); width:46px; height:46px; box-sizing:border-box; padding:3px;
+  border-radius:50% 50% 50% 0; background:var(--c-light); transform-origin:0 100%;
+  box-shadow:0 0 0 2px var(--c-dark), 0 6px 14px color-mix(in srgb, var(--c-dark) 35%, transparent); }
+#{{ID}} .ct-pin .ct-av { width:40px; height:40px; }
+/* the comment: shadow on the wrapper, so it follows the clip that opens for the reply */
+#{{ID}} .ct-popw { position:absolute; left:40px; top:340px; width:1000px; transform-origin:470px 0;
+  filter:drop-shadow(0 16px 20px color-mix(in srgb, var(--c-dark) 30%, transparent))
+         drop-shadow(0 1px 1px color-mix(in srgb, var(--c-dark) 14%, transparent)); }
+#{{ID}} .ct-pop { box-sizing:border-box; padding:16px 26px; background:var(--c-light); border-radius:calc(var(--radius) * 3); }
+#{{ID}} .ct-head { display:flex; align-items:center; gap:14px; height:40px; }
+#{{ID}} .ct-av { display:block; position:relative; width:40px; height:40px; flex:none; overflow:hidden; border-radius:50%; }
+#{{ID}} .ct-av svg, #{{ID}} .ct-av img { position:absolute; left:0; top:0; width:100%; height:100%; display:block; object-fit:cover; }
+#{{ID}} .ct-me .ct-ph { fill:color-mix(in srgb, var(--c-ink) 14%, var(--c-light)); }
+#{{ID}} .ct-me .ct-gl { fill:color-mix(in srgb, var(--c-ink) 44%, var(--c-light)); }
+#{{ID}} .ct-ed { background:var(--c-accent-light); }
+#{{ID}} .ct-ed svg * { fill:none; stroke:var(--c-light); stroke-width:3; stroke-linecap:round; }
+#{{ID}} .ct-name { font-family:var(--font-text); font-weight:600; font-size:26px; letter-spacing:-.01em; color:var(--c-ink); white-space:nowrap; }
+#{{ID}} .ct-time { font-family:var(--font-mono); font-weight:500; font-size:20px; color:var(--c-muted-light); }
+#{{ID}} .ct-text { margin:4px 0 0; height:40px; white-space:nowrap; font-family:var(--font-text); font-weight:400; font-size:32px;
+  line-height:40px; letter-spacing:-.005em; color:var(--c-ink); }
+#{{ID}} .ct-note i { font-style:normal; display:none; }
+#{{ID}} .ct-caret { display:inline-block; width:3px; height:36px; margin-left:2px; vertical-align:-7px; background:var(--c-accent-light); }
+#{{ID}} .ct-reply { height:97px; box-sizing:border-box; margin-top:12px; padding-top:12px; border-top:1px solid var(--c-hair-light); }
+</style>

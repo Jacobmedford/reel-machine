@@ -1,0 +1,226 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>__TITLE__</title>
+<style>
+/* The start page (pipeline/preview.py <project> start writes it from intake.json): the first page after the takes
+   are in. The takes, the three modes with an example clip each, the creator's styles, what to send. The creator
+   answers in the chat; any card takes a note, exactly like the approval stops. Colours and fonts are the creator's
+   pack (the theme block right below): display face for the title and the card names, text face for the copy, mono
+   for times and labels. */
+__THEME__
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font-text); padding-inline: 16px; padding-block: 24px 56px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 40px; }
+.top { display: grid; gap: 12px; }
+.eyebrow { font: 500 12px/1.3 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: var(--display-weight);
+     font-size: clamp(38px, 7vw, 60px); line-height: 1; letter-spacing: -.01em; text-wrap: balance; }
+.how { margin: 0; max-width: 60ch; color: var(--muted); }
+
+.block { display: grid; gap: 14px; }
+h2 { margin: 0; font: 500 12px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h3 { margin: 0; }
+.sub { margin: 0; max-width: 62ch; color: var(--muted); font-size: 15px; }
+.card { background: var(--sheet); border: 1px solid var(--hair); border-radius: 6px; scroll-margin-top: 16px; }
+
+/* your takes: one row each */
+.takes { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.take { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 16px; align-items: start; padding: 12px; }
+.thumb { display: block; height: 128px; width: auto; max-width: 228px; aspect-ratio: var(--ar, 9 / 16); object-fit: cover;
+         border-radius: 4px; border: 1px solid var(--hair); background: var(--paper); }
+.take .body { min-width: 0; display: grid; gap: 6px; align-content: start; }
+.take .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.take .n { font: 600 13px/1.3 var(--font-mono); color: var(--ink); }
+.take .name { font-weight: 600; overflow-wrap: anywhere; }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 500 13px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.take .line { margin: 0; font-size: 17px; line-height: 1.4; text-wrap: pretty; }
+.take .enc { margin: 0; font-size: 14px; line-height: 1.45; font-weight: 600; overflow-wrap: anywhere; }
+.take .enc span { font-weight: 400; color: var(--muted); }
+
+/* pick a mode: three cards, an example clip each */
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.mode { display: grid; grid-template-rows: auto 1fr auto; gap: 10px; padding: 12px; }
+.mode.rec { border-color: var(--accent-line); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.clip { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 4px;
+        background: var(--paper); border: 1px solid var(--hair); cursor: pointer; }
+.noclip { display: grid; place-items: center; color: var(--muted); font-size: 14px; cursor: default; }
+.mode .what { display: grid; gap: 8px; align-content: start; }
+.mode h3, .style h3 { font-family: var(--font-display); font-style: var(--display-style); font-weight: var(--display-weight);
+                      font-size: 30px; line-height: 1; letter-spacing: -.01em; }
+.mode p { margin: 0; }
+.badge { justify-self: start; font: 600 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase;
+         color: var(--paper); background: var(--accent); border-radius: 3px; padding: 5px 7px; }
+.why { color: var(--muted); font-size: 14px; }
+
+/* pick a style: one card per pack in the creator's home */
+.styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.style { display: grid; grid-template-rows: auto 1fr auto; gap: 8px; padding: 10px; }
+.style .text { display: grid; gap: 4px; align-content: start; }
+.frame { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 4px; border: 1px solid var(--hair); }
+.plain { display: grid; place-items: center; padding: 12px; background: var(--paper); border: 1px dashed var(--hair); text-align: center;
+         font-family: var(--font-display); font-style: var(--display-style); font-weight: var(--display-weight); font-size: 30px;
+         line-height: 1; color: var(--muted); overflow-wrap: anywhere; }
+.style .name { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.style h3 { font-size: 24px; }
+.tag { font: 500 11px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+       border: 1px solid var(--hair); border-radius: 3px; padding: 4px 5px; }
+.style p { margin: 0; font-size: 15px; color: var(--muted); }
+
+/* send what this one needs */
+#send { padding: 16px; gap: 12px; }
+.send { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.send li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 12px; align-items: start; }
+.send li::before { content: ""; width: 14px; height: 14px; margin-top: 4px; border: 1.5px solid var(--muted); border-radius: 3px; }
+.send b { font-weight: 600; }
+.paste { margin: 0; font-weight: 600; }
+
+/* notes: the comment composer when published as an artifact, a note box when served by storyboard/serve.py */
+.note { justify-self: start; align-self: start; font: 600 13px/1 var(--font-text); color: var(--ink); background: transparent;
+        border: 1px solid var(--hair); border-radius: 4px; padding: 7px 10px; cursor: pointer; }
+.note:hover { border-color: var(--ink); }
+.note[hidden], .local[hidden] { display: none; }
+.note:focus-visible, .clip:focus-visible, .local textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.local { display: grid; gap: 8px; grid-column: 1 / -1; }
+.local textarea { width: 100%; min-height: 56px; resize: vertical; font: 400 15px/1.45 var(--font-text); color: var(--ink);
+                  background: var(--paper); border: 1px solid var(--hair); border-radius: 4px; padding: 8px 10px; }
+.saved { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; grid-column: 1 / -1; }
+.status { font: 500 12px/1 var(--font-mono); color: var(--muted); }
+
+@media (max-width: 760px) {
+  .wrap { gap: 32px; }
+  .thumb { height: 104px; max-width: 112px; }
+  .take .line { font-size: 16px; }
+  .modes { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .mode { grid-template-columns: 112px minmax(0, 1fr); grid-template-rows: none; gap: 8px 14px; }
+  .mode .clip { grid-row: span 2; }
+  .mode .note { grid-column: 2; align-self: end; }
+  .mode h3 { font-size: 26px; }
+  .styles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .style h3 { font-size: 21px; }
+  .plain { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">New video</div>
+    <h1>__HEAD__</h1>
+    <p class="how">Here is what you dropped in. Pick a mode and a style in the chat, and send any links, screenshots or videos this one needs.</p>
+  </header>
+
+  <section class="block" aria-labelledby="h-takes">
+    <h2 id="h-takes">Your takes</h2>
+__TAKES_SUB__
+    <ol class="takes">
+__TAKES__
+    </ol>
+  </section>
+
+  <section class="block" aria-labelledby="h-modes">
+    <h2 id="h-modes">Pick a mode</h2>
+    <p class="sub">The mode decides how the edit is built. Each clip is a short example, made with a drawn stand-in.</p>
+    <div class="modes">
+__MODES__
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-styles">
+    <h2 id="h-styles">Pick a style</h2>
+    <p class="sub">__STYLES_SUB__</p>
+    <div class="styles">
+__STYLES__
+    </div>
+  </section>
+
+  <section class="block card" id="send" data-comment-target data-ask="Anything else this one needs?" aria-labelledby="h-send">
+    <h2 id="h-send">Send what this one needs</h2>
+    <ul class="send">
+      <li><span><b>Links I capture myself:</b> a repo, an article, a post, a docs page.</span></li>
+      <li><span><b>Screenshots or recordings only you have:</b> dashboards, anything behind a login.</span></li>
+      <li><span><b>B-roll:</b> any clips you want cut in.</span></li>
+    </ul>
+    <p class="paste">Paste links and drop files in the chat.</p>
+    <button class="note" type="button" data-note aria-label="Note on what to send">Note</button>
+  </section>
+</div>
+
+<script>
+(function () {
+  // the example clips: muted loops that play while they are on screen; a tap pauses one (it stays paused) or plays it.
+  // With reduced motion asked for, they hold on their posters until tapped.
+  var clips = Array.prototype.slice.call(document.querySelectorAll('video.clip'));
+  var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  clips.forEach(function (v) {
+    v.muted = true;
+    if (calm) { v.removeAttribute('autoplay'); v.pause(); v.dataset.held = '1'; }
+    v.addEventListener('click', function () {
+      if (v.paused) { v.dataset.held = ''; v.play().catch(function () {}); } else { v.dataset.held = '1'; v.pause(); }
+    });
+  });
+  if ('IntersectionObserver' in window) {
+    var seen = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) e.target.pause();
+        else if (!e.target.dataset.held) e.target.play().catch(function () {});
+      });
+    }, { threshold: 0.25 });
+    clips.forEach(function (v) { seen.observe(v); });
+  }
+
+  var notes = Array.prototype.slice.call(document.querySelectorAll('[data-note]'));
+  notes.forEach(function (b) { b.hidden = true; });
+
+  // 1) Published as a Claude artifact: a note opens the comment composer on its card.
+  var use = window.claude && window.claude.use ? window.claude.use('comments') : Promise.resolve(null);
+  use.then(function (comments) {
+    if (!comments) return;
+    notes.forEach(function (b) { b.hidden = false; });
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-note]');
+      if (!b) return;
+      comments.openComposer({ element: b.closest('[data-comment-target]') }).catch(function (err) {
+        if (err && (err.code === 'unavailable' || err.code === 'not_granted')) notes.forEach(function (n) { n.hidden = true; });
+      });
+    });
+  }, function () {});
+
+  // 2) Served locally by storyboard/serve.py <this folder>: notes save to notes.json beside this page.
+  if (location.protocol.indexOf('http') !== 0) return;
+  fetch('api/notes').then(function (r) { return r.ok ? r.json() : null; }).then(function (saved) {
+    if (!saved) return;
+    document.querySelectorAll('[data-comment-target]').forEach(function (target) {
+      var id = target.id, mine = saved.filter(function (n) { return n.beat === id; });
+      var open = target.querySelector('[data-note]');
+      if (mine.length) {                                         // notes already left stay in view
+        var list = document.createElement('ol');
+        list.className = 'saved';
+        mine.forEach(function (n) { var li = document.createElement('li'); li.textContent = n.text; list.appendChild(li); });
+        target.appendChild(list);
+      }
+      var box = document.createElement('div');                   // the note box opens from this card's Note button
+      box.className = 'local';
+      box.hidden = true;
+      box.innerHTML = '<textarea aria-label="Note"></textarea><div><button class="note" type="button">Save note</button> <span class="status"></span></div>';
+      target.appendChild(box);
+      var ta = box.querySelector('textarea'), st = box.querySelector('.status');
+      ta.placeholder = target.dataset.ask || 'Your note';
+      if (open) {
+        open.hidden = false;
+        open.addEventListener('click', function () { box.hidden = !box.hidden; if (!box.hidden) ta.focus(); });
+      }
+      box.querySelector('button').addEventListener('click', function () {
+        var text = ta.value.trim();
+        if (!text) { st.textContent = 'Type a note first.'; return; }
+        post({ beat: id, text: text }, function () { st.textContent = 'Saved.'; ta.value = ''; });
+      });
+    });
+  }).catch(function () {});
+
+  function post(body, done) {
+    fetch('api/notes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { if (r.ok) done(); });
+  }
+})();
+</script>

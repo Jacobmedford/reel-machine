@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>source screenshot</title>
+<!-- Source screenshot card: the real source page in a flat browser window, three tags landing on the items that
+     matter, their figures in a key row underneath.
+     img/source.png is a PLACEHOLDER (a made-up "Example Research" page). Replace it with a screenshot of your own
+     source: a 937x566 viewport captured at 2x (1874x1132 px) fits exactly; other sizes are cropped to fill the window.
+     Then move the three dots, leader lines and tags onto your items (view coordinates, 937 x 566: dot cx/cy, the
+     lead's y, the tag's top = dot y - 28), set the panel (#back) over whatever the tags would cover, and change the
+     URL, kicker, tag words, figures (vals) and caption. -->
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  #root { --k1:var(--c-s1); --k2:var(--c-s2); --k3:var(--c-s3); }   /* refined for the light page in the script below */
+  #cam { transform-origin:540px 700px; }
+  #kick { position:absolute; left:70px; top:248px; }
+
+  /* minimal flat browser window: hairline frame, pack corners, thin URL bar */
+  #rise { position:absolute; left:70px; top:338px; width:940px; height:596.5px; }
+  #push { position:absolute; left:0; top:0; width:940px; height:596.5px; }
+  .win  { position:absolute; left:0; top:0; width:940px; height:596.5px; border:1.5px solid var(--c-hair-light); border-radius:var(--radius); overflow:hidden; background:var(--c-light); }
+  .bar  { height:45.5px; border-bottom:1.5px solid var(--c-hair-light); background:color-mix(in srgb, var(--c-ink) 5%, var(--c-light)); display:flex; align-items:center; padding-left:20px; }
+  .url  { font-size:24px; letter-spacing:.01em; color:var(--c-muted-light); }
+  .url .dom { color:var(--c-ink); }
+  .view { position:relative; width:937px; height:548px; overflow:hidden; }
+  .view img { position:absolute; left:0; top:0; width:937px; height:566px; object-fit:cover; object-position:0 0; display:block; }
+
+  /* annotation layer over the screenshot (view coords, 937 x 566): a panel slides the page's own text out of the
+     way, then dots, leader lines and tags in the three series colours */
+  .back { position:absolute; left:669px; width:268px; background:var(--c-light); border:1.5px solid var(--c-hair-light); border-right:0;
+          border-radius:var(--radius) 0 0 var(--radius); }
+  .ann  { position:absolute; left:0; top:0; width:937px; height:566px; overflow:visible; }
+  .ann path { fill:none; stroke:var(--c); stroke-width:2; }
+  .ann circle { fill:var(--c); stroke:var(--c-light); stroke-width:2.5; }
+  .tag  { position:absolute; left:676px; height:56px; display:flex; align-items:center; padding:0 22px 0 18px;
+          border:1.5px solid var(--c-hair-light); border-radius:var(--radius); background:var(--c-light);
+          font-size:30px; color:var(--c-ink); }
+  .tag::before { content:''; flex:none; width:14px; height:14px; margin-right:12px; border-radius:50%; background:var(--c); }   /* the chart's own dot colour */
+
+  /* key row under the window */
+  .col  { position:absolute; top:0; width:296px; height:94px; }
+  .lab  { font-size:24px; letter-spacing:.1em; color:var(--c-muted-light); line-height:1; margin-top:2px; }
+  .lab::before { content:''; display:inline-block; width:12px; height:12px; margin-right:10px; border-radius:50%; background:var(--c); vertical-align:1px; }
+  .num  { font-size:52px; letter-spacing:-.01em; color:var(--c-ink); line-height:1; margin-top:14px; }
+  #cap  { position:absolute; left:70px; top:1108px; }
+</style>
+</head>
+<body>
+<div id="root" class="ground-light" data-composition-id="main" data-start="0" data-duration="2.500" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker">Example Research · Oct 2026</div>
+
+    <div id="rise">
+      <div id="push">
+        <div class="win">
+          <div class="bar"><div class="url mono"><span class="dom">example.com</span>/reports/next-year</div></div>
+          <div class="view">
+            <img id="shot" src="img/source.png" alt="" data-layout-allow-overflow />
+            <div id="back" class="back" style="top:309px;height:215px;"></div>
+            <svg class="ann" viewBox="0 0 937 566" data-layout-allow-overflow>
+              <path id="lead1" d="M585.6 488 H676" style="--c:var(--k3);" />
+              <path id="lead2" d="M585.6 420 H676" style="--c:var(--k2);" />
+              <path id="lead3" d="M585.6 352 H676" style="--c:var(--k1);" />
+              <circle id="dot1" cx="585.6" cy="488" r="5.5" style="--c:var(--k3);" />
+              <circle id="dot2" cx="585.6" cy="420" r="5.5" style="--c:var(--k2);" />
+              <circle id="dot3" cx="585.6" cy="352" r="5.5" style="--c:var(--k1);" />
+            </svg>
+            <div id="tag1" class="tag text" style="top:460px;--c:var(--k3);">slow</div>
+            <div id="tag2" class="tag text" style="top:392px;--c:var(--k2);">steady</div>
+            <div id="tag3" class="tag text" style="top:324px;--c:var(--k1);">strong</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="row" style="position:absolute;left:70px;top:992px;width:940px;height:94px;">
+      <div id="col1" class="col" style="left:0;--c:var(--k3);"><div class="lab mono">i. SLOW</div><div id="n1" class="num mono">+1.8%</div></div>
+      <div id="col2" class="col" style="left:322px;--c:var(--k2);"><div class="lab mono">ii. STEADY</div><div id="n2" class="num mono">+9.2%</div></div>
+      <div id="col3" class="col" style="left:644px;--c:var(--k1);"><div class="lab mono">iii. STRONG</div><div id="n3" class="num mono">+16.6%</div></div>
+    </div>
+    <div id="cap" class="foot">Revenue in 12 months vs. today</div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function draw(sel, t0, dur, ease) {
+    var p = document.querySelector(sel), L = Math.ceil(p.getTotalLength()) + 2;
+    gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    tl.to(p, { strokeDashoffset: 0, duration: dur, ease: ease || 'power2.inOut' }, q(t0));
+  }
+  function count(sel, from, to, t0, dur, dec, pre, suf, ease) {
+    var el = document.querySelector(sel), o = { v: from };
+    var fmt = function (v) { return (pre || '') + v.toFixed(dec || 0) + (suf || ''); };
+    el.textContent = fmt(from);
+    tl.to(o, { v: to, duration: dur, ease: ease || 'power2.out', onUpdate: function () { el.textContent = fmt(o.v); } }, q(t0));
+  }
+
+  // the three series colours are thin marks on light paper here: deepen each toward the ink only as far as a 3:1
+  // contrast needs (packs whose series already pass keep them exactly)
+  (function () {
+    var root = document.getElementById('root');
+    var cv = document.createElement('canvas'); cv.width = cv.height = 1;
+    var g = cv.getContext('2d', { willReadFrequently: true });
+    function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function channels(name) {
+      g.clearRect(0, 0, 1, 1); g.fillStyle = tok('--c-light'); g.fillRect(0, 0, 1, 1);
+      g.fillStyle = tok(name); g.fillRect(0, 0, 1, 1);
+      var d = g.getImageData(0, 0, 1, 1).data; return [d[0] / 255, d[1] / 255, d[2] / 255];
+    }
+    function lin(x) { return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); }
+    function rel(c) { return 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]); }
+    var paper = rel(channels('--c-light')), ink = channels('--c-ink');
+    [1, 2, 3].forEach(function (n) {
+      var c = channels('--c-s' + n);
+      for (var p = 0; p <= 60; p += 2) {
+        var m = [c[0] + (ink[0] - c[0]) * p / 100, c[1] + (ink[1] - c[1]) * p / 100, c[2] + (ink[2] - c[2]) * p / 100];
+        var r = rel(m), k = (Math.max(r, paper) + 0.05) / (Math.min(r, paper) + 0.05);
+        if (k >= 3 || p === 60) {
+          if (p) root.style.setProperty('--k' + n, 'color-mix(in srgb, var(--c-s' + n + ') ' + (100 - p) + '%, var(--c-ink))');
+          break;
+        }
+      }
+    });
+  })();
+
+  // hidden initial states (outside the timeline)
+  gsap.set(['#tag1', '#tag2', '#tag3', '#col1', '#col2', '#col3', '#cap', '#back'], { opacity: 0 });
+  gsap.set(['#dot1', '#dot2', '#dot3'], { scale: 0, transformOrigin: '50% 50%' });
+  gsap.set('#push', { transformOrigin: '471px 377px' });
+
+  // one slow camera push across the whole card
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.02, duration: 2.5, ease: 'none' }, 0);
+
+  // the window rises into place, frames 0-15, with a slight rotationX settle
+  tl.fromTo('#rise', { y: 70, rotationX: 9, transformPerspective: 1600, transformOrigin: '50% 100%' },
+                     { y: 0, rotationX: 0, duration: 0.5, ease: 'expo.out' }, 0);
+
+  // 0.60: the panel clears the page's own text to make room for the annotations
+  // 0.80, 1.10, 1.38: three tags land on the three line ends, bottom to top, each with its figure underneath
+  tl.to('#back', { opacity: 1, duration: 0.14, ease: 'power1.inOut' }, q(0.60));
+  var beats = [0.80, 1.10, 1.38], vals = [1.8, 9.2, 16.6];
+  for (var i = 0; i < 3; i++) {
+    var k = i + 1, T = beats[i];
+    tl.to('#dot' + k, { scale: 1, duration: 0.18, ease: 'back.out(1.4)' }, q(T - 0.17));
+    draw('#lead' + k, T - 0.14, 0.12, 'power2.out');
+    tl.fromTo('#tag' + k, { x: -26, scale: 0.92, transformOrigin: '0% 50%' },
+                          { x: 0, scale: 1, duration: 0.34, ease: 'back.out(1.4)', immediateRender: false }, q(T - 0.07));
+    tl.to('#tag' + k, { opacity: 1, duration: 0.07, ease: 'none' }, q(T - 0.07));
+    tl.fromTo('#col' + k, { y: 14 }, { y: 0, duration: 0.35, ease: 'power3.out', immediateRender: false }, q(T - 0.04));
+    tl.to('#col' + k, { opacity: 1, duration: 0.14, ease: 'none' }, q(T - 0.04));
+    count('#n' + k, 0, vals[i], T - 0.04, 0.5, 1, '+', '%');
+  }
+  tl.fromTo('#cap', { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out', immediateRender: false }, q(0.90));
+
+  // 1.66: the window gently pushes in toward the line ends
+  tl.fromTo('#push', { scale: 1 }, { scale: 1.06, duration: 0.8, ease: 'power2.inOut', immediateRender: false }, q(1.66));
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

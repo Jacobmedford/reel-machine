@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>pie</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* Shares of a growing whole: the pie pops in and grows to scale (area true to the totals), the light slice gives
+     up share, the hole it leaves is outlined, then the accent slice takes it. Every colour and font comes from
+     brand.css + card.css; this file only sets size and place. */
+  #cam { transform-origin:540px 720px; }
+  #kick { position:absolute; left:70px; top:262px; }
+  #foot { position:absolute; left:70px; top:1088px; }
+</style>
+</head>
+<body>
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="3.733" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker">Where the revenue goes</div>
+    <svg id="pie" class="layer" viewBox="0 0 1080 1920"></svg>
+    <div id="foot" class="foot">Share of revenue. Illustrative figures.</div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30, DUR = 3.733;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  var E = {
+    p1io: gsap.parseEase('power1.inOut'), p2io: gsap.parseEase('power2.inOut'), p3o: gsap.parseEase('power3.out'),
+    p2o: gsap.parseEase('power2.out'), back: gsap.parseEase('back.out(1.4)'), xo: gsap.parseEase('expo.out')
+  };
+  function P(t, t0, d, e) { var x = (t - q(t0)) / d; x = x < 0 ? 0 : (x > 1 ? 1 : x); return e ? e(x) : x; }
+  function clamp(v) { return v < 0 ? 0 : (v > 1 ? 1 : v); }
+
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+
+  // tokens: read once at load, never hard-coded
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var C = { light: tok('--c-light'), dark: tok('--c-dark'), ink: tok('--c-ink'), accent: tok('--c-accent'),
+            neg: tok('--c-neg'), mutedD: tok('--c-muted-dark'), hairD: tok('--c-hair-dark') };
+
+  // ---- the example, to scale ----
+  // the whole: $300K -> $444K (x1.48 in area, so the radius grows x1.2166: 220 -> 268)
+  // light slice (profit) 60% -> 45.2%, accent slice (costs) 40% -> 54.8%
+  var CX = 540, CY = 720, R = 268, R0 = 220;           // pie drawn at R, scaled down to R0 at the start
+  var A0 = 360 * 0.40, A1 = 360 * (1 - 0.452);          // accent slice ends / light slice starts (deg, clockwise from 12)
+  var LAB_L = 'PROFIT', LAB_R = 'COSTS';                // slice labels, 7 characters or fewer keeps the leaders long
+  var S0 = 'YEAR 1 · $300K', S1 = 'YEAR 3 · $444K';     // whole-pie label before / after: same length, each column rolls
+  var GAP = 6;
+
+  function u(a) { var r = a * Math.PI / 180; return [Math.sin(r), -Math.cos(r)]; }
+  function pt(a, r) { var v = u(a); return [CX + v[0] * r, CY + v[1] * r]; }
+  function f2(v) { return v.toFixed(2); }
+  function slice(a1, a2) {                               // filled sector a1 -> a2 (clockwise)
+    if (a2 - a1 <= 0.01) return '';
+    var p1 = pt(a1, R), p2 = pt(a2, R), large = (a2 - a1) > 180 ? 1 : 0;
+    return 'M' + CX + ' ' + CY + 'L' + f2(p1[0]) + ' ' + f2(p1[1]) + 'A' + R + ' ' + R + ' 0 ' + large + ' 1 ' + f2(p2[0]) + ' ' + f2(p2[1]) + 'Z';
+  }
+  function wedgeOutline(a1, a2, off, rin) {             // the lost wedge, inset so its stroke sits inside the hole
+    var D = a2 - a1; if (D <= 0.2) return '';
+    var d = off / Math.sin(D / 2 * Math.PI / 180);
+    if (d > rin - 6) return '';
+    var m = u((a1 + a2) / 2), s = Math.sqrt(rin * rin - off * off);
+    var r1 = a1 * Math.PI / 180, r2 = a2 * Math.PI / 180;
+    var n1 = [Math.cos(r1), Math.sin(r1)], n2 = [-Math.cos(r2), -Math.sin(r2)], v1 = u(a1), v2 = u(a2);
+    var q1 = [CX + off * n1[0] + s * v1[0], CY + off * n1[1] + s * v1[1]];
+    var q2 = [CX + off * n2[0] + s * v2[0], CY + off * n2[1] + s * v2[1]];
+    return 'M' + f2(CX + m[0] * d) + ' ' + f2(CY + m[1] * d) + 'L' + f2(q1[0]) + ' ' + f2(q1[1]) +
+      'A' + rin + ' ' + rin + ' 0 0 1 ' + f2(q2[0]) + ' ' + f2(q2[1]) + 'Z';
+  }
+
+  var svg = document.getElementById('pie');
+  var defs = el('defs', {}, svg);
+
+  // frame 0: the empty plate, a hairline
+  var ring = el('circle', { cx: CX, cy: CY, r: R0, fill: 'none', stroke: C.hairD, 'stroke-width': 1.5 }, svg);
+
+  var pieG = el('g', {}, svg);
+  var accP = el('path', { fill: C.accent }, pieG);
+  var liteP = el('path', { fill: C.light }, pieG);
+  var gapA = el('line', { stroke: C.dark, 'stroke-width': GAP, 'stroke-linecap': 'butt' }, pieG);
+  var gapG = el('line', { stroke: C.dark, 'stroke-width': GAP, 'stroke-linecap': 'butt' }, pieG);
+  var gapC = el('line', { stroke: C.dark, 'stroke-width': GAP, 'stroke-linecap': 'butt' }, pieG);
+  var hole = el('path', { fill: 'none', stroke: C.neg, 'stroke-width': 3.5, 'stroke-linejoin': 'round' }, pieG);
+  var SHARE_STYLE = 'font-feature-settings:"lnum" 1,"tnum" 1;';
+  var share = el('text', { 'text-anchor': 'middle', 'class': 'display', style: 'font-size:120px;fill:' + C.ink + ';' + SHARE_STYLE }, pieG);
+  // the share figure must fit its slice in any display face: the widest figure ('00%') is held to SHARE_W px.
+  // Measured on every paint (never cached), so it is right on every frame once the pack's fonts are in.
+  var SHARE_PX = 120, SHARE_W = 210;
+  var probe = el('text', { x: 0, y: -200, 'class': 'display', opacity: 0, style: 'font-size:' + SHARE_PX + 'px;' + SHARE_STYLE }, svg);
+  probe.textContent = '00%';
+  function shareSize() { var w = probe.getComputedTextLength(); return w > SHARE_W ? SHARE_PX * SHARE_W / w : SHARE_PX; }
+
+  // slice labels with leader hairlines (mono measures; label widths assume the usual 0.6em mono advance)
+  function leader(color, op) {
+    return { line: el('line', { stroke: color, 'stroke-opacity': op, 'stroke-width': 1.5 }, svg), dot: el('circle', { r: 0, fill: color }, svg) };
+  }
+  var YW = CY + 70, YC = CY - 120;                        // leader heights: light slice (left), accent slice (right)
+  var lw = leader(C.light, 0.5), lc = leader(C.accent, 0.75);
+  var labStyle = 'font-size:30px;letter-spacing:0.14em;';
+  var labW = el('text', { x: 70, y: YW + 11, 'class': 'mono', style: labStyle + 'fill:' + C.light + ';' }, svg); labW.textContent = LAB_L;
+  var labC = el('text', { x: 1010, y: YC + 11, 'text-anchor': 'end', 'class': 'mono', style: labStyle + 'fill:' + C.accent + ';' }, svg); labC.textContent = LAB_R;
+  var LW_END = 70 + LAB_L.length * 30 * 0.74 - 30 * 0.14 + 16, LC_START = 1010 - LAB_R.length * 30 * 0.74 - 16;
+
+  // whole-pie label: mono, rolls character by character
+  var NCH = S0.length;
+  function colOf(s, k) {
+    var ch = s.charAt(k);
+    if (ch === '·') return 'fill:' + C.mutedD + ';';
+    return k >= s.indexOf('$') ? 'fill:' + C.accent + ';' : 'fill:' + C.light + ';fill-opacity:.88;';
+  }
+  var LS = 42, ADV = LS * 0.6 + LS * 0.06, LBASE = 390, LX0 = CX - (NCH * ADV - LS * 0.06) / 2;
+  var cp = el('clipPath', { id: 'rollclip' }, defs);
+  el('rect', { x: LX0 - 20, y: LBASE - 44, width: NCH * ADV + 40, height: 58 }, cp);
+  var rollG = el('g', { 'clip-path': 'url(#rollclip)' }, svg);
+  var chars = [];
+  for (var k = 0; k < NCH; k++) {
+    var st = 'font-size:' + LS + 'px;letter-spacing:0;';
+    var a = el('text', { x: f2(LX0 + k * ADV), y: LBASE, 'class': 'mono', style: st + colOf(S0, k) }, rollG); a.textContent = S0.charAt(k);
+    var b = el('text', { x: f2(LX0 + k * ADV), y: LBASE + 58, 'class': 'mono', style: st + colOf(S1, k) }, rollG); b.textContent = S1.charAt(k);
+    chars.push([a, b]);
+  }
+
+  function setLine(L, x1, y1, x2, y2) { L.setAttribute('x1', f2(x1)); L.setAttribute('y1', f2(y1)); L.setAttribute('x2', f2(x2)); L.setAttribute('y2', f2(y2)); }
+
+  function paint(t) {
+    // "pie" 0.25: pops in (0.9 -> 1); "gets way bigger": 220 -> 268 ($300K -> $444K, area x1.48)
+    var pop = 0.9 + 0.1 * P(t, 0.20, 0.32, E.back);
+    var pa = t >= q(0.20) - 0.0001 ? 1 : 0;                 // a pop: no fade, it is simply there
+    var r = R0 + (R - R0) * P(t, 0.43, 0.57, E.p2io);
+    var k = pop * r / R;
+    pieG.setAttribute('transform', 'translate(' + CX + ' ' + CY + ') scale(' + k.toFixed(5) + ') translate(' + (-CX) + ' ' + (-CY) + ')');
+    pieG.setAttribute('opacity', pa.toFixed(4));
+    ring.setAttribute('opacity', (1 - P(t, 0.40, 0.10)).toFixed(4));   // the plate is covered once the pie lands
+
+    // "but you keep a smaller slice": light 60% -> 45.2%, the hole outlined, then the accent slice takes it
+    var ac = A0 + (A1 - A0) * P(t, 1.43, 0.90, E.p1io);
+    var ag = A0 + (A1 - A0) * P(t, 2.47, 0.45, E.p2io);
+    accP.setAttribute('d', slice(0, ag));
+    liteP.setAttribute('d', slice(ac, 360));
+    var g0 = pt(0, R + 2), gg = pt(ag, R + 2), gc = pt(ac, R + 2);
+    setLine(gapA, CX, CY, g0[0], g0[1]);
+    setLine(gapG, CX, CY, gg[0], gg[1]);
+    setLine(gapC, CX, CY, gc[0], gc[1]);
+    hole.setAttribute('d', wedgeOutline(ag, ac, GAP / 2 + 2 + 4, R - 6));
+    hole.setAttribute('opacity', (1 - P(t, 2.62, 0.30, E.p2o)).toFixed(4));
+
+    var mid = (ac + 360) / 2, sp = pt(mid, R * 0.53), fs = shareSize();
+    share.style.fontSize = fs.toFixed(2) + 'px';
+    share.setAttribute('x', f2(sp[0])); share.setAttribute('y', f2(sp[1] + 0.65 * fs / 2));
+    share.textContent = Math.round(100 * (360 - ac) / 360) + '%';
+
+    // leaders draw out from the pie edge, then the labels land
+    var re = R * k;
+    var xw = CX - Math.sqrt(Math.max(0, re * re - (YW - CY) * (YW - CY))) - 10;
+    var xc = CX + Math.sqrt(Math.max(0, re * re - (YC - CY) * (YC - CY))) + 10;
+    var dw = P(t, 0.36, 0.32, E.p3o), dc = P(t, 0.40, 0.32, E.p3o);
+    setLine(lw.line, xw, YW, xw + (LW_END - xw) * dw, YW);
+    setLine(lc.line, xc, YC, xc + (LC_START - xc) * dc, YC);
+    lw.line.setAttribute('opacity', dw > 0 ? 1 : 0); lc.line.setAttribute('opacity', dc > 0 ? 1 : 0);
+    lw.dot.setAttribute('cx', f2(xw + 1)); lw.dot.setAttribute('cy', YW); lw.dot.setAttribute('r', (3.5 * clamp(dw * 4)).toFixed(3));
+    lc.dot.setAttribute('cx', f2(xc - 1)); lc.dot.setAttribute('cy', YC); lc.dot.setAttribute('r', (3.5 * clamp(dc * 4)).toFixed(3));
+    var aw = P(t, 0.46, 0.30, E.p3o), ac2 = P(t, 0.50, 0.30, E.p3o);
+    labW.setAttribute('opacity', aw.toFixed(4)); labW.setAttribute('transform', 'translate(' + f2(-12 * (1 - aw)) + ' 0)');
+    labC.setAttribute('opacity', ac2.toFixed(4)); labC.setAttribute('transform', 'translate(' + f2(12 * (1 - ac2)) + ' 0)');
+
+    // YEAR 1 · $300K  ->  YEAR 3 · $444K, a mono roll landing on "bigger" (like an odometer, a column whose
+    // character does not change stays still)
+    for (var j = 0; j < NCH; j++) {
+      var p = S0.charAt(j) === S1.charAt(j) ? 0 : E.p2io(clamp((t - q(0.55) - j * 0.014) / 0.22));   // first column on a frame, the cascade sub-frame
+      chars[j][0].setAttribute('transform', 'translate(0 ' + f2(-58 * p) + ')');
+      chars[j][1].setAttribute('transform', 'translate(0 ' + f2(-58 * p) + ')');
+    }
+  }
+
+  var T = { t: 0 };
+  paint(0);
+  tl.fromTo(T, { t: 0 }, { t: DUR, duration: DUR, ease: 'none', onUpdate: function () { paint(T.t); } }, 0);
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: DUR, ease: 'none' }, 0);
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

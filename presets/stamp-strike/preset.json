@@ -1,0 +1,61 @@
+{
+  "name": "stamp-strike",
+  "kind": "fx",
+  "layer": "behind",
+  "from": "kit fx/word-stamp",
+  "source": ["kit fx/word-stamp"],
+  "does": "Words stamp in letter by letter, huge, in the display face on the wall behind the head (the head breaks the foot of the line), each where the speaker points as they say it; on the negation a stroke strikes each through in turn and the letters dim. Light/ink split against the wall, never an outline.",
+  "use_when": "the line names things the speaker no longer uses or needs ('no meetings, no emails, nothing else', 'I never open spreadsheets again'); one emphatic word struck through; a callback to an earlier stamp (same size, same move)",
+  "inputs": [
+    "a CUT_WINDOWS entry over the window (behind the head), split at every picture cut inside it",
+    "the words and where each stands (STAMPS x where the speaker points; measure on a still of the shot)",
+    "when each word stamps and is struck (T: seconds after A, or the spoken words)",
+    "a locked-off shot for the light/ink wall mask (mkmask.py); on a handheld shot set SPLIT false"
+  ],
+  "constants": {
+    "STAMPS": [{"text": "MEETINGS", "x": 46, "align": "left"}, {"text": "EMAILS", "x": 1034, "align": "right"}],
+    "T": {"stamp": [1.017, 0.0], "strike": [1.841, 1.941]},
+    "BASE": 548,
+    "SIZE": 432,
+    "MAXW": 940,
+    "GAP": 0.15,
+    "STEP_FRAMES": 2,
+    "GROW": 0.008,
+    "STROKE": {"color": "--c-neg", "thick": 0.11, "y": 0.5, "pad": 10, "rot": -2.5, "dur": 0.22},
+    "DIM": {"light": "--c-muted-dark", "ink": "--c-muted-light", "dur": 0.24, "after": 0.08},
+    "SPLIT": true,
+    "MASK": {"lo": 92, "hi": 124, "blur": 1.0, "samples": 0, "read": null, "front": null}
+  },
+  "notes": {
+    "STAMPS": "one entry per word: text (set in caps by you), x in px, align left | right | center from x",
+    "T": "stamp and strike, one per word in STAMPS order; strike null = never struck. Seconds after A or a spoken word ('nothing', 'nothing+0.1')",
+    "BASE": "the baseline in px; the speaker's head should break the foot of the line (about 60 px into the cap)",
+    "SIZE": "432 suits a condensed display face; a wider face shrinks the whole line to MAXW on its own",
+    "MAXW": "keep it under the span between the outer words' anchors (x 46 to 1034 is 988 px) so a line set smaller keeps its gap",
+    "STROKE": "color is a token name (--c-neg: the meaning is 'no'); thick and y are x the cap height",
+    "MASK": "for mkmask.py: lo/hi luma ramp, blur px, samples (0 = every frame), read [s, s] after A or null, front [luma, y] or null. A dark wall: lo 48, hi 68; a light wall: lo 110, hi 140; front [60, 350] when something dark hangs in front of the wall above y 350 (a ceiling fan)"
+  },
+  "cues": ["T"],
+  "generators": [
+    {"run": "{py} mkmask.py {project} {id} --at {at} --end {end}", "when": "the window, the cut or the footage changes",
+     "required": false, "fallback": "{py} mkmask.py {project} {id} --blank",
+     "fallback_means": "neutral masks: light type only, nothing in front of it"}
+  ],
+  "needs": [
+    "CUT_WINDOWS: ({at_cut}, {end}) behind the head (split it at every picture cut inside the window)"
+  ],
+  "sfx": [
+    {"at": "T.stamp.*+0.01", "name": "stamp", "db": -13, "what": "a word stamps"},
+    {"at": "T.strike.0+0.02", "name": "switch-off", "db": -16, "what": "the strike"}
+  ],
+  "examples": {
+    "a callback (one word later in the video, struck on the word 'again')": {
+      "STAMPS": [{"text": "EMAILS", "x": 380, "align": "center"}], "T": {"stamp": ["emails"], "strike": ["again"]},
+      "BASE": 640, "MASK": {"lo": 110, "hi": 140, "blur": 1.0, "samples": 0, "read": null, "front": null}
+    }
+  },
+  "typical_length": "2.7-3.4 s",
+  "modes": ["hifi", "showcase"],
+  "signature": null,
+  "pairs_with": null
+}

@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+kit/vendor/
+.models/
+dev/out/
+dist/
+examples/packs/*/fonts/
+examples/packs/*/brand.css
+examples/packs/*/board/
+packs/*/fonts/
+packs/*/brand.css
+packs/*/board/

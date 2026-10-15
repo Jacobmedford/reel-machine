@@ -1,0 +1,42 @@
+<!-- giant-captions (over everything): the words take over from the captions. The caption box grows out of the caption
+     band into a giant slab above the head, a display-face line wipes open under it, word tiles pop up across the chest
+     and a light slab slams the last word; every slab folds shut just before the window ends. The giant slab and the
+     tiles wear the creator's caption box (made solid on the ground that suits its ink), the display line their accent
+     on the dark ground, the slam their light ground with ink. Each row holds its slab's centre still, so a slab fitted
+     smaller stays in place. Give the window a KARAOKE hide so the normal captions step aside. Words, keys and times
+     live in fx.js. -->
+<div id="{{ID}}-all" data-layout-allow-overlap>
+  <div id="{{ID}}-r1" class="{{ID}}-row" data-layout-allow-overlap><div id="{{ID}}-big" class="{{ID}}-b {{ID}}-box" data-layout-allow-overflow><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-r2" class="{{ID}}-row" data-layout-allow-overlap><div id="{{ID}}-cap" class="{{ID}}-b" data-layout-allow-overflow><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-r3" class="{{ID}}-row" data-layout-allow-overlap><div id="{{ID}}-tiles"></div></div>
+  <div id="{{ID}}-r4" class="{{ID}}-row" data-layout-allow-overlap><div id="{{ID}}-sen" class="{{ID}}-b" data-layout-allow-overflow><span class="{{ID}}-t"></span></div></div>
+</div>
+<style>
+#{{ID}}-all { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}} .{{ID}}-row { position:absolute; left:0; width:1080px; display:flex; align-items:center; }
+#{{ID}}-r1 { top:232px; height:214px; justify-content:flex-start; padding-left:66px; }
+#{{ID}}-r2 { top:436px; height:212px; justify-content:flex-end; padding-right:66px; }
+#{{ID}}-r3 { top:1166px; height:86px; justify-content:flex-start; padding-left:52px; }
+#{{ID}}-r4 { top:1266px; height:184px; justify-content:flex-start; padding-left:46px; }
+#{{ID}} .{{ID}}-b { flex:none; overflow:hidden; white-space:nowrap; border-radius:var(--radius); }
+#{{ID}} .{{ID}}-t { display:block; }
+/* the caption box, solid: its colour over the ground its ink reads on (fx.js picks light or dark) */
+#{{ID}} .{{ID}}-box { background:var(--c-dark); }
+#{{ID}} .{{ID}}-box .{{ID}}-t { background:var(--c-box); color:var(--c-box-ink); }
+/* the giant slab */
+#{{ID}}-big { height:0.907em; font-family:var(--font-text); font-weight:800; font-size:236px; letter-spacing:-0.035em; }
+#{{ID}}-big .{{ID}}-t { height:100%; padding:0 0.144em; line-height:0.907em; }
+/* the display line: accent on the dark ground */
+#{{ID}}-cap { padding:0 0.19em 0.07em 0.16em; font-family:var(--font-display); font-style:var(--display-style);
+  font-weight:var(--display-weight); font-size:214px; line-height:1; letter-spacing:-0.02em; background:var(--c-dark);
+  color:var(--c-accent); }
+/* word tiles */
+#{{ID}}-tiles { display:flex; gap:10px; font-size:62px; }
+#{{ID}} .{{ID}}-tile { flex:none; height:1.387em; overflow:hidden; border-radius:var(--radius); font-family:var(--font-text);
+  font-weight:800; letter-spacing:-0.01em; white-space:nowrap; }
+#{{ID}} .{{ID}}-tile .{{ID}}-t { height:100%; padding:0 0.32em; line-height:1.42em; }
+/* the slam: ink on the light ground */
+#{{ID}}-sen { padding:0 0.214em 0.07em 0.175em; font-family:var(--font-display); font-style:var(--display-style);
+  font-weight:var(--display-weight); font-size:206px; line-height:1; letter-spacing:-0.02em; background:var(--c-light);
+  color:var(--c-ink); }
+</style>

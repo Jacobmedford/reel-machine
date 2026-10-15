@@ -1,0 +1,24 @@
+<!-- grade-slider (camera layer): a before/after comparison slider, the way a colourist checks a grade. A copy of the
+     footage in the new look wipes in from the right behind a line tilted TILT degrees and splits the face (BEFORE /
+     AFTER), steps a little further over the face on the nudge cue, then sweeps the new look across the whole frame on
+     the sweep cue. edit.GRADES switches the main picture to the same look at B (the cut), so the hand-off can't be
+     seen. Words, times, the face path and the look are the constants in fx.js. The copy is timed by the build
+     ({{START}}, {{SYNC}}, {{DUR}}). -->
+<video id="{{ID}}-v" class="full" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video>
+<div id="{{ID}}-lb" class="{{ID}}-side" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-tb" class="{{ID}}-tag" data-layout-allow-overlap data-layout-allow-occlusion></span></div>
+<div id="{{ID}}-la" class="{{ID}}-side" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-ta" class="{{ID}}-tag" data-layout-allow-overlap data-layout-allow-occlusion></span></div>
+<div id="{{ID}}-line" data-layout-allow-overlap data-layout-allow-occlusion><div id="{{ID}}-knob" data-layout-allow-overlap data-layout-allow-occlusion><svg viewBox="0 0 64 64"><path d="M26 22 L16 32 L26 42 M38 22 L48 32 L38 42"/></svg></div></div>
+<style>
+#{{ID}}-v { clip-path: polygon(1300px 0px, 1300px 0px, 1300px 1920px, 1300px 1920px); }
+#{{ID}} .{{ID}}-side { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+/* BEFORE / AFTER: mono kickers in the caption box's colours, so they belong to the same edit as the captions */
+#{{ID}} .{{ID}}-tag { position:absolute; top:258px; padding:12px 16px 11px 19px; border-radius:var(--radius); white-space:nowrap;
+  background:var(--c-box); color:var(--c-box-ink); font:500 25px/1 var(--font-mono); letter-spacing:.2em; text-transform:uppercase; }
+#{{ID}}-tb { left:52px; }
+#{{ID}}-ta { right:52px; }
+#{{ID}}-line { position:absolute; left:-3px; top:-90px; width:6px; height:2100px; background:var(--c-light); transform-origin:3px 1050px; }
+#{{ID}}-knob { position:absolute; left:-33px; top:1014px; width:72px; height:72px; border-radius:50%; background:var(--c-light);
+  box-shadow:0 4px 14px color-mix(in srgb, var(--c-dark) 30%, transparent); }
+#{{ID}}-knob svg { width:72px; height:72px; display:block; }
+#{{ID}}-knob path { fill:none; stroke:var(--c-ink); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+</style>

@@ -1,0 +1,96 @@
+{
+  "name": "grade-slider",
+  "kind": "fx",
+  "layer": "cam",
+  "from": "kit fx/grade-slider",
+  "source": [
+    "kit fx/grade-slider"
+  ],
+  "does": "A before/after slider tilted 8 degrees splits the frame through the face (BEFORE / AFTER tags), the knob takes a small press and the line steps further over the face on the nudge word, then the new look sweeps across the whole frame on the sweep word; GRADES takes the look over on the cut at B.",
+  "use_when": "a look change the line asks for ('make it warmer', 'a touch warmer', 'it warms up'): any grade, named in LOOKS or a CSS filter",
+  "inputs": [
+    "a GRADES entry for the new look starting at B, no fade: (B, <until>, LOOK)",
+    "where the split crosses the face (FACE: three [s, x, y] samples measured on stills; the code uses x, y)",
+    "the nudge and sweep cues (T.nudge, T.sweep: seconds after A or the spoken words)"
+  ],
+  "constants": {
+    "LOOK": "warm",
+    "LABELS": [
+      "Before",
+      "After"
+    ],
+    "FACE": [
+      [
+        0.2,
+        540,
+        700
+      ],
+      [
+        0.733,
+        540,
+        700
+      ],
+      [
+        1.295,
+        540,
+        700
+      ]
+    ],
+    "NUDGE": 50,
+    "TILT": 8,
+    "HANDLE_Y": 1105,
+    "T": {
+      "slide": 0.271,
+      "labels": 0.16,
+      "nudge": 0.74,
+      "nudgeDur": 0.2,
+      "sweep": 1.302,
+      "sweepDur": 0.47
+    }
+  },
+  "notes": {
+    "LOOK": "warm or moody (build.py LOOKS), or a CSS filter list; it is read off the timeline at B so the sweep lands on exactly the grade that holds",
+    "FACE": "[seconds after A, x, y] where the line should cross the face: after the glide, at the nudge, at the sweep (eyes height); the default is a still, centred face",
+    "T": "slide and nudgeDur, sweepDur are lengths (s); labels, nudge and sweep are beats (nudge, sweep can be spoken words)",
+    "HANDLE_Y": "the knob's height on the line: keep it on the body, clear of the pack's caption box"
+  },
+  "cues": [
+    "T"
+  ],
+  "generators": [],
+  "needs": [
+    "GRADES: ({end}, <until>, \"{=LOOK}\") the same LOOK, no fade, so the cut hands over invisibly"
+  ],
+  "sfx": [
+    {
+      "at": "@at+0.067",
+      "name": "whoosh-soft",
+      "db": -21,
+      "what": "the slider glides in"
+    },
+    {
+      "at": "T.nudge",
+      "name": "tick",
+      "db": -15,
+      "what": "the nudge"
+    },
+    {
+      "at": "T.sweep+0.241",
+      "name": "whoosh",
+      "db": -16,
+      "what": "the sweep (its loudest moment mid-sweep)"
+    }
+  ],
+  "typical_length": "2.1 s",
+  "modes": [
+    "showcase",
+    "hifi"
+  ],
+  "signature": null,
+  "pairs_with": null,
+  "lengths": [
+    "T.slide",
+    "T.nudgeDur",
+    "T.sweepDur"
+  ]
+}

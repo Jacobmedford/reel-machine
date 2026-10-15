@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>task grid</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* A whole as 100 tiles (10x10): a diagonal wave flips most of them to the accent state, a few stay as they were,
+     then a row of new empty slots traces in and one fills. Light ground. Every colour and font comes from
+     brand.css + card.css; this file only sets size and place. */
+  #cam { transform-origin:540px 700px; }
+  #kick { position:absolute; left:70px; top:262px; }
+
+  /* legend: sits on the grid's left edge, decodes the two tile states */
+  #legend { position:absolute; left:224px; top:316px; height:30px; display:flex; align-items:center; gap:44px; }
+  .lg { display:flex; align-items:center; gap:14px; }
+  .lg-label { font-size:30px; color:var(--c-ink); line-height:1; }
+  /* small pieces cap the pack's corner radius at 14% of their size, so a round pack never turns them into dots */
+  .sw { width:28px; height:28px; border-radius:min(var(--radius), 14%); flex:none; }
+  .sw.flip { background:var(--c-accent-light); }
+  .sw.keep { background:color-mix(in srgb, var(--c-ink) 5%, var(--c-light)); border:2px solid var(--c-ink); }
+
+  /* the tiles (built in script, positioned absolutely; the script paints their colours from the same tokens) */
+  #grid { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+  .tile { position:absolute; width:56px; height:56px; border-radius:min(var(--radius), 14%); border:2px solid var(--c-ink);
+          background:color-mix(in srgb, var(--c-ink) 5%, var(--c-light)); }
+
+  /* new tasks row */
+  #newlab { position:absolute; left:224px; top:1034px; font-size:30px; letter-spacing:.1em; text-transform:uppercase; color:var(--c-ink); line-height:1; }
+  #slots { position:absolute; left:0; top:0; width:1080px; height:1920px; overflow:visible; }
+  #newtile { position:absolute; left:237px; top:1089px; width:30px; height:30px; border-radius:min(var(--radius), 14%); background:var(--c-ink); }
+</style>
+</head>
+<body>
+<div id="root" class="ground-light" data-composition-id="main" data-start="0" data-duration="5.833" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker">One week of work, as 100 tasks</div>
+
+    <div id="legend">
+      <div class="lg"><div class="sw flip"></div><div class="lg-label text">automated</div></div>
+      <div class="lg"><div class="sw keep"></div><div class="lg-label text">done by you</div></div>
+    </div>
+
+    <div id="grid"></div>
+
+    <div id="newlab" class="mono">New tasks for you</div>
+    <svg id="slots" viewBox="0 0 1080 1920"><defs id="slot-defs"></defs></svg>
+    <div id="newtile"></div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30, DUR = 175 / FPS;                 // 175 frames exactly
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  // ---------- tokens: read once at load, never hard-coded ----------
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var C = { light: tok('--c-light'), ink: tok('--c-ink'), accentL: tok('--c-accent-light') };
+  var RAD = parseFloat(tok('--radius')) || 0;
+
+  // token colours as [r,g,b], so the flip can shade a face as it turns. A 1px canvas resolves any CSS colour syntax
+  // (hex, rgb, hsl, oklch, color-mix) to the sRGB bytes it actually paints.
+  var cv = document.createElement('canvas'); cv.width = 1; cv.height = 1;
+  var cx = cv.getContext('2d', { willReadFrequently: true });
+  function rgbOf(v) { cx.clearRect(0, 0, 1, 1); cx.fillStyle = v; cx.fillRect(0, 0, 1, 1); var d = cx.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2]]; }
+  function hx(v) { v = Math.max(0, Math.min(255, Math.round(v))); return (v < 16 ? '0' : '') + v.toString(16); }
+  function mix(a, b, k) {                                    // a -> b by k, as a hex colour
+    return '#' + hx(a[0] + (b[0] - a[0]) * k) + hx(a[1] + (b[1] - a[1]) * k) + hx(a[2] + (b[2] - a[2]) * k);
+  }
+  var LIGHT = rgbOf(C.light), INK = rgbOf(C.ink), ACC = rgbOf(C.accentL);
+  var KEPT = rgbOf(mix(LIGHT, INK, 0.05));                   // a kept tile's face: the ground, a touch sunken (as the CSS)
+  var EDGE = INK;                                            // a kept tile's edge
+
+  // ---------- geometry ----------
+  var N = 10, TS = 56, GAP = 8, PITCH = TS + GAP;          // 10x10, 56px tiles, 8px gaps -> 632px
+  var GX = 224, GY = 372;                                   // grid x 224..856, y 372..1004
+  var SY = 1076;                                            // new-task slot row y 1076..1132
+
+  // ---------- the six tiles that stay: fixed, seeded (mulberry32, seed 2030) ----------
+  // no shared row or column, at least 3 cells apart, never in the corner where the wave starts
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  var KEEP = {};
+  (function () {
+    var rnd = mulberry32(2030), kept = [], rows = {}, cols = {}, guard = 0;
+    while (kept.length < 6 && guard++ < 5000) {
+      var r = Math.floor(rnd() * N), c = Math.floor(rnd() * N);
+      if (rows[r] || cols[c] || r + c < 3) continue;
+      var ok = kept.every(function (k) { return Math.max(Math.abs(k[0] - r), Math.abs(k[1] - c)) >= 3; });
+      if (!ok) continue;
+      kept.push([r, c]); rows[r] = 1; cols[c] = 1; KEEP[r + '_' + c] = 1;
+    }
+  })();
+
+  // ---------- timing ----------
+  // arrival: diagonal wave, pre-rolled so frame 0 already shows the top-left corner forming; all in by 0.41s
+  var A0 = -0.08, AS = 0.0125, AD = 0.26;
+  // flip: diagonal wave (row+col), one diagonal every 0.08s, each flip 0.22s with a gravity ease (power2.in)
+  // so it tips, accelerates and slams flat like a departures-board flap. The accent side shows at the flip
+  // midpoint (0.707 of the flip): tile one turns on the first beat (0.86), the last diagonal lands at 2.36.
+  var F0 = 0.70, FS = 0.08, FD = 0.22, SHADE = 0.30;
+
+  // ---------- build tiles ----------
+  var grid = document.getElementById('grid'), tiles = [];
+  for (var r = 0; r < N; r++) {
+    for (var c = 0; c < N; c++) {
+      var el = document.createElement('div');
+      el.className = 'tile';
+      el.style.left = (GX + c * PITCH) + 'px';
+      el.style.top = (GY + r * PITCH) + 'px';
+      grid.appendChild(el);
+      var d = r + c;
+      tiles.push({ el: el, a: A0 + d * AS, f: F0 + d * FS, keep: !!KEEP[r + '_' + c], last: '' });
+    }
+  }
+
+  // pure function of time: every tile's arrival + flip state (seek-safe, deterministic)
+  function gridAt(t) {
+    for (var i = 0; i < tiles.length; i++) {
+      var T = tiles[i];
+      var pa = clamp01((t - T.a) / AD);
+      var ea = pa >= 1 ? 1 : 1 - Math.pow(2, -10 * pa);         // expo.out
+      var s = 0.6 + 0.4 * ea, op = Math.min(1, ea * 1.15);
+      var ang = 0;
+      if (!T.keep) { var pf = clamp01((t - T.f) / FD); ang = 180 * pf * pf; }   // power2.in
+      var flipped = ang > 90;
+      var k = (1 - Math.abs(Math.cos(ang * Math.PI / 180))) * SHADE;        // face darkens as it turns away
+      var bg = mix(flipped ? ACC : KEPT, INK, k);
+      var bd = flipped ? bg : mix(EDGE, INK, k);
+      var rest = (ang === 0 || ang === 180) && s === 1;
+      var tr = rest ? 'none' : 'perspective(200px) rotateY(' + ang.toFixed(2) + 'deg) scale(' + s.toFixed(4) + ')';
+      var key = tr + '|' + bg + '|' + bd + '|' + op.toFixed(3);
+      if (key === T.last) continue;
+      T.last = key;
+      T.el.style.transform = tr;
+      T.el.style.background = bg;
+      T.el.style.borderColor = bd;
+      T.el.style.opacity = op.toFixed(3);
+    }
+  }
+  var clock = { t: 0 };
+  gridAt(0);
+  tl.to(clock, { t: DUR, duration: DUR, ease: 'none', onUpdate: function () { gridAt(clock.t); } }, 0);
+
+  // ---------- new tasks row: 10 dashed slots, drawn in with a mask on "creates" ----------
+  var NS = 'http://www.w3.org/2000/svg';
+  var svg = document.getElementById('slots'), defs = document.getElementById('slot-defs');
+  function mk(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  var slotG = [], slotDash = [], slotMask = [];
+  var rr = Math.min(RAD, 0.14 * (TS - 2));                  // same corner rule as the tiles
+  for (var i = 0; i < N; i++) {
+    var x = GX + i * PITCH + 1, y = SY + 1, w = TS - 2;
+    var dpath = 'M' + (x + rr) + ' ' + y + 'H' + (x + w - rr) + 'A' + rr + ' ' + rr + ' 0 0 1 ' + (x + w) + ' ' + (y + rr) +
+      'V' + (y + w - rr) + 'A' + rr + ' ' + rr + ' 0 0 1 ' + (x + w - rr) + ' ' + (y + w) +
+      'H' + (x + rr) + 'A' + rr + ' ' + rr + ' 0 0 1 ' + x + ' ' + (y + w - rr) +
+      'V' + (y + rr) + 'A' + rr + ' ' + rr + ' 0 0 1 ' + (x + rr) + ' ' + y + 'Z';
+    // an alpha mask: any opaque stroke reveals, so the mask needs no colour of its own
+    var m = mk('mask', { id: 'slotmask' + i, maskUnits: 'userSpaceOnUse', x: 0, y: 0, width: 1080, height: 1920, style: 'mask-type:alpha' }, defs);
+    var mp = mk('path', { d: dpath, fill: 'none', stroke: C.ink, 'stroke-width': 10, 'stroke-linecap': 'square' }, m);
+    var g = mk('g', { id: 'slot' + i }, svg);
+    var inner = mk('g', { mask: 'url(#slotmask' + i + ')' }, g);
+    var dp = mk('path', { d: dpath, fill: 'none', stroke: C.ink, 'stroke-width': 2, 'stroke-opacity': 0.55 }, inner);
+    var L = dp.getTotalLength(), n = 16, unit = L / n;              // 16 even dashes around the square
+    dp.setAttribute('stroke-dasharray', (unit * 0.56).toFixed(3) + ' ' + (unit * 0.44).toFixed(3));
+    dp.setAttribute('stroke-dashoffset', (unit * 0.28).toFixed(3));  // centre a dash on each corner run
+    var ML = Math.ceil(mp.getTotalLength()) + 2;
+    gsap.set(mp, { strokeDasharray: ML, strokeDashoffset: ML });
+    slotG.push(g); slotDash.push(dp); slotMask.push({ el: mp, L: ML });
+  }
+
+  // label rises in on "and it" (2.76)
+  gsap.set('#newlab', { opacity: 0, y: 14 });
+  tl.to('#newlab', { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out' }, q(2.70));
+
+  // slots trace in left to right on "creates" (3.08), all closed before the next beat (3.72)
+  for (var j = 0; j < N; j++) {
+    tl.to(slotMask[j].el, { strokeDashoffset: 0, duration: 0.30, ease: 'power2.inOut' }, q(3.02) + j * 0.035);
+  }
+
+  // one small tile settles into the first slot on "new" (3.72)
+  // #newtile sits centred in slot 0 (CSS left 237, top 1089: 30px inside a 56px slot)
+  // it comes down onto the board (scale 1.45 -> 1, a short 10px drop), never crossing the label above
+  gsap.set('#newtile', { opacity: 0, y: -10, scale: 1.45 });
+  tl.to('#newtile', { y: 0, scale: 1, duration: 0.45, ease: 'expo.out' }, q(3.60));
+  tl.to('#newtile', { opacity: 1, duration: 0.10, ease: 'none' }, q(3.60));
+  // the slot it fills firms up a touch, so filled reads differently from empty
+  tl.to(slotDash[0], { attr: { 'stroke-opacity': 0.9 }, duration: 0.30, ease: 'power2.out' }, q(3.67));
+
+  // on "you" (5.24) the nine empty slots give one quiet pulse, rippling left to right
+  for (var p = 1; p < N; p++) {
+    var t0 = q(5.08) + (p - 1) * 0.02;            // slot 2 peaks at 5.21, slot 10 at 5.37
+    gsap.set(slotG[p], { transformOrigin: '50% 50%' });
+    tl.to(slotG[p], { scale: 1.07, duration: 0.14, ease: 'power2.out' }, t0);
+    tl.to(slotG[p], { scale: 1, duration: 0.42, ease: 'power2.inOut' }, t0 + 0.14);
+    tl.to(slotDash[p], { attr: { 'stroke-opacity': 1 }, duration: 0.14, ease: 'power2.out' }, t0);
+    tl.to(slotDash[p], { attr: { 'stroke-opacity': 0.55 }, duration: 0.42, ease: 'power2.inOut' }, t0 + 0.14);
+  }
+
+  // slow camera push across the whole card
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: DUR, ease: 'none' }, 0);
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!-- wall-window (behind the speaker, on the wall): "Here's the full version of this video." A window on the wall
+     behind the head. A seam draws, the window opens out of it on the open cue (the title strip up, the picture down)
+     and plays a clip from its MEDIA_START (by default THIS video from its first frame, a copy of clean.mp4 as its own
+     clip), the title types the LABEL, a progress line runs along the seam, and on the tag cue a true tag types onto the
+     picture. It folds back into the seam before the cut. Words, place, the clip and times are the constants in fx.js;
+     the clip's timing below is bound to T.open by preset.py ([[T.open]]): rerun preset.py to move it. -->
+<div id="{{ID}}-win">
+  <div id="{{ID}}-shadow"></div>
+  <div id="{{ID}}-vw">
+    <video id="{{ID}}-v" class="{{ID}}-vid g" src="[[SRC]]" muted playsinline data-start="{{START+[[T.open]]}}" data-media-start="[[MEDIA_START]]" data-duration="{{DUR-[[T.open]]}}" data-track-index="{{T0}}"></video>
+    <div id="{{ID}}-tag" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-tagt" data-layout-allow-overlap data-layout-allow-occlusion></span><i id="{{ID}}-caret"></i></div>
+  </div>
+  <div id="{{ID}}-strip">
+    <i id="{{ID}}-dot"></i><span id="{{ID}}-lab" data-layout-allow-overlap data-layout-allow-occlusion></span>
+  </div>
+  <div id="{{ID}}-seam"><div id="{{ID}}-fill"></div></div>
+</div>
+<style>
+#{{ID}}-win { position:absolute; left:0; top:0; }
+/* a soft functional shadow lifting the window off the wall */
+#{{ID}}-shadow { position:absolute; left:0; top:0; border-radius:var(--radius);
+  box-shadow:0 16px 36px color-mix(in srgb, var(--c-dark) 32%, transparent), 0 2px 5px color-mix(in srgb, var(--c-dark) 22%, transparent); }
+/* the picture in a thin light frame (sides and bottom; the strip is the top) */
+#{{ID}}-vw { position:absolute; left:0; overflow:hidden; background:var(--c-light); border-radius:0 0 var(--radius) var(--radius); }
+#{{ID}} .{{ID}}-vid { position:absolute; object-fit:cover; object-position:50% 50%; background:var(--c-dark); }
+/* the title strip: the creator's light ground, a mono label with the accent square (the prompt bar's label) */
+#{{ID}}-strip { position:absolute; left:0; top:0; display:flex; align-items:center; gap:12px; padding:0 18px; overflow:hidden;
+  background:var(--c-light); border-radius:var(--radius) var(--radius) 0 0; white-space:nowrap; }
+#{{ID}}-dot { flex:none; width:11px; height:11px; border-radius:min(2px, var(--radius)); background:var(--c-accent-light); }
+#{{ID}}-lab { font-family:var(--font-mono); font-weight:500; font-size:27px; line-height:1; letter-spacing:.16em; color:var(--c-ink); }
+#{{ID}}-lab span, #{{ID}}-tagt span { display:none; }
+/* the seam: an ink hairline along the strip's base (it draws first, on the wall), the progress running along it in
+   the accent */
+#{{ID}}-seam { position:absolute; left:0; height:4px; background:var(--c-ink); transform-origin:0 50%; }
+#{{ID}}-fill { position:absolute; left:0; top:0; width:100%; height:100%; background:var(--c-accent); transform-origin:0 50%; }
+/* the true tag on the picture */
+#{{ID}}-tag { position:absolute; display:flex; align-items:center; padding:12px 15px 11px 16px; border-radius:var(--radius);
+  background:color-mix(in srgb, var(--c-dark) 86%, transparent); white-space:nowrap; transform-origin:0 50%; }
+#{{ID}}-tagt { font-family:var(--font-mono); font-weight:500; font-size:30px; line-height:1; letter-spacing:.1em; color:var(--c-light); }
+#{{ID}}-caret { display:inline-block; width:3px; height:30px; margin-left:3px; background:var(--c-accent); }
+</style>

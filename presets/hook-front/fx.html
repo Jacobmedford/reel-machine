@@ -1,0 +1,50 @@
+<!-- hook-front (top layer): a proof line over the hook, and line one on frame 0.
+     The proof line: one small true line in mono over the hook, readable on frame 0: what the video was made from and
+     who cut it. On the cue its last word lights up in the accent. It sits on the top layer but reads as if it were on
+     the wall behind the speaker: each frame's copy is knocked out wherever the speaker is (knock.png, the cutout per
+     frame), so it never lands on the head as the speaker moves up into it. Inside that, light type and an ink copy
+     through a per-frame mask of wherever the picture under the line is light (masks.png), so it splits light/dark
+     against the room, never an outline or a box. Both sheets hold one band per frame of this window; fx.js clones the
+     frame copy once per frame. LINE [] (empty) drops the proof line.
+     Frame 0: a cutout window can't start on frame 0 (a window at 0.0 fails the render's static guard), so this layer
+     carries line one there: OPEN in the display face (or, with OPEN_FROM, the words, size and baseline of that hook
+     effect's own line one), scaled like the camera's opening settle, split by wall.png and knocked out by the frame-0
+     cutout (knock0.png), so the thumbnail shows the type behind the head. mkmask.py writes all four masks from this
+     project's footage. Off hard on the cut with the window. -->
+<div id="{{ID}}-big" class="{{ID}}-full" data-layout-allow-overlap>
+  <div class="{{ID}}-full {{ID}}-blt" data-layout-allow-overlap><div class="{{ID}}-bln" data-layout-allow-overlap data-layout-allow-overflow><span class="{{ID}}-bt"></span></div></div>
+  <div class="{{ID}}-full {{ID}}-bdk" data-layout-allow-overlap><div class="{{ID}}-bln" data-layout-allow-overlap data-layout-allow-overflow><span class="{{ID}}-bt"></span></div></div>
+</div>
+<div id="{{ID}}-band" data-layout-allow-overlap>
+  <div id="{{ID}}-f0" class="{{ID}}-cp {{ID}}-fr" data-layout-allow-overlap>
+    <div class="{{ID}}-cp {{ID}}-lt" data-layout-allow-overlap><div class="{{ID}}-ln" data-layout-allow-overflow><span class="{{ID}}-a"></span><span class="{{ID}}-c"></span></div></div>
+    <div class="{{ID}}-cp {{ID}}-dk" data-layout-allow-overlap><div class="{{ID}}-ln" data-layout-allow-overflow><span class="{{ID}}-a"></span><span class="{{ID}}-c"></span></div></div>
+  </div>
+</div>
+<style>
+/* the hook's line one on frame 0 (camera space: fx.js scales the whole block like the camera) */
+#{{ID}} .{{ID}}-full { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-big { -webkit-mask-image:url(fx/{{ID}}/knock0.png); mask-image:url(fx/{{ID}}/knock0.png); }
+#{{ID}} .{{ID}}-bdk { -webkit-mask-image:url(fx/{{ID}}/wall.png); mask-image:url(fx/{{ID}}/wall.png); }
+#{{ID}}-big, #{{ID}} .{{ID}}-bdk { -webkit-mask-size:1080px 1920px; mask-size:1080px 1920px;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; }
+#{{ID}} .{{ID}}-bln { position:absolute; left:0; top:0; width:1080px; text-align:center; white-space:nowrap; line-height:1;
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  letter-spacing:-0.02em; color:var(--c-light); }
+#{{ID}} .{{ID}}-bdk .{{ID}}-bln { color:var(--c-ink); }
+#{{ID}} .{{ID}}-bt { display:inline-block; white-space:nowrap; }
+/* the proof line: a band one frame tall per copy (fx.js sets its top and height from BAND) */
+#{{ID}}-band { position:absolute; left:0; top:0; width:1080px; }
+#{{ID}} .{{ID}}-cp { position:absolute; left:0; top:0; width:1080px; }
+#{{ID}} .{{ID}}-fr { -webkit-mask-image:url(fx/{{ID}}/knock.png); mask-image:url(fx/{{ID}}/knock.png); }
+#{{ID}} .{{ID}}-dk { -webkit-mask-image:url(fx/{{ID}}/masks.png); mask-image:url(fx/{{ID}}/masks.png); }
+/* one band per frame, stacked; repeat-y so a one-band neutral sheet (mkmask.py --blank) serves every frame */
+#{{ID}} .{{ID}}-fr, #{{ID}} .{{ID}}-dk { -webkit-mask-size:1080px auto; mask-size:1080px auto;
+  -webkit-mask-repeat:repeat-y; mask-repeat:repeat-y; -webkit-mask-position:0 0; mask-position:0 0; }
+/* the line stands 33px into the band */
+#{{ID}} .{{ID}}-ln { position:absolute; left:0; top:9px; width:1080px; text-align:center; white-space:nowrap;
+  font-family:var(--font-mono); font-weight:500; font-size:26px; line-height:30px; letter-spacing:0.12em;
+  text-transform:uppercase; color:var(--c-light); }
+#{{ID}} .{{ID}}-dk .{{ID}}-ln { color:var(--c-ink); }
+#{{ID}} .{{ID}}-a, #{{ID}} .{{ID}}-c { white-space:nowrap; }
+</style>

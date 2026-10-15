@@ -1,0 +1,53 @@
+{
+  "name": "hook-front",
+  "kind": "fx",
+  "layer": "top",
+  "from": "kit fx/kinetic-hook-front",
+  "source": ["kit fx/kinetic-hook-front"],
+  "does": "A small proof line in mono above the hook (what the video was made from), knocked out wherever the speaker is so it reads as if it hung on the wall, split light/ink per frame, its last word lighting in the accent on the cue; and, when the window starts the video, line one standing big behind the head on frame 0 only (the thumbnail), knocked out by the frame-0 cutout.",
+  "use_when": "the hook, when one true fact sells it (3 TAKES, 2:40, EDITED BY CLAUDE); line one on frame 0 when the platform shows the first frame as the cover",
+  "inputs": [
+    "the proof line as [plain, the word that lights], true facts only (count the raw files, ffprobe their joined length); [] drops it",
+    "the cue the last word lights on (T.ignite: seconds after A or a spoken word)",
+    "line one for frame 0 (OPEN, its size and baseline measured on a still: the head should break its foot); OPEN_UNTIL_FRAMES 0 drops it",
+    "CAM_OPEN = edit.CAMERA['open'][0] when the edit changes the camera's opening settle"
+  ],
+  "constants": {
+    "LINE": ["3 takes · 2:40 · edited by ", "Claude"],
+    "T": {"ignite": 2.333},
+    "BAND": {"top": 222, "height": 44},
+    "OPEN_FROM": null,
+    "OPEN": "WATCH THIS",
+    "OPEN_SIZE": 470,
+    "OPEN_BASE": 622,
+    "OPEN_MAXW": 940,
+    "OPEN_UNTIL_FRAMES": 1,
+    "CAM_OPEN": 1.04,
+    "MASK": {"lo": 92, "hi": 124, "blur": 1.0}
+  },
+  "notes": {
+    "LINE": "[plain text, the last word that lights]; set in caps by the CSS; [] = no proof line",
+    "BAND": "the proof line's band in px (the line stands 33 px into it); keep it clear of the hook's own lines",
+    "OPEN_FROM": "null: line one is OPEN at OPEN_SIZE, OPEN_BASE and OPEN_MAXW, split against frame 0 itself. Or the id of a behind-the-head hook effect listed before this entry whose line one sits at #<id>-lt .<id>-l0: frame 0 copies it and its wall mask",
+    "OPEN": "drawn on frame 0 only, and only when the window starts at 0 (a thumbnail line); keep it to two short words",
+    "OPEN_UNTIL_FRAMES": "how many frames line one holds from frame 0; 0 drops it (when the video's own hook covers frame 0)",
+    "CAM_OPEN": "GSAP writes the camera's first frame lazily, so it is a constant here: edit.CAMERA['open'][0] (kit default 1.04)",
+    "MASK": "mkmask.py: the light/ink ramp under the proof line and under line one (luma 0-255)"
+  },
+  "cues": ["T"],
+  "generators": [
+    {"run": "{py} mkmask.py {project} {id} --at {at} --end {end}", "when": "the window, the cut, the camera or the footage changes",
+     "required": false, "fallback": "{py} mkmask.py {project} {id} --blank",
+     "fallback_means": "neutral sheets: nothing knocked out, no ink split (the line can then land on the head)"}
+  ],
+  "needs": [
+    "keep BAND clear of the hook's own lines; with OPEN_FROM set, list this entry after that hook effect (same window: at {at}, end {end})"
+  ],
+  "sfx": [
+    {"at": "T.ignite+0.007", "name": "tick", "db": -19, "what": "the last word lights"}
+  ],
+  "typical_length": "the hook's window (2.9 s)",
+  "modes": ["showcase", "hifi"],
+  "signature": null,
+  "pairs_with": null
+}

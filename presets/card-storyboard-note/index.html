@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>card-storyboard-note</title>
+<!-- card-storyboard-note (dark): a real storyboard page as the creator saw it on their monitor (captured by
+     capture-storyboard.mjs: desktop layout, dark scheme, the published state with its "Comment on this beat" buttons),
+     close on one beat; its button takes the hover and presses, a pin with the creator's face drops onto the caption,
+     the note types into a comment and sends, Claude answers, the old frame dims while Claude works and the new frame
+     lands with its caption grown, and a version badge stamps.
+     img/strip.png, btn.png, btn-hover.png, strip.js   the capture (three beats, the focus beat in the middle)
+     img/v2-clean.jpg                                   the focus beat's source frame with its reel's grade (frame.py)
+     Everything is laid out at load from the capture's own boxes (img/strip.js) and WINDOW, so any beat of any
+     storyboard page lands the same way. Words and beats are the constants in the script. -->
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  #cam  { transform-origin:540px 700px; }
+  #kick { position:absolute; left:80px; top:262px; }
+
+  /* the window onto the page: page x 18-371.8 (it cuts in the gap after the beat's duration), y 334-641, at s = 2.6
+     card px per page px. Inside it: local = ((page_x - 18) * 2.6, (page_y - 334) * 2.6). The script re-lays it all
+     from the capture's own boxes */
+  #win   { position:absolute; left:80px; top:324px; width:920px; height:798.2px; overflow:hidden; border-radius:var(--radius);
+           background:var(--c-dark); }
+  #strip { position:absolute; left:-46.8px; top:-868.4px; width:1456px; height:2535px; display:block; }
+  #winLine { position:absolute; left:80px; top:324px; width:920px; height:798.2px; border:1.5px solid var(--c-hair-dark);
+             border-radius:var(--radius); }
+
+  /* the focus beat's own button, normal and hover, over a patch of the page's sheet (dark 88% + light) so a press
+     never shows the button underneath */
+  #btnPatch { position:absolute; left:463.4px; top:245px; width:333.55px; height:89.8px;
+              background:color-mix(in srgb, var(--c-dark) 88%, var(--c-light)); }
+  #btn  { position:absolute; left:449.8px; top:231.4px; width:361.4px; height:117px; transform-origin:50% 50%; }
+  #btn img { position:absolute; left:0; top:0; width:361.4px; height:117px; display:block; }
+
+  /* the focus beat's frame, inside its 1px border: the new frame is the reel's own 1080 x 1920 picture, scaled */
+  #thumb { position:absolute; left:67.6px; top:75.4px; width:338px; height:605.8px; overflow:hidden; border-radius:5.2px; }
+  #stage { position:absolute; left:-1.381px; top:0; width:1080px; height:1920px; transform-origin:0 0; }
+  #stage img { position:absolute; left:0; top:0; width:1080px; height:1920px; display:block; }
+  /* the kit's lo-fi caption exactly as that reel set it (kit/reel-lofi.css .kw/.kc at 72px), one word lit */
+  .kw { position:absolute; left:0; top:1318px; width:1080px; display:flex; justify-content:center; }
+  .kc { white-space:nowrap; font-family:var(--font-caption); font-style:var(--caption-style); font-weight:var(--caption-weight);
+        font-size:72px; line-height:1.08; letter-spacing:-.01em; padding:4px 20px 9px; background:var(--c-box);
+        border-radius:var(--radius); color:var(--c-box-dim); transform-origin:50% 0; }
+  .kc .lit { color:var(--c-box-ink); }
+
+  /* while Claude works, the old frame dims under a veil of the page's paper; it lifts as the new frame lands */
+  #dim { position:absolute; left:67.6px; top:75.4px; width:338px; height:605.8px; border-radius:5.2px;
+         background:color-mix(in srgb, var(--c-dark) 55%, transparent); }
+
+  /* the version badge on the frame */
+  #badge { position:absolute; left:328.6px; top:87.4px; height:46px; padding:0 14px; display:flex; align-items:center;
+           border-radius:var(--radius); background:var(--c-accent); color:var(--c-dark); font-size:30px; font-weight:600;
+           letter-spacing:.02em; transform-origin:50% 50%; }
+
+  /* the pin: the creator's headshot (or a neutral glyph) in a teardrop whose tip sits on the caption */
+  #pin { position:absolute; left:240px; top:421px; width:72px; height:72px; padding:4px;
+         border-radius:50% 50% 50% 0; background:var(--c-light); border:3px solid var(--c-dark); transform-origin:0 100%; }
+  #pin img { display:block; width:58px; height:58px; border-radius:50%; object-fit:cover; }
+
+  /* the comment: a generic thread in the pack's palette (the light card, ink type, the accent only on the caret and
+     Send); its avatar sits level with the pin's head */
+  #popw { position:absolute; left:465.4px; top:419px; width:434.6px; transform-origin:0 38px; }
+  #pop  { position:relative; width:434.6px; height:309.5px; padding:18px 20px; background:var(--c-light); border-radius:var(--radius); }
+  .hd  { position:relative; display:flex; align-items:center; gap:12px; height:40px; }
+  .av  { display:block; width:40px; height:40px; flex:none; border-radius:50%; object-fit:cover; }
+  #pin .glyph, .av .glyph { display:block; width:100%; height:100%; border-radius:50%; }
+  .glyph circle, .glyph path { fill:color-mix(in srgb, var(--c-ink) 55%, var(--c-light)); }
+  .av.cl { display:flex; align-items:center; justify-content:center; background:var(--c-dark); color:var(--c-light);
+           font-family:var(--font-mono); font-weight:600; font-size:20px; }
+  .nm  { font-family:var(--font-text); font-weight:700; font-size:30px; letter-spacing:-.01em; color:var(--c-ink); }
+  .tm  { position:absolute; right:0; top:0; height:40px; display:flex; align-items:center; font-family:var(--font-mono);
+         font-weight:500; font-size:21px; color:var(--c-muted-light); }
+  .chip { position:absolute; right:0; top:2px; height:36px; padding:0 14px; display:flex; align-items:center;
+          border-radius:var(--radius); font-family:var(--font-text); font-weight:700; font-size:24px; transform-origin:50% 50%; }
+  #sendOff { border:1.5px solid var(--c-hair-light); color:var(--c-muted-light); }
+  #sendOn  { border:1.5px solid var(--c-accent-light); background:var(--c-accent-light); color:var(--c-light); }
+  .bd  { margin-top:6px; font-family:var(--font-text); font-weight:600; font-size:44px; line-height:50px;
+         letter-spacing:-.005em; color:var(--c-ink); white-space:nowrap; }
+  .ln  { position:relative; height:50px; }
+  #ph  { position:absolute; left:0; top:0; color:var(--c-muted-light); }   /* a placeholder: the caret sits at its start */
+  #note i { font-style:normal; display:none; }
+  .caret { display:inline-block; width:3px; height:40px; margin-left:1px; vertical-align:-6px; background:var(--c-accent-light); }
+  #rep { margin-top:18px; padding-top:12px; border-top:1.5px solid var(--c-hair-light); }
+</style>
+</head>
+<body>
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="[[@DUR]]" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker"></div>
+    <div id="win">
+      <img id="strip" src="img/strip.png" alt="" data-layout-allow-overflow />
+      <div id="btnPatch"></div>
+      <div id="btn"><img id="btnN" src="img/btn.png" alt="" /><img id="btnH" src="img/btn-hover.png" alt="" /></div>
+      <div id="thumb">
+        <div id="stage" data-layout-ignore data-layout-allow-overflow>
+          <img src="img/v2-clean.jpg" alt="" />
+          <div class="kw"><div id="kc" class="kc"></div></div>
+        </div>
+      </div>
+      <div id="dim"></div>
+      <div id="badge" class="mono"></div>
+      <div id="pin"></div>
+      <div id="popw">
+        <div id="pop">
+          <div id="msg">
+            <div class="hd"><span id="av1" class="av"></span><span id="nm1" class="nm"></span>
+              <span id="tm1" class="tm">now</span><span id="sendOff" class="chip">Send</span><span id="sendOn" class="chip">Send</span></div>
+            <div id="note" class="bd"><div id="ln1" class="ln"><span id="ph"></span><span id="c1" class="caret"></span></div><div id="ln2" class="ln"><span id="c2" class="caret"></span></div></div>
+          </div>
+          <div id="rep">
+            <div id="repHd" class="hd"><span id="av2" class="av cl"></span><span id="nm2" class="nm"></span><span class="tm">now</span></div>
+            <div id="repTx" class="bd"><div id="rep1" class="ln"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="winLine"></div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script src="img/strip.js"></script>
+<script>
+(function () {
+  var FPS = 30;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }            // snap every beat to a frame
+
+  // PRESET CONSTANTS START
+  var KICK = "Storyboard · Beat {n}";                     // the kicker; {n} = the focus beat's number
+  var NOTE = ["Make the captions", "bigger here."];       // the creator's note, as it breaks in the comment (two lines)
+  var PLACEHOLDER = "What should change?";                // the empty comment field
+  var NAME = "You";                                       // the commenter (the creator's first name reads best)
+  var REPLY_NAME = "Claude";                              // who answers (its avatar is its initial)
+  var REPLY = "On it.";                                   // the answer
+  var BADGE = "v2";                                       // the version badge the new frame gets
+  // the new frame's caption: its words, which one is lit (spoken), its size before and after the change and its top
+  // (px on the reel: the lo-fi caption is 72 at y 1318, the kit's huge size is 124)
+  var CAPTION = {"words": ["this", "line."], "lit": 0, "size": 72, "grow": 124, "y": 1318};
+  var HEADSHOT = {"pin": "", "avatar": ""};               // square face crops in img/ ("" = a neutral glyph)
+  // the page window: page x from x0 to x1 (the card shows it 920 px wide), from `top` page px above the focus beat,
+  // h page px tall
+  var WINDOW = {"x0": 18, "x1": 371.8, "top": 8.86, "h": 307};
+  // capture-storyboard.mjs: the storyboard to capture ("" = this project's own, else another project's folder name or a
+  // path to a storyboard index.html) and three of its beats, the focus beat in the middle; frame.py: the focus beat's
+  // source frame (a project, "" = this one, and a time on its output timeline)
+  var CAPTURE = {"page": "", "beats": ["p01", "p02", "p03"]};
+  var FRAME = {"project": "", "t": 1.0};
+  // card seconds (or spoken words, which preset.py turns into card seconds): the button's hover, press (contact
+  // after 2 frames), release, unhover; the pin drops, the comment opens, the empty caret blinks, the note types from
+  // type0 to type1, Send presses and the note posts, Claude replies, the old frame dims, the new frame lands (grow) and
+  // its caption has grown (grown), the badge stamps
+  var T = {"hover": 0.56, "press": 0.73, "release": 0.8, "unhover": 1.36, "pin": 0.86, "open": 0.92, "blink": [1.03, 1.33, 1.63], "type0": 1.74, "type1": 2.8, "send": 2.83, "sent": 2.9, "reply": 2.97, "work": 3.18, "grow": 3.34, "grown": 3.7, "badge": 3.66};
+  // PRESET CONSTANTS END
+  var DUR = [[@DUR]];
+
+  // ---- the words in, and the avatars (a file in img/, else a glyph)
+  var GLYPH = '<svg class="glyph" viewBox="0 0 48 48"><circle cx="24" cy="19" r="8"/><path d="M8 46 C9.5 34 16 29.5 24 29.5 C32 29.5 38.5 34 40 46 Z"/></svg>';
+  var ST = window.STRIP || null, FOCUS = ST ? ST.beats[CAPTURE.beats[1]] : null;
+  document.getElementById('kick').textContent = KICK.replace('{n}', String(CAPTURE.beats[1]).replace(/[^0-9]/g, ''));
+  document.getElementById('ph').textContent = PLACEHOLDER;
+  document.getElementById('nm1').textContent = NAME;
+  document.getElementById('nm2').textContent = REPLY_NAME;
+  document.getElementById('av2').textContent = REPLY_NAME.charAt(0);
+  document.getElementById('rep1').textContent = REPLY;
+  document.getElementById('badge').textContent = BADGE;
+  document.getElementById('pin').innerHTML = HEADSHOT.pin ? '<img src="img/' + HEADSHOT.pin + '" alt="" />' : GLYPH;
+  document.getElementById('av1').innerHTML = HEADSHOT.avatar ? '<img class="av" src="img/' + HEADSHOT.avatar + '" alt="" />' : GLYPH;
+  document.getElementById('kc').innerHTML = CAPTION.words.map(function (w, i) {
+    return '<span' + (i === CAPTION.lit ? ' class="lit"' : '') + '>' + w.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span>';
+  }).join(' ');
+  document.querySelector('.kc').style.fontSize = CAPTION.size + 'px';
+  document.querySelector('.kw').style.top = CAPTION.y + 'px';
+
+  // ---- the layout, from the capture's own boxes: page (x, y) -> card (80 + (x - x0) * s, 324 + (y - y0) * s)
+  var S2 = 920 / (WINDOW.x1 - WINDOW.x0), Y0 = FOCUS ? FOCUS.box.y - WINDOW.top : 334;
+  function box(id, x, y, w, h) {
+    var e = document.getElementById(id);
+    e.style.left = ((x - WINDOW.x0) * S2).toFixed(2) + 'px'; e.style.top = ((y - Y0) * S2).toFixed(2) + 'px';
+    if (w !== undefined) { e.style.width = (w * S2).toFixed(2) + 'px'; e.style.height = (h * S2).toFixed(2) + 'px'; }
+  }
+  var WH = WINDOW.h * S2, TH = { x: 67.6, y: 75.4, w: 338, h: 605.8 };   // the approved place when there is no capture
+  ['win', 'winLine'].forEach(function (id) { document.getElementById(id).style.height = WH.toFixed(2) + 'px'; });
+  if (ST && FOCUS) {
+    var sp = document.getElementById('strip');
+    sp.style.left = (-WINDOW.x0 * S2).toFixed(2) + 'px'; sp.style.top = (-Y0 * S2).toFixed(2) + 'px';
+    sp.style.width = (ST.stripW * S2).toFixed(2) + 'px'; sp.style.height = (ST.height * S2).toFixed(2) + 'px';
+    var nb = FOCUS.note, bc = ST.btnClip, fr = FOCUS.frames[0];
+    box('btnPatch', nb.x - 0.8, nb.y - 0.4, nb.w + 1.7, nb.h + 1.5);              // the page's sheet over the button
+    box('btn', bc.x, bc.y - ST.origin.y, bc.width, bc.height);                    // its own capture, normal and hover
+    ['btnN', 'btnH'].forEach(function (id) { var e = document.getElementById(id); e.style.width = (bc.width * S2).toFixed(2) + 'px'; e.style.height = (bc.height * S2).toFixed(2) + 'px'; });
+    TH = { x: (fr.x + 1 - WINDOW.x0) * S2, y: (fr.y + 1.14 - Y0) * S2, w: (fr.w - 2) * S2, h: (fr.h - 1.66) * S2 };   // inside its 1 px border
+  }
+  ['thumb', 'dim'].forEach(function (id) {
+    var e = document.getElementById(id);
+    e.style.left = TH.x.toFixed(2) + 'px'; e.style.top = TH.y.toFixed(2) + 'px'; e.style.width = TH.w.toFixed(2) + 'px'; e.style.height = TH.h.toFixed(2) + 'px';
+  });
+  var STAGE = TH.h / 1920;                                       // reel px -> card px inside the frame
+  document.getElementById('stage').style.left = ((TH.w - 1080 * STAGE) / 2).toFixed(3) + 'px';
+  // the badge, the pin and the comment keep their approved places relative to the frame
+  function place(id, dx, dy) { var e = document.getElementById(id); e.style.left = (TH.x + dx).toFixed(2) + 'px'; e.style.top = (TH.y + dy).toFixed(2) + 'px'; }
+  place('badge', TH.w - 77, 12);
+  place('pin', TH.w / 2 + 3.4, 345.6 * TH.h / 605.8);
+  place('popw', TH.w + 59.8, 343.6 * TH.h / 605.8);
+  var GROW = CAPTION.grow / CAPTION.size;                          // the caption's change, as a scale
+
+  // ---- build the note: one hidden span per character, each line ending in its own caret
+  var c1 = document.getElementById('c1'), c2 = document.getElementById('c2'), carets = [c1, c2], chars = [];
+  NOTE.forEach(function (line, n) {
+    for (var i = 0; i < line.length; i++) {
+      var c = document.createElement('i'); c.textContent = line[i]; carets[n].parentNode.insertBefore(c, carets[n]);
+      chars.push({ el: c, line: n });
+    }
+  });
+  var POP_H = 309.5, PRE_H = 182;                                // the thread's full height; the note alone (fixed layout)
+  var SHUT = 'inset(0px 0px ' + (POP_H - PRE_H) + 'px 0px round 4px)', OPEN = 'inset(0px 0px 0px 0px round 4px)';
+
+  // ---- hidden initial states (outside the timeline)
+  gsap.set('#stage', { scale: STAGE });
+  gsap.set('#btnH', { opacity: 0 });
+  gsap.set(['#thumb', '#dim'], { opacity: 0 });
+  gsap.set('#kc', { scale: 1 });
+  gsap.set('#badge', { opacity: 0, scale: 1.6 });
+  gsap.set('#pin', { opacity: 0, y: -46 });
+  gsap.set('#popw', { opacity: 0, scale: 0.94 });
+  gsap.set('#pop', { clipPath: SHUT });
+  gsap.set(['#tm1', '#sendOn'], { opacity: 0 });
+  gsap.set(carets, { opacity: 0 });
+  gsap.set(['#repHd', '#repTx'], { opacity: 0, y: 12 });
+
+  // one slow camera push across the whole card
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.02, duration: DUR, ease: 'none' }, 0);
+
+  // the focus beat's Comment button takes the hover, presses, lets go
+  tl.to('#btnH', { opacity: 1, duration: 0.10, ease: 'power1.out' }, q(T.hover));
+  tl.to('#btn', { scale: 0.94, duration: 2 / FPS, ease: 'power2.in' }, q(T.press));
+  tl.to('#btn', { scale: 1, duration: 0.24, ease: 'power3.out' }, q(T.release));
+  tl.to('#btnH', { opacity: 0, duration: 0.24, ease: 'power1.inOut' }, q(T.unhover));
+
+  // the pin drops onto the caption, the comment opens beside it
+  tl.fromTo('#pin', { opacity: 0, y: -46 }, { opacity: 1, y: 0, duration: 0.26, ease: 'back.out(1.4)', immediateRender: false }, q(T.pin));
+  tl.fromTo('#popw', { scale: 0.94 }, { scale: 1, duration: 0.30, ease: 'power3.out', immediateRender: false }, q(T.open));
+  tl.fromTo('#popw', { opacity: 0 }, { opacity: 1, duration: 0.08, ease: 'none', immediateRender: false }, q(T.open));
+  tl.set(c1, { opacity: 1 }, q(T.blink[0]));
+  tl.set(c1, { opacity: 0 }, q(T.blink[1]));
+  tl.set(c1, { opacity: 1 }, q(T.blink[2]));
+
+  // the note types in, Send wakes up
+  tl.set('#ph', { display: 'none' }, q(T.type0));
+  tl.set(c1, { opacity: 1 }, q(T.type0));
+  tl.set('#sendOn', { opacity: 1 }, q(T.type0));
+  var dt = (T.type1 - T.type0) / (chars.length - 1);
+  for (var k = 0; k < chars.length; k++) {
+    tl.set(chars[k].el, { display: 'inline' }, q(T.type0 + k * dt));
+    if (k && chars[k].line !== chars[k - 1].line) { tl.set(c1, { opacity: 0 }, q(T.type0 + k * dt)); tl.set(c2, { opacity: 1 }, q(T.type0 + k * dt)); }
+  }
+
+  // Send presses, the note posts (the caret goes, "now" takes the button's place)
+  tl.to('#sendOn', { scale: 0.9, duration: 0.05, ease: 'power2.in' }, q(T.send));
+  tl.set(['#sendOn', '#sendOff', c1, c2], { opacity: 0 }, q(T.sent));
+  tl.set('#tm1', { opacity: 1 }, q(T.sent));
+
+  // the answer lands, the frame takes the change, the badge stamps
+  tl.fromTo('#pop', { clipPath: SHUT }, { clipPath: OPEN, duration: 0.30, ease: 'power3.out', immediateRender: false }, q(T.reply));
+  tl.fromTo('#repHd', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.20, ease: 'power3.out', immediateRender: false }, q(T.reply + 0.03));
+  tl.fromTo('#repTx', { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.20, ease: 'power3.out', immediateRender: false }, q(T.reply + 0.066));
+  tl.fromTo('#dim', { opacity: 0 }, { opacity: 1, duration: 0.10, ease: 'power2.out', immediateRender: false }, q(T.work));
+  tl.set('#thumb', { opacity: 1 }, q(T.grow));
+  tl.fromTo('#dim', { opacity: 1 }, { opacity: 0, duration: 0.20, ease: 'power2.out', immediateRender: false }, q(T.grow));
+  tl.fromTo('#kc', { scale: 1 }, { scale: GROW, duration: T.grown - q(T.grow), ease: 'back.out(1.4)', immediateRender: false }, q(T.grow));
+  // back.out(1.4) first reaches its value at 41.7% of the tween: 3.667 + 0.417 * 0.26 = 3.775
+  tl.fromTo('#badge', { opacity: 0, scale: 1.6 }, { opacity: 1, scale: 1, duration: 0.26, ease: 'back.out(1.4)', immediateRender: false }, q(T.badge));
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

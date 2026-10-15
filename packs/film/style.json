@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "creator": {
+    "name": "",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "League Gothic",
+      "italic": false,
+      "weight": 400
+    },
+    "text": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 600
+    }
+  },
+  "colors": {
+    "light": "#EBDFBF",
+    "dark": "#232A22",
+    "ink": "#232A22",
+    "muted_light": "#5B6350",
+    "muted_dark": "rgba(235,223,191,.6)",
+    "hair_light": "#C6BB8E",
+    "hair_dark": "rgba(235,223,191,.22)",
+    "accent": "#F0B49A",
+    "accent_on_light": "#A3471F",
+    "negative": "#B5739D",
+    "negative_on_light": "#7E3F6A",
+    "positive": "#8F9A79",
+    "positive_on_light": "#3B5549",
+    "series": [
+      "#E2744D",
+      "#8F9A79",
+      "#C6BB8E"
+    ],
+    "caption_box": "rgba(47,67,58,.94)",
+    "caption_ink": "#EBDFBF",
+    "caption_dim": "rgba(235,223,191,.45)",
+    "textbox_bg": "#EBDFBF",
+    "textbox_ink": "#232A22"
+  },
+  "grounds": {
+    "grid": true,
+    "radius": 4
+  },
+  "captions": {
+    "hifi": {
+      "box": false,
+      "uppercase": false,
+      "size": 60,
+      "y": 1236
+    },
+    "lofi": {
+      "box": false,
+      "uppercase": false,
+      "size": 66,
+      "y": 1318
+    }
+  },
+  "modes": {
+    "hifi": {
+      "hook": "two-line",
+      "captions": "phrases",
+      "emphasis": [
+        "thesis"
+      ],
+      "behind_head": "sometimes",
+      "cards": "sometimes",
+      "camera": "settle",
+      "bw": true,
+      "j_lead": 0.3
+    },
+    "lofi": {
+      "captions": "phrase",
+      "max_words": 4,
+      "max_chars": 26,
+      "text_boxes": true,
+      "overlays": "sometimes",
+      "backdrops": "sometimes",
+      "zooms": false,
+      "bw": false,
+      "j_lead": 0.3
+    },
+    "showcase": {
+      "emphasis_word": "scale",
+      "transitions": [
+        "push",
+        "reveal"
+      ],
+      "density": "medium",
+      "motif": "the title line: one line in the accent serif that sets itself like a film title over the opening shot and comes back, the same size and place, over the last one",
+      "j_lead": 0.3
+    }
+  },
+  "grade": "sepia(.3) contrast(.88) saturate(.84) brightness(1.03) hue-rotate(0deg)",
+  "motion": "calm",
+  "sound": {
+    "sfx": "light",
+    "music": "none"
+  },
+  "end_card": false
+}

@@ -1,0 +1,58 @@
+<!-- prompt-bar, the motif: a bar types the instruction the speaker gives, on their words, sends it (the button
+     presses, a ring turns, the label flips to SENT), a line runs along its base and the result rolls in (DONE).
+     The same component, position and in/out move every time it appears: gen.py writes each appearance from one
+     BEATS table. Words, labels and timing are constants at the top of fx.js; every colour and font is a token. -->
+<div class="pb">
+  <div class="pb-card">
+    <div class="pb-label">
+      <span class="pb-lab pb-lab0"></span>
+      <span class="pb-lab pb-lab1"><i></i><b></b></span>
+      <span class="pb-lab pb-lab2"><i></i><b></b></span>
+    </div>
+    <div class="pb-row">
+      <div class="pb-field"><span class="pb-text"></span><span class="pb-caret"></span></div>
+      <div class="pb-done"></div>
+    </div>
+    <div class="pb-send">
+      <svg class="pb-arrow" viewBox="0 0 80 80"><path d="M40 55 V25 M28 37 L40 25 L52 37"/></svg>
+      <svg class="pb-ring" viewBox="0 0 80 80"><circle class="pb-track" cx="40" cy="40" r="13"/><path d="M40 27 A13 13 0 0 1 53 40"/></svg>
+      <svg class="pb-check" viewBox="0 0 80 80"><path d="M27 41 L36 50 L54 31"/></svg>
+    </div>
+    <div class="pb-line"></div>
+  </div>
+</div>
+<style>
+/* the bar sits in the top band, above the head; the shadow lives on the wrapper so it follows the opening clip */
+#{{ID}} .pb { position:absolute; left:60px; top:272px; width:960px; height:148px;
+  filter:drop-shadow(0 14px 17px color-mix(in srgb, var(--c-dark) 30%, transparent))
+         drop-shadow(0 2px 3px color-mix(in srgb, var(--c-dark) 18%, transparent)); }
+#{{ID}} .pb-card { position:absolute; left:0; top:0; width:960px; height:148px; overflow:hidden;
+  border-radius:calc(var(--radius) * 3); background:var(--c-light);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--c-ink) 7%, transparent); }
+#{{ID}} .pb-label { position:absolute; left:46px; top:26px; width:320px; height:26px; overflow:hidden; }
+#{{ID}} .pb-lab { position:absolute; left:0; top:0; height:26px; line-height:26px; white-space:nowrap;
+  font-family:var(--font-mono); font-weight:500; font-size:20px; letter-spacing:.18em; color:var(--c-muted-light); }
+#{{ID}} .pb-lab b { font-weight:inherit; }
+#{{ID}} .pb-lab i { display:inline-block; width:8px; height:8px; margin-right:12px; vertical-align:2px;
+  border-radius:min(4px, var(--radius)); background:var(--c-accent-light); }
+/* the field: left-aligned while the text fits, then it slides left like a real input so the caret stays in view */
+#{{ID}} .pb-row { position:absolute; left:46px; top:56px; width:770px; height:72px; overflow:hidden; }
+#{{ID}} .pb-field { position:absolute; right:0; top:0; width:max-content; min-width:100%; height:72px; line-height:72px;
+  white-space:pre; font-family:var(--font-text); font-weight:500; font-size:46px; letter-spacing:-.018em; color:var(--c-ink); }
+#{{ID}} .pb-text span { display:none; }
+#{{ID}} .pb-caret { display:inline-block; width:4px; height:50px; margin-left:3px; vertical-align:-9px;
+  border-radius:1px; background:var(--c-accent-light); }
+#{{ID}} .pb-done { position:absolute; left:0; top:0; height:72px; line-height:72px; white-space:nowrap;
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  font-size:56px; letter-spacing:-.015em; color:var(--c-ink); }
+#{{ID}} .pb-send { position:absolute; left:844px; top:32px; width:84px; height:84px; overflow:hidden;
+  border-radius:min(42px, calc(var(--radius) * 7)); background:var(--c-dark); color:var(--c-light); }
+#{{ID}} .pb-send svg { position:absolute; left:0; top:0; width:84px; height:84px; }
+#{{ID}} .pb-send path, #{{ID}} .pb-track { fill:none; stroke:currentColor; stroke-width:4.5; stroke-linecap:round;
+  stroke-linejoin:round; }
+#{{ID}} .pb-track { stroke:color-mix(in srgb, var(--c-light) 28%, transparent); stroke-width:4; }
+#{{ID}} .pb-ring path { stroke-width:4; }
+#{{ID}} .pb-check path { stroke-width:5; }
+#{{ID}} .pb-line { position:absolute; left:0; bottom:0; width:960px; height:6px; transform-origin:0 50%;
+  background:var(--c-accent-light); }
+</style>

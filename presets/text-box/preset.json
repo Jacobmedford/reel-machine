@@ -1,0 +1,44 @@
+{
+  "name": "text-box",
+  "kind": "device",
+  "layer": "BOXES",
+  "list": "BOXES",
+  "from": "the kit's lo-fi text box (edit.BOXES)",
+  "source": ["kit modes/LOFI.md BOXES", "kit examples/lofi/edit.py BOXES"],
+  "does": "The native Instagram-style text box (the text face 800 at 54 px on the pack's text-box colours, one box per line, centred at TOP): the hook from frame 0, a numbered label on the line that opens each section, the CTA from its cut held to the last frame.",
+  "use_when": "lo-fi and showcase: the hook (two short lines, frame 0), a chapter label on each audience or step ('1. Start with the hook'), the CTA box on the last cut",
+  "inputs": [
+    "the text (TEXT; \\n breaks a line) in sentence case, true, no em dashes",
+    "the role (ROLE: hook, label or cta): it sets the approved sounds; a CTA ends at \"end\"",
+    "the window: a hook from 0.0, a label on the first word of its section, a CTA on the cut into the last shot"
+  ],
+  "constants": {
+    "TEXT": "Most people skip this step.\nHere's why it matters.",
+    "TOP": 236,
+    "ROLE": "hook"
+  },
+  "notes": {
+    "TEXT": "one line per \\n; keep each line under about 30 characters at 54 px",
+    "TOP": "px: the box's top (236 is the kit's place, inside the top safe zone)",
+    "ROLE": "hook | label | cta"
+  },
+  "entry": {"text": "@TEXT", "at": "@at", "end": "@end", "top": "@TOP", "note": "@note"},
+  "generators": [],
+  "needs": [
+    "STYLE \"lofi\" or \"showcase\" (the box is part of the lo-fi type system)"
+  ],
+  "sfx": [
+    {"at": 0.03, "name": "click", "db": -18, "what": "the hook box on frame 0", "if": "ROLE=hook"},
+    {"at": 0.0, "name": "click", "db": -14, "what": "the label", "if": "ROLE=label"},
+    {"at": 0.0, "name": "click", "db": -12, "what": "the CTA box", "if": "ROLE=cta"},
+    {"at": 0.13, "name": "ding", "db": -20, "what": "under the CTA box", "if": "ROLE=cta"}
+  ],
+  "examples": {
+    "label": {"TEXT": "1. Start with the hook", "ROLE": "label"},
+    "cta (--end end)": {"TEXT": "Part two is on my page.\nFollow so you catch it.", "ROLE": "cta"}
+  },
+  "typical_length": "hook 5 s, label 2.4-2.7 s, cta to the end",
+  "modes": ["lofi", "showcase"],
+  "signature": null,
+  "pairs_with": null
+}

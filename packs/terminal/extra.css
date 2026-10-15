@@ -1,0 +1,69 @@
+/* Terminal (builds, screen recordings). Appended to brand.css by pipeline/pack.py, after the tokens.
+   brand.css is inlined BEFORE kit/reel.css (and the build's caption rules), so every rule here starts with
+   `html body` to outrank the kit's. The ink box is the caption_box token; lo-fi captions are already IBM Plex Mono
+   through fonts.caption. */
+
+:root { --font-accent: 'DM Serif Display', Georgia, serif; }
+html body .accent-serif { font-family:var(--font-accent); font-style:normal; font-weight:400; text-transform:none; }
+
+/* ---- captions: a shell line. Mono in the ink box, a sage prompt mark, the key phrase (*phrase*) in coral */
+html body .cap { font-family:var(--font-mono); font-style:normal; font-weight:500; letter-spacing:-.015em; line-height:1.22;
+  padding:12px 26px 14px; }
+html body .cap::before { content:'\203A'; color:var(--c-pos); margin-right:.45em; }
+html body .cap.onlight::before { color:var(--c-pos-light); }
+html body .cap.onfoot { background:var(--c-box); color:var(--c-box-ink); }
+html body .cap .em { color:var(--c-accent); }
+html body .cap.onlight .em { color:var(--c-accent-light); }
+html body .cap.thesis { font-family:var(--font-mono); font-style:normal; font-weight:600; font-size:72px; line-height:1.1;
+  letter-spacing:-.03em; color:var(--c-accent); padding:12px 30px 16px; }
+html body .cap.onlight.thesis { color:var(--c-accent-light); }
+html body .cap.big, html body .cap.strike { font-size:60px; font-weight:600; letter-spacing:-.025em; }
+html body .cap.huge { font-size:110px; font-weight:600; }
+
+/* ---- hook: a terminal window. The eyebrow is the path, h1 the command after a sage $, h2 the output. The command
+   types itself, 30 characters a second from 0.2s, the coral cursor riding its end; at 1.15s the output prints and
+   the cursor drops to the end of it. CSS animations on the hook's own elements: HyperFrames seeks them frame by frame
+   (the hook always starts at 0) and they start paused, so every render types the same character on the same frame.
+   Keep the command under 36 characters: it types on one line. */
+html body #hook { left:70px; width:940px; top:236px; text-align:left; padding:24px 30px 28px; background:var(--c-box);
+  border:1.5px solid var(--c-hair-dark); border-radius:var(--radius); }
+html body #hook .hw { display:inline; }
+html body #hook .eb { font:500 24px/1.25 var(--font-mono); letter-spacing:.02em; text-transform:none; color:var(--c-muted-dark); }
+html body #hook .h1, html body #hook .h2 { margin-top:16px; font-family:var(--font-mono); font-style:normal; font-weight:500;
+  font-size:40px; line-height:1.28; letter-spacing:-.015em; text-transform:none; color:var(--c-light); text-shadow:none; }
+html body #hook > .h1:first-child, html body #hook > .h2:first-child { margin-top:0; }
+html body #hook .h1::before { content:'$\00a0'; color:var(--c-pos); }
+html body #hook .h1 .hw { display:inline-block; vertical-align:top; max-width:0; overflow:hidden; white-space:nowrap;
+  letter-spacing:0; animation:terminal-type 1.4s steps(42, end) .2s both paused; }
+html body #hook .h2 { margin-top:8px; font-size:44px; line-height:1.22; }
+/* the cursor is a no-break space on coral: one mono cell wide, and it never wraps away from the last word */
+html body #hook .h1::after { content:'\00a0'; margin-left:.06em; background:var(--c-accent); }
+html body #hook > .h1:not(:last-child)::after { animation:terminal-cursor-off 1.15s steps(1, end) both paused; }
+html body #hook > .h2 { animation:terminal-print 1.15s steps(1, end) both paused; }
+html body #hook > .h2:last-child .hw::after { content:'\00a0'; margin-left:.12em; background:var(--c-accent); }
+@keyframes terminal-type { from { max-width:0; } to { max-width:42ch; } }
+@keyframes terminal-cursor-off { from { opacity:1; } to { opacity:0; } }
+@keyframes terminal-print { from { opacity:0; } to { opacity:1; } }
+
+/* ---- the picture, a touch cool: style.json's grade desaturates it (hue-rotate cannot cool: greys stay grey), and
+   Deep Green in soft light moves the neutrals toward Harbor's cool side. Footage only (#foot), never the screens
+   drawn on top, so cards and captions keep their true colours */
+html body #foot.layer { isolation:isolate; }
+html body #foot.layer > #cam::before { content:''; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:var(--c-pos-light); mix-blend-mode:soft-light; opacity:.32; }
+
+/* ---- behind the head: display-face caps; a line above the head reads as a comment */
+html body .bh { text-transform:uppercase; }
+html body .above { font:500 34px/1.2 var(--font-mono); letter-spacing:-.01em; }
+html body .above::before { content:'#\00a0'; color:var(--c-pos); }
+
+/* ---- lo-fi: the same shell line, word by word; a text box is a small terminal window, the cursor on its last line */
+html body .kc { letter-spacing:-.015em; padding:6px 22px 10px; }
+html body .kc::before { content:'\203A'; color:var(--c-pos); margin-right:.4em; }
+html body .kc.huge { font-size:96px; letter-spacing:-.03em; }
+html body .nb { left:0; right:0; width:fit-content; max-width:960px; margin:0 auto; text-align:left; padding:20px 28px 24px;
+  background:var(--c-tb-bg); border:1.5px solid var(--c-hair-dark); border-radius:var(--radius); }
+html body .nb .ln { background:none; padding:0; border-radius:0; font-family:var(--font-mono); font-weight:500; font-size:42px;
+  line-height:1.38; letter-spacing:-.015em; color:var(--c-tb-ink); }
+html body .nb .ln:first-child::before { content:'$\00a0'; color:var(--c-pos); }
+html body .nb .ln:last-child::after { content:'\00a0'; margin-left:.12em; background:var(--c-accent); }

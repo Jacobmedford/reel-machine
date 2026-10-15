@@ -1,0 +1,71 @@
+<!-- odometer-recursion (camera layer). Part 1: a mechanical counter rolls the raw footage's length down to the finished
+     video's, drum by drum; when the minutes drop below ten the leading drum rolls to blank and drops away, so the
+     number gets shorter. Part 2: the whole frame, counter included, shrinks into a framed inset of itself, one level per
+     word (every level is the same synced footage in the live grade, with its own copy of the counter), then the camera
+     dives through one level so the last frame is the loop's first. Words, numbers, place and times are the constants
+     in fx.js. The five footage copies are timed by the build from the effect's window and staggered a frame apart
+     ({{START+0.033}} with {{SYNC+0.033}}). -->
+<div id="{{ID}}-stack" data-layout-allow-overflow data-layout-allow-overlap data-layout-allow-occlusion>
+  <video id="{{ID}}-v0" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START}}" data-media-start="{{SYNC}}" data-duration="{{DUR}}" data-track-index="{{T0}}"></video>
+  <div id="{{ID}}-odo" class="{{ID}}-plate" data-layout-allow-overlap data-layout-allow-occlusion>
+    <div class="{{ID}}-bg"></div>
+    <div class="{{ID}}-lab"><div class="{{ID}}-lab-in"><span class="{{ID}}-k" data-layout-allow-overlap data-layout-allow-occlusion></span><span class="{{ID}}-s" data-layout-allow-overlap data-layout-allow-occlusion></span></div></div>
+    <div class="{{ID}}-row">
+      <div class="{{ID}}-drum {{ID}}-wmt"><div class="{{ID}}-strip {{ID}}-dmt"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span></span></div></div>
+      <div class="{{ID}}-drum"><div class="{{ID}}-strip {{ID}}-dmu"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div>
+      <div class="{{ID}}-colon" data-layout-allow-overlap data-layout-allow-occlusion>:</div>
+      <div class="{{ID}}-drum"><div class="{{ID}}-strip {{ID}}-dst"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>0</span></div></div>
+      <div class="{{ID}}-drum"><div class="{{ID}}-strip {{ID}}-dsu"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span></div></div>
+    </div>
+  </div>
+  <div id="{{ID}}-n1" class="{{ID}}-lv">
+    <video id="{{ID}}-v1" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.033}}" data-media-start="{{SYNC+0.033}}" data-duration="{{DUR-0.033}}" data-track-index="{{T1}}"></video>
+    <div id="{{ID}}-f1" class="{{ID}}-fr"></div>
+    <div id="{{ID}}-n2" class="{{ID}}-lv">
+      <video id="{{ID}}-v2" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.067}}" data-media-start="{{SYNC+0.067}}" data-duration="{{DUR-0.067}}" data-track-index="{{T2}}"></video>
+      <div id="{{ID}}-f2" class="{{ID}}-fr"></div>
+      <div id="{{ID}}-n3" class="{{ID}}-lv">
+        <video id="{{ID}}-v3" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.1}}" data-media-start="{{SYNC+0.1}}" data-duration="{{DUR-0.1}}" data-track-index="{{T3}}"></video>
+        <div id="{{ID}}-f3" class="{{ID}}-fr"></div>
+        <div id="{{ID}}-n4" class="{{ID}}-lv">
+          <video id="{{ID}}-v4" class="{{ID}}-vid g" src="clean.mp4" muted playsinline data-start="{{START+0.133}}" data-media-start="{{SYNC+0.133}}" data-duration="{{DUR-0.133}}" data-track-index="{{T4}}"></video>
+          <div id="{{ID}}-f4" class="{{ID}}-fr"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- vertical motion blur for the spinning drums: one filter per drum, its strength set frame by frame from the speed -->
+<svg id="{{ID}}-fxdefs" width="0" height="0" aria-hidden="true">
+  <filter id="{{ID}}-mb0" x="-10%" y="-4%" width="120%" height="108%" color-interpolation-filters="sRGB"><feGaussianBlur id="{{ID}}-g0" stdDeviation="0 0"/></filter>
+  <filter id="{{ID}}-mb1" x="-10%" y="-4%" width="120%" height="108%" color-interpolation-filters="sRGB"><feGaussianBlur id="{{ID}}-g1" stdDeviation="0 0"/></filter>
+  <filter id="{{ID}}-mb2" x="-10%" y="-4%" width="120%" height="108%" color-interpolation-filters="sRGB"><feGaussianBlur id="{{ID}}-g2" stdDeviation="0 0"/></filter>
+  <filter id="{{ID}}-mb3" x="-10%" y="-4%" width="120%" height="108%" color-interpolation-filters="sRGB"><feGaussianBlur id="{{ID}}-g3" stdDeviation="0 0"/></filter>
+</svg>
+
+<style>
+#{{ID}}-stack { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-fxdefs { position:absolute; left:0; top:0; width:0; height:0; overflow:hidden; }
+#{{ID}} .{{ID}}-lv { position:absolute; left:0; top:0; width:1080px; height:1920px;
+  box-shadow:0 30px 70px color-mix(in srgb, var(--c-dark) 34%, transparent); }
+#{{ID}} .{{ID}}-vid { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; }
+#{{ID}} .{{ID}}-fr { position:absolute; left:0; top:0; width:1080px; height:1920px; box-sizing:border-box; border:0 solid var(--c-light); }
+
+/* the counter: a dark plate, recessed drums, mono digits; the kicker in mono, the landing in the accent face (fx.js places it: PLATE) */
+#{{ID}} .{{ID}}-plate { position:absolute; left:430px; top:236px; width:600px; height:300px; }
+#{{ID}} .{{ID}}-bg { position:absolute; left:0; top:0; width:600px; height:300px; border-radius:var(--radius);
+  background:color-mix(in srgb, var(--c-dark) 92%, var(--c-light));
+  box-shadow:0 16px 36px color-mix(in srgb, var(--c-dark) 26%, transparent); }
+#{{ID}} .{{ID}}-lab { position:absolute; left:0; top:20px; width:600px; height:50px; overflow:hidden; text-align:center; }
+#{{ID}} .{{ID}}-lab-in span { display:block; height:50px; line-height:50px; white-space:nowrap; color:var(--c-accent); }
+#{{ID}} .{{ID}}-k { font-family:var(--font-mono); font-weight:500; font-size:25px; letter-spacing:.22em; text-transform:uppercase; }
+#{{ID}} .{{ID}}-s { font-family:var(--font-accent, var(--font-display)); font-weight:400; font-size:44px; letter-spacing:0; }
+#{{ID}} .{{ID}}-row { position:absolute; left:26px; top:80px; width:548px; height:196px; display:flex; justify-content:center; align-items:center; }
+#{{ID}} .{{ID}}-drum { width:116px; height:196px; overflow:hidden; background:var(--c-dark); border-radius:var(--radius); margin:0 5px;
+  position:relative; box-shadow:inset 0 0 0 1.5px var(--c-hair-dark); }
+#{{ID}} .{{ID}}-strip { position:absolute; left:0; top:-17px; width:116px; }
+#{{ID}} .{{ID}}-strip span { display:block; height:230px; line-height:230px; text-align:center; color:var(--c-light);
+  font-family:var(--font-mono); font-weight:500; font-size:150px; font-variant-numeric:tabular-nums; }
+#{{ID}} .{{ID}}-colon { width:72px; margin:0 -14px; text-align:center; color:var(--c-light); line-height:196px; margin-top:-14px;
+  font-family:var(--font-mono); font-weight:500; font-size:120px; }
+</style>

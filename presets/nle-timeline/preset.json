@@ -1,0 +1,123 @@
+{
+  "name": "nle-timeline",
+  "kind": "fx",
+  "layer": "top",
+  "from": "kit fx/nle-timeline",
+  "source": [
+    "kit fx/nle-timeline"
+  ],
+  "does": "THIS video's real editing timeline (its captions, graphics and cards by layer, cutout windows, the cut with graded thumbnails and camera keyframes, the voice with its J-cuts, the sound blips) opens empty over the shot, floods in from the playhead on the words, holds with a real running timecode, then folds to a line and retracts into the playhead.",
+  "use_when": "'you'd think this took hours in an editor', 'how much work an edit is', the video about its own edit; once a video, after most of the edit exists (it draws the edit as it is)",
+  "inputs": [
+    "nothing by hand: gen.py draws it from edit.py, timeline.json, the voice and clean.mp4 (rerun it after pasting the FX entry, after the mix, after any cut, caption or FX change)",
+    "the beats the lanes flood in on (T: seconds after A or the spoken words) and where the panel sits (PANEL, above the eyes in every shot of the window)"
+  ],
+  "constants": {
+    "TITLE": "",
+    "PANEL": {
+      "left": 35,
+      "top": 220
+    },
+    "T": {
+      "open": 0.0,
+      "captions": 0.787,
+      "video": 1.107,
+      "audio": 1.327,
+      "fold": 0.33
+    },
+    "LANE_AT": {
+      "T1": [
+        "captions",
+        0
+      ],
+      "V4": [
+        "video",
+        0
+      ],
+      "V3": [
+        "video",
+        0.035
+      ],
+      "V2": [
+        "video",
+        0.07
+      ],
+      "V1": [
+        "video",
+        0.1
+      ],
+      "A1": [
+        "audio",
+        0
+      ],
+      "KF": [
+        "audio",
+        0.1
+      ],
+      "A2": [
+        "audio",
+        0.05
+      ]
+    },
+    "SELECT": [
+      "audio",
+      0.24
+    ],
+    "RIPPLE": 0.42,
+    "SHAPE": 0.72
+  },
+  "notes": {
+    "TITLE": "the sequence name in the panel's tab; \"\" = the project's folder name",
+    "T": "open, captions, video, audio are beats (seconds after A or words): the caption lane floods in on captions, the video lanes on video, the voice, keyframes and sound on audio; fold is a length (s before B)",
+    "LANE_AT": "lane -> [a key of T, stagger s]; these name T's keys, not spoken words",
+    "PANEL": "1010 x about 350 px; keep it above the eyes in every shot of the window"
+  },
+  "cues": [
+    "T"
+  ],
+  "generated": [
+    "fx.html",
+    "strip.jpg"
+  ],
+  "generators": [
+    {
+      "run": "{py} gen.py {project}",
+      "when": "you paste the FX entry (its own block shows selected), after the mix, after any change to the cut, the captions or the FX list",
+      "required": true
+    }
+  ],
+  "needs": [
+    "rerun gen.py once this entry is in edit.FX, and again after the mix"
+  ],
+  "sfx": [
+    {
+      "at": "@at",
+      "name": "click",
+      "db": -18,
+      "what": "the panel opens"
+    },
+    {
+      "at": "T.captions+0.024",
+      "name": "clicks-run",
+      "db": -17,
+      "max_len": 0.9,
+      "what": "the edit floods in (placed by its start)"
+    },
+    {
+      "at": "@end-0.117",
+      "name": "switch-off",
+      "db": -22,
+      "what": "it collapses to a line"
+    }
+  ],
+  "typical_length": "3.1 s",
+  "modes": [
+    "showcase",
+    "hifi"
+  ],
+  "signature": null,
+  "pairs_with": null,
+  "lengths": [
+    "T.fold"
+  ]
+}

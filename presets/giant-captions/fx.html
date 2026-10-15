@@ -1,0 +1,53 @@
+<!-- giant-captions (over everything): "Watch the captions grow really big, then huge, until they take over." The
+     caption does what the line says. Two normal hi-fi captions (the kit's own .cap box), then on the big cue the box crouches
+     and launches into a giant slab above the head, the display line slams onto the chest in the accent, on the cover
+     cue the caption box falls over the whole frame (a picture cut can hide under it), the cover words rise in it, and
+     on the shut cue the box shrinks back into the next caption's box and hands over. One box all the way: a full-frame
+     layer whose clip-path is the box. Words, sizes, places and beat times are the constants in fx.js. -->
+<div id="{{ID}}-chw"><div id="{{ID}}-ch" data-layout-allow-overflow><span id="{{ID}}-cht" data-layout-allow-overlap data-layout-allow-occlusion></span></div></div>
+<div id="{{ID}}-g1">
+  <div id="{{ID}}-box">
+    <div id="{{ID}}-boxd"></div>
+    <div id="{{ID}}-boxc"></div>
+    <div id="{{ID}}-t1" data-layout-allow-overlap data-layout-allow-occlusion><span id="{{ID}}-t1s" data-layout-allow-overlap data-layout-allow-occlusion></span></div>
+    <div id="{{ID}}-cv">
+      <div id="{{ID}}-mk1" class="{{ID}}-mk" data-layout-allow-overflow><div id="{{ID}}-cv1" data-layout-allow-overlap data-layout-allow-occlusion></div></div>
+      <div id="{{ID}}-cvr">
+        <div id="{{ID}}-mk2" class="{{ID}}-mk" data-layout-allow-overflow><div id="{{ID}}-cv2" class="{{ID}}-x" data-layout-allow-overlap data-layout-allow-occlusion></div></div>
+        <div id="{{ID}}-mk3" class="{{ID}}-mk" data-layout-allow-overflow><div id="{{ID}}-cv3" class="{{ID}}-x" data-layout-allow-overlap data-layout-allow-occlusion></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="{{ID}}-c1w" class="capw"><div id="{{ID}}-c1" class="cap onfoot" data-layout-allow-overlap data-layout-allow-occlusion></div></div>
+<div id="{{ID}}-c2w" class="capw"><div id="{{ID}}-c2" class="cap onfoot" data-layout-allow-overlap data-layout-allow-occlusion></div></div>
+<style>
+/* the caption box: solid (its colour over the dark ground), full frame; its clip-path is the box's shape and it
+   clips everything inside it (the giant line, the cover's words) */
+#{{ID}}-g1 { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-box, #{{ID}}-boxd, #{{ID}}-boxc { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-boxd { background:var(--c-dark); }
+#{{ID}}-boxc { background:var(--c-box); }
+/* the giant line: the caption blown up, in the pack's caption face one weight up (fx.js copies the caption's case,
+   line height and tracking, and sets size and top) */
+#{{ID}}-t1 { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap; font-family:var(--font-caption, var(--font-text));
+  font-weight:800; line-height:1.1; letter-spacing:-.02em; color:var(--c-box-ink); }
+#{{ID}}-t1s { display:inline-block; }
+/* SLAM: the display face in the accent, on the dark ground, across the chest */
+#{{ID}}-chw { position:absolute; left:0; width:1080px; display:flex; justify-content:center; }
+#{{ID}}-ch { flex:none; overflow:hidden; white-space:nowrap; border-radius:var(--radius); background:var(--c-dark);
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight); line-height:.8;
+  letter-spacing:-.02em; color:var(--c-accent); padding:.075em .12em 0 .1em; }
+#{{ID}}-cht { display:block; }
+/* the cover's words: a small text line, then the display line, each word rising through its own mask */
+#{{ID}}-cv { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-mk1 { position:absolute; left:0; width:1080px; overflow:hidden; text-align:center; }
+#{{ID}}-cv1 { white-space:nowrap; font-family:var(--font-caption, var(--font-text)); font-weight:800; line-height:1.25; letter-spacing:-.02em;
+  color:var(--c-box-ink); }
+#{{ID}}-cvr { position:absolute; left:0; width:1080px; display:flex; justify-content:center; gap:.09em; }
+#{{ID}} .{{ID}}-mk { overflow:hidden; }
+/* the display words keep their own width, never squeezed by the row: fx.js measures them and sets the row smaller */
+#{{ID}}-cvr > .{{ID}}-mk { flex:none; }
+#{{ID}} .{{ID}}-x { white-space:nowrap; font-family:var(--font-display); font-style:var(--display-style);
+  font-weight:var(--display-weight); line-height:.8; letter-spacing:-.02em; color:var(--c-box-ink); padding:0 .02em 0 0; }
+</style>

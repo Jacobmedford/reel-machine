@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>blueprint stamp</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* the plan sheet is the pack's dark ground (graph paper when the pack has it); #paper overhangs the frame so the
+     stamp's shake never shows an edge */
+  #shake { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+  #paper { position:absolute; left:-40px; top:-40px; width:1160px; height:2000px; background-position:40px 40px; }
+  #cam   { transform-origin:540px 700px; }
+  #kick  { position:absolute; left:70px; top:248px; }
+
+  /* drawing: every stroke in the light colour, 2px; hierarchy by opacity only */
+  .dwg path { fill:none; stroke-width:2; stroke-linejoin:miter; }
+  .s0 { stroke:var(--c-light); }
+  .h  { stroke:color-mix(in srgb, var(--c-light) 28%, transparent); }
+  .s1 { stroke:var(--c-light); }
+  .w  { stroke:color-mix(in srgb, var(--c-light) 90%, transparent); }
+  .s2 { stroke:color-mix(in srgb, var(--c-light) 55%, transparent); }
+  .d  { stroke:color-mix(in srgb, var(--c-light) 45%, transparent); }
+  .dwg text { fill:color-mix(in srgb, var(--c-light) 62%, transparent); font-size:24px; font-weight:500; letter-spacing:.02em; }
+
+  /* title block: two steps ticked off in the accent */
+  .lab  { position:absolute; display:flex; align-items:center; font-size:30px; letter-spacing:.12em; color:var(--c-light); line-height:1; }
+  .lab svg { width:34px; height:30px; margin-left:12px; overflow:visible; }
+  .lab path { fill:none; stroke:var(--c-accent); stroke-width:3.5; stroke-linecap:round; stroke-linejoin:round; }
+  #sheet { position:absolute; right:70px; top:1072px; }
+
+  /* rubber stamp: double hairline rectangle, heavy caps, in the negative colour (red stamp ink in most packs) */
+  .stamp { position:absolute; left:303px; top:656px; width:474px; height:128px; border:3px solid var(--c-neg); border-radius:var(--radius); }
+  .stamp .in { position:absolute; left:5px; top:5px; right:5px; bottom:5px; border:1.5px solid var(--c-neg); border-radius:max(0px, calc(var(--radius) - 4px));
+               display:flex; align-items:center; justify-content:center; }
+  .stamp .ink { font-weight:800; font-size:62px; letter-spacing:.08em; padding-left:.08em; color:var(--c-neg); line-height:1; }
+</style>
+</head>
+<body>
+<!-- Blueprint stamp: a building elevation draws itself as a fast time-lapse, the first step ticks off, then an
+     APPROVED stamp slams onto the sheet (ink offset frame, card shake) and the second step ticks off.
+     Change the kicker, the two title-block steps and the sheet label; the drawing is a generic four-storey elevation. -->
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="2.266" data-fps="30" data-width="1080" data-height="1920">
+  <div id="shake">
+    <div id="paper" class="ground-dark"></div>
+    <div id="cam" class="layer">
+      <div id="kick" class="kicker">Design · Review · Build</div>
+
+      <svg class="layer dwg" viewBox="0 0 1080 1920">
+        <path d="M110 960 H970" class="s0"/>
+        <path d="M138 962 L124 976" class="h"/>
+        <path d="M158 962 L144 976" class="h"/>
+        <path d="M178 962 L164 976" class="h"/>
+        <path d="M198 962 L184 976" class="h"/>
+        <path d="M218 962 L204 976" class="h"/>
+        <path d="M238 962 L224 976" class="h"/>
+        <path d="M258 962 L244 976" class="h"/>
+        <path d="M278 962 L264 976" class="h"/>
+        <path d="M298 962 L284 976" class="h"/>
+        <path d="M318 962 L304 976" class="h"/>
+        <path d="M338 962 L324 976" class="h"/>
+        <path d="M358 962 L344 976" class="h"/>
+        <path d="M378 962 L364 976" class="h"/>
+        <path d="M398 962 L384 976" class="h"/>
+        <path d="M418 962 L404 976" class="h"/>
+        <path d="M438 962 L424 976" class="h"/>
+        <path d="M458 962 L444 976" class="h"/>
+        <path d="M478 962 L464 976" class="h"/>
+        <path d="M498 962 L484 976" class="h"/>
+        <path d="M518 962 L504 976" class="h"/>
+        <path d="M538 962 L524 976" class="h"/>
+        <path d="M558 962 L544 976" class="h"/>
+        <path d="M578 962 L564 976" class="h"/>
+        <path d="M598 962 L584 976" class="h"/>
+        <path d="M618 962 L604 976" class="h"/>
+        <path d="M638 962 L624 976" class="h"/>
+        <path d="M658 962 L644 976" class="h"/>
+        <path d="M678 962 L664 976" class="h"/>
+        <path d="M698 962 L684 976" class="h"/>
+        <path d="M718 962 L704 976" class="h"/>
+        <path d="M738 962 L724 976" class="h"/>
+        <path d="M758 962 L744 976" class="h"/>
+        <path d="M778 962 L764 976" class="h"/>
+        <path d="M798 962 L784 976" class="h"/>
+        <path d="M818 962 L804 976" class="h"/>
+        <path d="M838 962 L824 976" class="h"/>
+        <path d="M858 962 L844 976" class="h"/>
+        <path d="M878 962 L864 976" class="h"/>
+        <path d="M898 962 L884 976" class="h"/>
+        <path d="M918 962 L904 976" class="h"/>
+        <path d="M938 962 L924 976" class="h"/>
+        <path d="M958 962 L944 976" class="h"/>
+        <path id="e0" class="dr s1" d="M324 960 V414"/>
+        <path id="e1" class="dr s1" d="M756 960 V414"/>
+        <path id="e2" class="dr s1" d="M324 809 H756"/>
+        <path id="e3" class="dr s1" d="M324 687 H756"/>
+        <path id="e4" class="dr s1" d="M324 565 H756"/>
+        <path id="e5" class="dr s1" d="M324 443 H756"/>
+        <path id="e6" class="dr s1" d="M316 414 H764"/>
+        <path id="e7" class="dr s1" d="M316 414 V422 H764 V414"/>
+        <path id="e8" class="dr s1" d="M640 414 V376 H716 V414"/>
+        <path id="e9" class="dr s2" d="M324 823 H756"/>
+        <path id="e10" class="dr w" d="M504 960 V872 H576 V960"/>
+        <path id="e11" class="dr s2" d="M540 960 V872"/>
+        <path id="e12" class="dr s2" d="M504 864 V844 H576 V864 Z"/>
+        <path id="e13" class="dr w" d="M346 934 V846 H486 V934 Z"/>
+        <path id="e14" class="dr w" d="M594 934 V846 H734 V934 Z"/>
+        <path id="e15" class="dr s2" d="M393 934 V846"/>
+        <path id="e16" class="dr s2" d="M439 934 V846"/>
+        <path id="e17" class="dr s2" d="M641 934 V846"/>
+        <path id="e18" class="dr s2" d="M687 934 V846"/>
+        <path id="e19" class="dr w" d="M348 711 H408 V783 H348 Z"/>
+        <path id="e20" class="dr s2" d="M378 711 V783"/>
+        <path id="e21" class="dr s2" d="M342 789 H414"/>
+        <path id="e22" class="dr w" d="M456 711 H516 V783 H456 Z"/>
+        <path id="e23" class="dr s2" d="M486 711 V783"/>
+        <path id="e24" class="dr s2" d="M450 789 H522"/>
+        <path id="e25" class="dr w" d="M564 711 H624 V783 H564 Z"/>
+        <path id="e26" class="dr s2" d="M594 711 V783"/>
+        <path id="e27" class="dr s2" d="M558 789 H630"/>
+        <path id="e28" class="dr w" d="M672 711 H732 V783 H672 Z"/>
+        <path id="e29" class="dr s2" d="M702 711 V783"/>
+        <path id="e30" class="dr s2" d="M666 789 H738"/>
+        <path id="e31" class="dr w" d="M348 589 H408 V661 H348 Z"/>
+        <path id="e32" class="dr s2" d="M378 589 V661"/>
+        <path id="e33" class="dr s2" d="M342 667 H414"/>
+        <path id="e34" class="dr w" d="M456 589 H516 V661 H456 Z"/>
+        <path id="e35" class="dr s2" d="M486 589 V661"/>
+        <path id="e36" class="dr s2" d="M450 667 H522"/>
+        <path id="e37" class="dr w" d="M564 589 H624 V661 H564 Z"/>
+        <path id="e38" class="dr s2" d="M594 589 V661"/>
+        <path id="e39" class="dr s2" d="M558 667 H630"/>
+        <path id="e40" class="dr w" d="M672 589 H732 V661 H672 Z"/>
+        <path id="e41" class="dr s2" d="M702 589 V661"/>
+        <path id="e42" class="dr s2" d="M666 667 H738"/>
+        <path id="e43" class="dr w" d="M348 467 H408 V539 H348 Z"/>
+        <path id="e44" class="dr s2" d="M378 467 V539"/>
+        <path id="e45" class="dr s2" d="M342 545 H414"/>
+        <path id="e46" class="dr w" d="M456 467 H516 V539 H456 Z"/>
+        <path id="e47" class="dr s2" d="M486 467 V539"/>
+        <path id="e48" class="dr s2" d="M450 545 H522"/>
+        <path id="e49" class="dr w" d="M564 467 H624 V539 H564 Z"/>
+        <path id="e50" class="dr s2" d="M594 467 V539"/>
+        <path id="e51" class="dr s2" d="M558 545 H630"/>
+        <path id="e52" class="dr w" d="M672 467 H732 V539 H672 Z"/>
+        <path id="e53" class="dr s2" d="M702 467 V539"/>
+        <path id="e54" class="dr s2" d="M666 545 H738"/>
+        <path id="e55" class="dr d" d="M316 960 H226"/>
+        <path id="e56" class="dr d" d="M316 809 H274"/>
+        <path id="e57" class="dr d" d="M316 687 H274"/>
+        <path id="e58" class="dr d" d="M316 565 H274"/>
+        <path id="e59" class="dr d" d="M316 443 H226"/>
+        <path id="e60" class="dr d" d="M284 970 V433"/>
+        <path id="e61" class="dr d" d="M236 970 V433"/>
+        <path id="e62" class="dr d" d="M278 966 L290 954"/>
+        <path id="e63" class="dr d" d="M278 815 L290 803"/>
+        <path id="e64" class="dr d" d="M278 693 L290 681"/>
+        <path id="e65" class="dr d" d="M278 571 L290 559"/>
+        <path id="e66" class="dr d" d="M278 449 L290 437"/>
+        <path id="e67" class="dr d" d="M230 966 L242 954"/>
+        <path id="e68" class="dr d" d="M230 449 L242 437"/>
+        <text id="e69" class="tx t mono" x="269" y="884.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 269 884.5)">4.20</text>
+        <text id="e70" class="tx t mono" x="269" y="748.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 269 748.0)">3.40</text>
+        <text id="e71" class="tx t mono" x="269" y="626.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 269 626.0)">3.40</text>
+        <text id="e72" class="tx t mono" x="269" y="504.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 269 504.0)">3.40</text>
+        <text id="e73" class="tx t mono" x="221" y="701.5" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 221 701.5)">14.40</text>
+        <path id="e74" class="dr d" d="M324 988 V1028"/>
+        <path id="e75" class="dr d" d="M756 988 V1028"/>
+        <path id="e76" class="dr d" d="M314 1018 H766"/>
+        <path id="e77" class="dr d" d="M318 1024 L330 1012"/>
+        <path id="e78" class="dr d" d="M750 1024 L762 1012"/>
+        <text id="e79" class="tx t mono" x="540" y="1006" text-anchor="middle" dominant-baseline="middle">12.00</text>
+        <path id="e80" class="dr d" d="M764 443 H982"/>
+        <path id="e81" class="dr d" d="M779 430 H793 L786 443 Z"/>
+        <text id="e82" class="tx t mono" x="804" y="435" text-anchor="start" dominant-baseline="middle">ROOF +14.40</text>
+        <path id="e83" class="dr d" d="M764 565 H982"/>
+        <path id="e84" class="dr d" d="M779 552 H793 L786 565 Z"/>
+        <text id="e85" class="tx t mono" x="804" y="557" text-anchor="start" dominant-baseline="middle">L4 +11.00</text>
+        <path id="e86" class="dr d" d="M764 687 H982"/>
+        <path id="e87" class="dr d" d="M779 674 H793 L786 687 Z"/>
+        <text id="e88" class="tx t mono" x="804" y="679" text-anchor="start" dominant-baseline="middle">L3 +7.60</text>
+        <path id="e89" class="dr d" d="M764 809 H982"/>
+        <path id="e90" class="dr d" d="M779 796 H793 L786 809 Z"/>
+        <text id="e91" class="tx t mono" x="804" y="801" text-anchor="start" dominant-baseline="middle">L2 +4.20</text>
+        <path id="e92" class="dr d" d="M779 947 H793 L786 960 Z"/>
+        <text id="e93" class="tx t mono" x="804" y="952" text-anchor="start" dominant-baseline="middle">L1 ±0.00</text>
+        <path id="e94" class="dr d" d="M788 368 H742 L718 386"/>
+        <text id="e95" class="tx t mono" x="796" y="368" text-anchor="start" dominant-baseline="middle">ROOF PLANT</text>
+      </svg>
+
+      <div class="rule" style="left:70px;top:1046px;width:940px;"></div>
+      <div id="lab1" class="lab mono" style="left:70px;top:1068px;">DESIGN<svg viewBox="0 0 34 30"><path id="tick1" d="M3 16 L12 25 L31 5"/></svg></div>
+      <div id="lab2" class="lab mono" style="left:330px;top:1068px;">REVIEW<svg viewBox="0 0 34 30"><path id="tick2" d="M3 16 L12 25 L31 5"/></svg></div>
+      <div id="sheet" class="foot">FRONT ELEVATION · 1:100</div>
+
+      <div id="ghost" class="stamp" data-layout-allow-overlap><div class="in"><div class="ink text" data-layout-allow-overlap>APPROVED</div></div></div>
+      <div id="stamp" class="stamp" data-layout-allow-overlap><div class="in"><div class="ink text" data-layout-allow-overlap>APPROVED</div></div></div>
+    </div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30, DUR = 68 / FPS;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function f(n) { return n / FPS; }                               // frame -> seconds
+  function draw(sel, t0, dur, ease) {
+    var p = document.querySelector(sel), L = Math.ceil(p.getTotalLength()) + 2;
+    gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    tl.to(p, { strokeDashoffset: 0, duration: dur, ease: ease || 'power2.inOut' }, q(t0));
+  }
+
+  // hidden initial states
+  gsap.set(['#lab1', '#lab2'], { opacity: 0 });
+  gsap.set('#stamp', { rotation: -11, scale: 1.8, opacity: 0, transformOrigin: '50% 50%' });
+  gsap.set('#ghost', { rotation: -8, x: 5, y: 4, opacity: 0, transformOrigin: '50% 50%' });
+
+  // one slow camera push across the whole card
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: DUR, ease: 'none' }, 0);
+
+  // 0.39: the time-lapse starts, staggered and accelerating, every line down by 1.20
+  var N = 96, T0 = 0.39, A = 0.73, P = 2.4;
+  for (var i = 0; i < N; i++) {
+    var el = document.getElementById('e' + i), u = i / (N - 1);
+    var t = T0 + A * (1 - Math.pow(1 - u, P));
+    var d = 0.24 - 0.18 * Math.pow(u, 0.8);
+    if (el.tagName.toLowerCase() === 'path') {
+      var L = Math.ceil(el.getTotalLength()) + 2;
+      gsap.set(el, { strokeDasharray: L, strokeDashoffset: L });
+      tl.to(el, { strokeDashoffset: 0, duration: d, ease: 'power2.out' }, t);
+    } else {
+      gsap.set(el, { opacity: 0 });
+      tl.to(el, { opacity: 1, duration: 0.07, ease: 'none' }, t);
+    }
+  }
+
+  // 1.067: step one + tick
+  tl.fromTo('#lab1', { y: 10 }, { y: 0, duration: 0.3, ease: 'power3.out', immediateRender: false }, q(1.067));
+  tl.to('#lab1', { opacity: 1, duration: 0.1, ease: 'none' }, q(1.067));
+  draw('#tick1', 1.067, 0.14, 'power2.inOut');
+
+  // 1.50 (frame 45): the stamp slams (scale 1.8 -> 1 over frames 45-49), ink offset frame, card shake
+  tl.to('#stamp', { opacity: 1, duration: f(2), ease: 'none' }, f(45));
+  tl.to('#stamp', { scale: 1, rotation: -8, duration: f(4), ease: 'power2.in' }, f(45));
+  tl.set('#ghost', { opacity: 0.45 }, f(48.5));
+  tl.set('#ghost', { opacity: 0 }, f(49.5));
+  [[49, -3, 6], [50, 4, -4], [51, -2, 3], [52, 1, -1], [53, 0, 0]].forEach(function (s) {
+    tl.set('#shake', { x: s[1], y: s[2] }, f(s[0] - 0.5));
+  });
+  tl.to('#stamp', { opacity: 0.92, duration: 0.25, ease: 'none' }, f(50));
+
+  // 1.667: step two + tick, just after the slam
+  tl.fromTo('#lab2', { y: 10 }, { y: 0, duration: 0.3, ease: 'power3.out', immediateRender: false }, q(1.67));
+  tl.to('#lab2', { opacity: 1, duration: 0.1, ease: 'none' }, q(1.67));
+  draw('#tick2', 1.70, 0.16, 'power2.out');
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

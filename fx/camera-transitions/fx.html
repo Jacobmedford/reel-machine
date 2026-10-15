@@ -1,0 +1,8 @@
+<!-- camera-transitions: the motion blur the moves use (fx.js keys #foot frame by frame). A directional gaussian,
+     then alpha forced to 1, so the frame edges blur into picture instead of into black. Nothing here is visible. -->
+<svg id="{{ID}}-defs" width="0" height="0" style="position:absolute;" aria-hidden="true">
+  <filter id="{{ID}}-mb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+    <feGaussianBlur id="{{ID}}-mb-g" in="SourceGraphic" stdDeviation="0 0" result="b"/>
+    <feComponentTransfer in="b"><feFuncA type="table" tableValues="1 1"/></feComponentTransfer>
+  </filter>
+</svg>

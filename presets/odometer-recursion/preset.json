@@ -1,0 +1,48 @@
+{
+  "name": "odometer-recursion",
+  "kind": "fx",
+  "layer": "cam",
+  "from": "kit fx/odometer-recursion",
+  "source": ["kit fx/odometer-recursion"],
+  "does": "A mechanical counter plate rises beside the head and rolls the raw footage's length down to the finished length (from ten minutes or more the leading drum rolls to blank and drops away), the label rolls to an accent line; then the frame shrinks into a framed inset of itself four levels deep, one level per word, and dives through so the last frame is the loop's first.",
+  "use_when": "'hours of takes became minutes', 'this is the video', 'the finished cut, right here': the length of the raw against the cut, the video about itself",
+  "inputs": [
+    "the two true lengths, m:ss under 100 minutes (RAW: ffprobe the raw takes joined; FINAL: timeline.json total)",
+    "the beats (T: seconds after A or the spoken words); T.levels takes exactly four, one per word",
+    "where the plate sits (PLATE, beside the head, above the caption band) and where the insets converge (FOCUS, bare wall)"
+  ],
+  "constants": {
+    "RAW": "2:40",
+    "FINAL": "0:45",
+    "LABELS": ["3 raw takes", "This video"],
+    "T": {"rise": 0.0, "roll": 0.166, "land": 0.665, "levels": [1.184, 1.513, 1.852, 2.062], "dive": 2.471},
+    "PLATE": {"left": 430, "top": 236},
+    "FOCUS": [50, 314],
+    "S": 0.3
+  },
+  "notes": {
+    "RAW": "the raw's true length; a counter that starts over 9:59 drops its leading drum on the way down",
+    "LABELS": "[the kicker over RAW (mono caps), the accent line over FINAL (the pack's accent face)]; keep the kicker true (count the takes)",
+    "T": "rise, roll, land, the four levels and dive are beats (seconds after A or words); the dive runs to B, so end the window on the cut",
+    "FOCUS": "px the insets shrink toward: pick bare wall away from the face",
+    "S": "each level is this much of its parent (0.3: level one is about 324 x 576 px)"
+  },
+  "cues": ["T"],
+  "generators": [],
+  "needs": [
+    "end the window on the picture cut after the last word (the dive's last frame is the loop's first)"
+  ],
+  "sfx": [
+    {"at": "T.roll", "name": "clicks-run", "db": -13, "max_len": "T.land - T.roll", "what": "the drums roll (placed by its start)"},
+    {"at": "T.land", "name": "ding", "db": -20, "what": "it lands on the finished length"},
+    {"at": "T.levels.0+0.013", "name": "pop", "db": -21, "what": "level one"},
+    {"at": "T.levels.1+0.017", "name": "pop", "db": -22, "what": "level two"},
+    {"at": "T.levels.2+0.01", "name": "pop", "db": -23, "what": "level three"},
+    {"at": "T.levels.3", "name": "pop", "db": -24, "what": "level four"},
+    {"at": "@end-0.041", "name": "whoosh-deep", "db": -17, "what": "the dive"}
+  ],
+  "typical_length": "3.1 s",
+  "modes": ["showcase"],
+  "signature": null,
+  "pairs_with": null
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>card template</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* card-specific layout goes here: sizes and positions only, colours and fonts come from tokens */
+  #cam { transform-origin:540px 700px; }
+  #kick { position:absolute; left:70px; top:262px; }
+  #num { position:absolute; left:0; width:1080px; top:520px; text-align:center; font-size:220px; color:var(--c-ink); }
+</style>
+</head>
+<body>
+<!-- DURATION: set data-duration to the card's exact length (frames/30). Ground: class "ground-light" or "ground-dark". -->
+<div id="root" class="ground-light" data-composition-id="main" data-start="0" data-duration="2.000" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker">Source · Topic · Year</div>
+    <svg class="layer" viewBox="0 0 1080 1920">
+      <path id="demo-line" d="M90 1000 C 400 980, 700 900, 990 560" fill="none" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <div id="num" class="display">+0.0%</div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }            // snap every beat to a frame
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var C = { ink: tok('--c-ink'), accent: tok('--c-accent'), accentL: tok('--c-accent-light'), neg: tok('--c-neg-light'),
+            pos: tok('--c-pos-light'), hair: tok('--c-hair-light') };    // on a dark ground use --c-light, --c-accent, --c-neg, --c-pos
+  document.getElementById('demo-line').setAttribute('stroke', C.accentL);
+
+  // draw an SVG stroke from 0 to full length (measured once at build time: deterministic)
+  function draw(sel, t0, dur, ease) {
+    var p = document.querySelector(sel), L = Math.ceil(p.getTotalLength()) + 2;
+    gsap.set(p, { strokeDasharray: L, strokeDashoffset: L });
+    tl.to(p, { strokeDashoffset: 0, duration: dur, ease: ease || 'power2.inOut' }, q(t0));
+  }
+  // count a number with a fixed format: count('#num', 0, 1.6, t0, dur, 1, '+', '%')
+  function count(sel, from, to, t0, dur, dec, pre, suf, ease) {
+    var el = document.querySelector(sel), o = { v: from };
+    var fmt = function (v) { return (pre || '') + v.toFixed(dec || 0) + (suf || ''); };
+    el.textContent = fmt(from);
+    tl.to(o, { v: to, duration: dur, ease: ease || 'power2.out', onUpdate: function () { el.textContent = fmt(o.v); } }, q(t0));
+  }
+  // slow camera push across the whole card keeps it alive between beats
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: 2.0, ease: 'none' }, 0);
+
+  draw('#demo-line', 0.10, 0.9, 'expo.out');
+  count('#num', 0, 1.6, 0.30, 0.8, 1, '+', '%');
+  tl.fromTo('#kick', { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35, ease: 'power3.out', immediateRender: false }, 0);
+  gsap.set('#kick', { opacity: 0 });
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

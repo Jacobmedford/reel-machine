@@ -1,0 +1,163 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>__TITLE__</title>
+<style>
+/* An approval stop of the fast lane (pipeline/preview.py writes it): the first cut, then the hook. One video, the
+   facts that matter at this stop, every line with its time (tap a time to jump there), a note on any line or on the
+   whole video. Colours and fonts are the creator's pack (the theme block right below): display face for the title,
+   text face for the lines, mono for times. */
+__THEME__
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.5 var(--font-text); padding-inline: 16px; padding-block: 24px 56px; }
+.wrap { max-width: 1040px; margin: 0 auto; display: grid; gap: 22px; }
+.top { display: grid; gap: 12px; }
+.eyebrow { font: 500 12px/1.3 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-family: var(--font-display); font-style: var(--display-style); font-weight: var(--display-weight);
+     font-size: clamp(38px, 7vw, 60px); line-height: 1; letter-spacing: -.01em; text-wrap: balance; }
+.how { margin: 0; max-width: 60ch; color: var(--muted); }
+.how b { color: var(--ink); font-weight: 600; }
+
+.stop { display: grid; grid-template-columns: minmax(0, 380px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.player { position: sticky; top: 16px; display: grid; gap: 10px; }
+.player video { display: block; width: 100%; aspect-ratio: 9 / 16; max-height: 78vh; object-fit: contain; border-radius: 6px;
+                background: var(--sheet); border: 1px solid var(--hair); }
+.side { min-width: 0; display: grid; gap: 18px; }
+
+.facts { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; padding: 14px 16px;
+         background: var(--sheet); border: 1px solid var(--hair); border-radius: 6px; font-size: 15px; }
+.facts dt { font: 500 11px/1.9 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 0; min-width: 0; }
+.facts .warn { color: var(--accent); font-weight: 600; }
+.facts ul { margin: 2px 0 0; padding-left: 18px; }
+
+h2 { margin: 0; font: 500 12px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.lines { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.lines > li { display: grid; grid-template-columns: 4.6em minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline;
+            padding: 8px 10px; border-radius: 4px; scroll-margin-top: 16px; }
+.lines > li.now { background: var(--sheet); box-shadow: inset 3px 0 0 var(--accent-line); }
+.lines .txt { font-size: 18px; line-height: 1.4; text-wrap: pretty; }
+.lines .quiet { color: var(--muted); font-size: 15px; }
+.lines > li.quiet { display: block; }
+.t { font: 500 13px/1.3 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--muted); background: none; border: 0;
+     padding: 2px 0; text-align: left; cursor: pointer; }
+.t:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.note { justify-self: start; font: 600 13px/1 var(--font-text); color: var(--ink); background: transparent; border: 1px solid var(--hair);
+        border-radius: 4px; padding: 7px 10px; cursor: pointer; }
+.note:hover { border-color: var(--ink); }
+.note[hidden], .go[hidden], .local[hidden] { display: none; }
+.t:focus-visible, .note:focus-visible, .go:focus-visible, .local textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.go { justify-self: start; font: 700 15px/1 var(--font-text); color: var(--paper); background: var(--ink); border: 0; border-radius: 4px;
+      padding: 12px 18px; cursor: pointer; }
+.local { display: grid; gap: 8px; grid-column: 1 / -1; }
+.local textarea { width: 100%; min-height: 56px; resize: vertical; font: 400 15px/1.45 var(--font-text); color: var(--ink);
+                  background: var(--paper); border: 1px solid var(--hair); border-radius: 4px; padding: 8px 10px; }
+.saved { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+.status { font: 500 12px/1 var(--font-mono); color: var(--muted); }
+.foot { margin: 0; color: var(--muted); font-size: 14px; max-width: 62ch; }
+
+@media (max-width: 760px) {
+  .stop { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .player { position: static; }
+  .player video { max-height: 72vh; }
+  .lines > li { grid-template-columns: 3.9em minmax(0, 1fr) auto; gap: 4px 10px; padding: 8px 4px; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">__EYEBROW__</div>
+    <h1>__HEAD__</h1>
+    <p class="how">__HOW__</p>
+    <button class="go" type="button" id="go" hidden>__GO__</button>
+  </header>
+  <main class="stop">
+    <section class="player" id="video" data-comment-target aria-label="The video">
+      <video id="v" src="__VIDEO__" poster="__POSTER__" controls playsinline preload="metadata" width="720" height="1280"></video>
+      <button class="note" type="button" data-note>Comment on the whole video</button>
+    </section>
+    <section class="side">
+      <dl class="facts">__FACTS__</dl>
+      <h2>__LINES_HEAD__</h2>
+      <ol class="lines" id="lines">
+__LINES__
+      </ol>
+    </section>
+  </main>
+  <p class="foot">__FOOT__</p>
+</div>
+
+<script>
+(function () {
+  var v = document.getElementById('v');
+  var items = Array.prototype.slice.call(document.querySelectorAll('#lines li[data-t]'));
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('.t');
+    if (!t) return;
+    v.currentTime = parseFloat(t.dataset.t);
+    v.play().catch(function () {});
+  });
+  v.addEventListener('timeupdate', function () {                 // the line you are hearing
+    var now = v.currentTime, cur = null;
+    items.forEach(function (li) { if (parseFloat(li.dataset.t) <= now + 0.05) cur = li; });
+    items.forEach(function (li) { li.classList.toggle('now', li === cur); });
+  });
+
+  var notes = Array.prototype.slice.call(document.querySelectorAll('[data-note]'));
+  notes.forEach(function (b) { b.hidden = true; });
+
+  // 1) Published as a Claude artifact: a note opens the comment composer on its line (or on the whole video).
+  var use = window.claude && window.claude.use ? window.claude.use('comments') : Promise.resolve(null);
+  use.then(function (comments) {
+    if (!comments) return;
+    notes.forEach(function (b) { b.hidden = false; });
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-note]');
+      if (!b) return;
+      comments.openComposer({ element: b.closest('[data-comment-target]') }).catch(function (err) {
+        if (err && (err.code === 'unavailable' || err.code === 'not_granted')) notes.forEach(function (n) { n.hidden = true; });
+      });
+    });
+  }, function () {});
+
+  // 2) Served locally by storyboard/serve.py <this folder>: notes save to notes.json beside this page.
+  if (location.protocol.indexOf('http') !== 0) return;
+  fetch('api/notes').then(function (r) { return r.ok ? r.json() : null; }).then(function (saved) {
+    if (!saved) return;
+    var go = document.getElementById('go');
+    go.hidden = false;
+    go.addEventListener('click', function () { post({ beat: 'all', text: 'go' }, function () { go.textContent = 'Sent: go'; go.disabled = true; }); });
+    document.querySelectorAll('[data-comment-target]').forEach(function (target) {
+      var id = target.id, mine = saved.filter(function (n) { return n.beat === id; });
+      var open = target.querySelector('[data-note]');
+      if (mine.length) {                                         // notes already left stay in view
+        var list = document.createElement('ol');
+        list.className = 'saved local';
+        mine.forEach(function (n) { var li = document.createElement('li'); li.textContent = n.text; list.appendChild(li); });
+        target.appendChild(list);
+      }
+      var box = document.createElement('div');                   // the note box opens from this target's Note button
+      box.className = 'local';
+      box.hidden = true;
+      box.innerHTML = '<textarea aria-label="Note"></textarea><div><button class="note" type="button">Save note</button> <span class="status"></span></div>';
+      target.appendChild(box);
+      var ta = box.querySelector('textarea'), st = box.querySelector('.status');
+      ta.placeholder = id === 'video' ? 'A note on the whole video' : 'What should change on this line?';
+      if (open) {
+        open.hidden = false;
+        open.addEventListener('click', function () { box.hidden = !box.hidden; if (!box.hidden) ta.focus(); });
+      }
+      box.querySelector('button').addEventListener('click', function () {
+        var text = ta.value.trim();
+        if (!text) { st.textContent = 'Type a note first.'; return; }
+        post({ beat: id, text: text }, function () { st.textContent = 'Saved.'; ta.value = ''; });
+      });
+    });
+  }).catch(function () {});
+
+  function post(body, done) {
+    fetch('api/notes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { if (r.ok) done(); });
+  }
+})();
+</script>

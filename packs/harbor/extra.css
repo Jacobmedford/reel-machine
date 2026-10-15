@@ -1,0 +1,11 @@
+/* Harbor (the default look: tutorials and builds). Appended to brand.css by pipeline/pack.py, after the tokens.
+   brand.css is inlined BEFORE kit/reel.css (and the build's caption rules), so every rule here starts with
+   `html body` to outrank the kit's.
+   The accent serif is DM Serif Display, set in mixed case, never caps: the engine puts it on the hi-fi hook's second
+   line and the one-word thesis caption; cards and effects reach it through var(--font-accent) or the .accent-serif
+   class, for one or two words a beat. League Gothic stays the display face, for big type only. */
+
+:root { --font-accent: 'DM Serif Display', Georgia, serif; }
+html body #hook .h2, html body .cap.thesis { font-family:var(--font-accent); font-style:normal; font-weight:400;
+  text-transform:none; letter-spacing:0; }
+html body .accent-serif { font-family:var(--font-accent); font-style:normal; font-weight:400; text-transform:none; }

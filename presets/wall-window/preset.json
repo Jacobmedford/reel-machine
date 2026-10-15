@@ -1,0 +1,45 @@
+{
+  "name": "wall-window",
+  "kind": "fx",
+  "layer": "behind",
+  "from": "kit fx/video-card",
+  "source": ["kit fx/video-card"],
+  "does": "A window on the wall behind the head: a seam draws, the window opens out of it (title strip up, picture down) and plays a clip (by default this very video from 0:00), the title types, a progress line runs along the seam, a true tag types onto the picture, then it folds back into the seam before the cut. The head breaks the window's edge.",
+  "use_when": "'here's the full version', 'I filmed the whole process', any mention of a video or a recording the viewer can get; a clip that should feel like it hangs in the room",
+  "inputs": [
+    "a CUT_WINDOWS entry over the window (behind the head)",
+    "the label and a true tag (TAG: this video's real length, or what the clip is)",
+    "the clip (SRC: clean.mp4, or a file dropped in the instance folder as fx/<id>/<file>.mp4) and where it starts (MEDIA_START)",
+    "WIN measured on a still of the shot: bare wall beside the head, the head breaking the window's near edge"
+  ],
+  "constants": {
+    "LABEL": "FULL VERSION",
+    "TAG": "THIS VIDEO · 0:45",
+    "WIN": {"x": 532, "y": 238, "w": 470, "strip": 56, "frame": 4},
+    "T": {"seam": 0.637, "open": 0.738, "label": 0.839, "tag": 1.895, "tagEnd": 2.718, "fold": 3.153, "gone": 3.469},
+    "SRC": "clean.mp4",
+    "MEDIA_START": 0
+  },
+  "notes": {
+    "TAG": "true facts only: the length is timeline.json total as m:ss",
+    "WIN": "x, y, w in px; the picture is 9:16 inside the frame; strip is the title bar's height",
+    "T": "all beats (seconds after A or spoken words); the clip starts on T.open (bound into fx.html by preset.py), so rerun preset.py when you move it",
+    "SRC": "a project-relative path the composition can load: clean.mp4, or fx/{{ID}}/clip.mp4 for a file in the instance folder"
+  },
+  "cues": ["T"],
+  "generators": [],
+  "needs": [
+    "CUT_WINDOWS: ({at_cut}, {end}) behind the head"
+  ],
+  "sfx": [
+    {"at": "T.seam+0.021", "name": "tick", "db": -15, "what": "the seam draws"},
+    {"at": "T.open+0.081", "name": "whoosh-soft", "db": -20, "what": "the window opens"},
+    {"at": "T.label", "name": "typing", "db": -17, "max_len": 0.3, "what": "the label types (placed by its start)"},
+    {"at": "T.tag", "name": "typing", "db": -18, "max_len": "T.tagEnd - T.tag", "what": "the tag types"},
+    {"at": "T.fold+0.145", "name": "whoosh-soft", "db": -22, "what": "it folds into the seam"}
+  ],
+  "typical_length": "3.5 s",
+  "modes": ["showcase", "hifi"],
+  "signature": null,
+  "pairs_with": null
+}

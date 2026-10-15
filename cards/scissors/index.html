@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>scissors</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* scissors: two lines leave the same start. The hero line climbs (accent), the other falls (negative), and fine
+     hatching fills the gap as it opens. Shares its chart system with cards/lines-by-group (same plot geometry, axis,
+     line weights, labels, end dots): change one, change both. */
+  #cam { transform-origin:520px 700px; }
+  .t { position:absolute; }
+  .yr { position:absolute; top:1030px; width:140px; margin-left:-70px; text-align:center; font-size:28px; color:var(--c-muted-dark); }
+  .endlab { position:absolute; display:flex; align-items:baseline; gap:14px; white-space:nowrap; }
+  .endlab .nm { font-size:30px; color:color-mix(in srgb, var(--c-light) 84%, transparent); }
+  .endlab .val { font-size:56px; line-height:1; letter-spacing:-.02em; }
+  .endlab .unit { font-size:30px; color:var(--c-muted-dark); }
+  .c-hero { color:var(--c-accent); }
+  .c-loss { color:var(--c-neg); }
+  .foot div { line-height:30px; }
+
+  /* chart paint: the hero is the accent, the loss is the negative, everything else is the light ink at a strength */
+  #p-hero, #pg-hero { stroke:var(--c-accent); }
+  #p-loss, #pg-loss { stroke:var(--c-neg); }
+  #d-hero { fill:var(--c-accent); }
+  #d-loss { fill:var(--c-neg); }
+  #origin { fill:var(--c-light); }
+  #origin, #d-hero, #d-loss { stroke:var(--c-dark); }          /* end dots cut out of their line in the ground colour */
+  #axis .rule-ax { stroke:var(--c-hair-dark); }
+  #axis .tick { stroke:color-mix(in srgb, var(--c-light) 40%, transparent); }
+  #axis .zero { stroke:color-mix(in srgb, var(--c-light) 42%, transparent); }
+  #hatch line { stroke:color-mix(in srgb, var(--c-light) 30%, transparent); }
+</style>
+</head>
+<body>
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="4.5666" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="kick" class="kicker t" style="left:70px;top:252px;">Video channel · 2021 → 2025</div>
+
+    <svg id="plot" class="layer" viewBox="0 0 1080 1920" width="1080" height="1920">
+      <g id="axis"></g>
+      <g id="hatch"></g>
+      <path id="p-hero" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <path id="p-loss" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+      <circle id="pg-hero" r="11" fill="none" stroke-width="2.5" opacity="0" />
+      <circle id="pg-loss" r="11" fill="none" stroke-width="2.5" opacity="0" />
+      <circle id="origin" r="9" stroke-width="4" />
+      <circle id="d-hero" r="11" stroke-width="4" opacity="0" />
+      <circle id="d-loss" r="11" stroke-width="4" opacity="0" />
+    </svg>
+
+    <div id="years"></div>
+
+    <div id="lab-hero" class="endlab">
+      <span class="nm text">the channel</span>
+      <span id="v-hero" class="val mono c-hero">+32.4%</span>
+      <span class="unit mono">views</span>
+    </div>
+    <div id="lab-loss" class="endlab">
+      <span class="nm text">ad revenue per view</span>
+      <span id="v-loss" class="val mono c-loss">−11.5%</span>
+    </div>
+
+    <div id="foot" class="foot t" style="left:70px;top:1088px;">
+      <div>Both lines vs. their 2021 level.</div>
+      <div>Source: sample channel data</div>
+    </div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30, D = 137 / 30;      // 137 frames (renderer frames = ceil(duration x fps))
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function $(id) { return document.getElementById(id); }
+
+  /* ---------- example data: end values (% vs. the first year) and the first year on the axis ---------- */
+  var HERO = 32.4, LOSS = -11.5, YEAR0 = 2021;
+
+  /* ---------- shared chart geometry (identical in lines-by-group) ---------- */
+  var X0 = 150, X1 = 890, Y0 = 790, S = 11.4;          // 0% at y790, 11.4px per point; +40 -> 334, -20 -> 1018
+  var AXIS_Y = Y0 + 20 * S;                              // bottom axis sits at the -20 level
+  function xOf(u) { return X0 + (X1 - X0) * u; }
+  function yOf(v) { return Y0 - S * v; }
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); parent.appendChild(n); return n; }
+  /* where a 56px mono value's baseline sits in its line box, measured from the pack's mono font */
+  function baselineOf(cls, px) {
+    var box = document.createElement('div'), mark = document.createElement('span'), root = $('root');
+    box.className = cls; box.style.cssText = 'position:absolute;left:0;top:0;font-size:' + px + 'px;line-height:1;';
+    mark.style.cssText = 'display:inline-block;width:0;height:0;';
+    box.appendChild(mark); box.appendChild(document.createTextNode('0')); root.appendChild(box);
+    var b = mark.offsetTop; root.removeChild(box); return b;
+  }
+
+  /* line shapes: the hero accelerates to its end value; the loss holds flat, then bends down */
+  function heroV(u) { return HERO * (Math.exp(4.5 * u) - 1) / (Math.exp(4.5) - 1); }
+  function lossV(u) { return LOSS * (0.04 * u + 0.96 * Math.pow(Math.max(0, u - 0.42) / 0.58, 1.8)); }
+
+  var N = 240;
+  function curve(fn) {
+    var pts = [], cum = [0], i;
+    for (i = 0; i <= N; i++) { var u = i / N; pts.push([xOf(u), yOf(fn(u))]); }
+    for (i = 1; i <= N; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return { fn: fn, pts: pts, cum: cum, L: cum[N], d: 'M' + pts.map(function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); }).join(' L') };
+  }
+  function arcAt(c, u) { var f = u * N, i = Math.min(N - 1, Math.floor(f)), r = f - i; return c.cum[i] + (c.cum[i + 1] - c.cum[i]) * r; }
+  function yAtX(c, x) { var u = (x - X0) / (X1 - X0); return yOf(c.fn(Math.max(0, Math.min(1, u)))); }
+
+  var H = curve(heroV), L = curve(lossV);
+  var pHero = $('p-hero'), pLoss = $('p-loss');
+  pHero.setAttribute('d', H.d); pLoss.setAttribute('d', L.d);
+  [[pHero, H], [pLoss, L]].forEach(function (a) { a[0].style.strokeDasharray = a[1].L + ' ' + (a[1].L + 40); a[0].style.strokeDashoffset = a[1].L; a[0].style.opacity = 0; });
+
+  /* ---------- axis: bottom rule + year ticks + labels, dashed zero baseline ---------- */
+  var ax = $('axis');
+  el('line', { x1: X0, y1: AXIS_Y, x2: X1, y2: AXIS_Y, 'stroke-width': 1.5, 'class': 'rule-ax' }, ax);
+  var years = $('years');
+  for (var yi = 0; yi <= 4; yi++) {
+    var xx = xOf(yi / 4);
+    el('line', { x1: xx, y1: AXIS_Y, x2: xx, y2: AXIS_Y + 10, 'stroke-width': 1.5, 'class': 'tick' }, ax);
+    var yl = document.createElement('div'); yl.className = 'yr mono'; yl.style.left = xx + 'px'; yl.textContent = String(YEAR0 + yi);
+    if (yi === 0) { yl.style.marginLeft = '-2px'; yl.style.textAlign = 'left'; } if (yi === 4) { yl.style.marginLeft = '-138px'; yl.style.textAlign = 'right'; }
+    years.appendChild(yl);
+  }
+  el('line', { x1: X0, y1: Y0, x2: X1, y2: Y0, 'stroke-width': 2, 'stroke-dasharray': '10 10', 'class': 'zero' }, ax);
+  var origin = $('origin'); origin.setAttribute('cx', X0); origin.setAttribute('cy', Y0);
+
+  /* ---------- hatching: fine hairlines filling the gap between the two lines ---------- */
+  var hatch = $('hatch'), HS = [];
+  (function () {
+    var INSET = 9, cMin = X0 + Y0 - 4, cMax = X1 + yOf(LOSS), step = 15, c, x;
+    function inside(x, y) { return x >= X0 && y >= yAtX(H, x) + INSET && y <= yAtX(L, x) - INSET; }
+    for (c = cMin + step; c < cMax; c += step) {
+      var a = null, prev = false;
+      for (x = X0; x <= X1 + 0.5; x += 0.5) {
+        var y = c - x, ins = x <= X1 - 8 && inside(x, y);
+        if (ins && !prev) a = x;
+        if (!ins && prev) addSeg(c, a, x - 0.5);
+        prev = ins;
+      }
+      if (prev) addSeg(c, a, X1 - 8);
+    }
+    function addSeg(c, a, b) {
+      if (b - a < 4) return;
+      var ln = el('line', { x1: b, y1: c - b, x2: a, y2: c - a, 'stroke-width': 1.5, 'stroke-linecap': 'round' }, hatch);
+      var len = Math.SQRT2 * (b - a) + 2;
+      ln.style.strokeDasharray = len + ' ' + (len + 10); ln.style.strokeDashoffset = len;
+      HS.push({ el: ln, len: len, c: c });
+    }
+    HS.forEach(function (h, i) { h.k = HS.length > 1 ? i / (HS.length - 1) : 0; });
+  })();
+
+  /* ---------- beat times (seconds from card start), snapped to frames ---------- */
+  var T = {
+    g0: q(0.24),  gk: q(1.56), g1: q(1.88),     // hero: starts drawing, kicks on its word (1.62), lands
+    b0: q(2.24),  bk: q(3.60), b1: q(3.98),     // loss: named at 2.30, drops on its words (3.66 / 3.82), lands
+    h0: q(3.84),  h1: q(4.24)                   // hatching sweep as the gap opens
+  };
+  function clamp(p) { return p < 0 ? 0 : p > 1 ? 1 : p; }
+  function seg(t, t0, t1, u0, u1, ease) { return u0 + (u1 - u0) * ease(clamp((t - t0) / (t1 - t0))); }
+  function soft(p) { return 0.5 * p + 0.5 * p * p; }
+  function lin(p) { return p; }
+  function p3o(p) { return 1 - Math.pow(1 - p, 3); }
+  function p2o(p) { return 1 - Math.pow(1 - p, 2); }
+  function uHero(t) { if (t < T.g0) return -1; return t < T.gk ? seg(t, T.g0, T.gk, 0, 0.62, soft) : seg(t, T.gk, T.g1, 0.62, 1, p3o); }
+  function uLoss(t) { if (t < T.b0) return -1; return t < T.bk ? seg(t, T.b0, T.bk, 0, 0.55, lin) : seg(t, T.bk, T.b1, 0.55, 1, p2o); }
+
+  var dHero = $('d-hero'), dLoss = $('d-loss');
+  var pgHero = $('pg-hero'), pgLoss = $('pg-loss');
+  var vHero = $('v-hero'), vLoss = $('v-loss');
+
+  function drawLine(path, C, dot, u, t0, t) {
+    if (u < 0) { path.style.opacity = 0; dot.setAttribute('opacity', 0); return; }
+    path.style.opacity = 1;
+    path.style.strokeDashoffset = (C.L - arcAt(C, u)).toFixed(2);
+    var x = xOf(u), y = yOf(C.fn(u)), s = 0.4 + 0.6 * p3o(clamp((t - t0) / 0.14));
+    dot.setAttribute('opacity', 1); dot.setAttribute('cx', x.toFixed(2)); dot.setAttribute('cy', y.toFixed(2));
+    dot.setAttribute('r', (11 * s).toFixed(2));
+  }
+  function ping(ring, x, y, t, t0) {
+    var p = (t - t0) / 0.5;
+    if (p <= 0 || p >= 1) { ring.setAttribute('opacity', 0); return; }
+    ring.setAttribute('cx', x); ring.setAttribute('cy', y);
+    ring.setAttribute('r', (11 + 24 * p2o(p)).toFixed(2));
+    ring.setAttribute('opacity', (0.85 * (1 - p)).toFixed(3));
+    ring.setAttribute('stroke-width', (2.5 - 1.2 * p).toFixed(2));
+  }
+  function fmt(v, sign) { return sign + Math.abs(v).toFixed(1) + '%'; }
+
+  function render(t) {
+    drawLine(pHero, H, dHero, uHero(t), T.g0, t);
+    drawLine(pLoss, L, dLoss, uLoss(t), T.b0, t);
+    ping(pgHero, X1, yOf(HERO), t, T.g1 - 0.03);
+    ping(pgLoss, X1, yOf(LOSS), t, T.b1 - 0.03);
+    vHero.textContent = fmt(HERO * p3o(clamp((t - q(1.84)) / 0.46)), '+');
+    vLoss.textContent = fmt(LOSS * p3o(clamp((t - q(3.94)) / 0.46)), '−');
+    for (var i = 0; i < HS.length; i++) {
+      var h = HS[i], st = T.h0 + (T.h1 - T.h0) * h.k, p = clamp((t - st) / 0.16);
+      h.el.style.strokeDashoffset = (h.len * (1 - p2o(p))).toFixed(2);
+    }
+  }
+
+  /* label placement needs the pack's fonts measured, so the labels and the timeline are built once they are in */
+  var FONTS = ['600 30px ' + tok('--font-text'), '500 56px ' + tok('--font-mono'), '400 24px ' + tok('--font-mono')];
+  Promise.all(FONTS.map(function (f) { return document.fonts.load(f); })).then(build, build);
+
+  function build() {
+    /* end labels: rising line -> left of the dot, value baseline just under it; falling line -> below the dot */
+    var BASE = baselineOf('mono', 56);
+    var labH = $('lab-hero'), labL = $('lab-loss');
+    labH.style.right = (1080 - (X1 - 40)) + 'px'; labH.style.top = (yOf(HERO) + 10 - BASE) + 'px';
+    labL.style.right = (1080 - 899) + 'px'; labL.style.top = (yOf(LOSS) + 22) + 'px';
+
+    /* label entrances (positions are static; GSAP only moves x/y/opacity) */
+    gsap.set(labH, { opacity: 0, x: 18 });
+    gsap.set(labL, { opacity: 0, y: -12 });
+    tl.fromTo(labH, { opacity: 0, x: 18 }, { opacity: 1, x: 0, duration: 0.34, ease: 'power3.out', immediateRender: false }, q(1.84));
+    tl.fromTo(labL, { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: 0.34, ease: 'power3.out', immediateRender: false }, q(3.94));
+
+    /* one clock drives every drawn element: seek-safe, deterministic */
+    var clock = { t: 0 };
+    render(0);
+    tl.fromTo(clock, { t: 0 }, { t: D, duration: D, ease: 'none', immediateRender: false, onUpdate: function () { render(clock.t); } }, 0);
+
+    /* slow camera push across the whole card */
+    tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: D, ease: 'none' }, 0);
+
+    window.__timelines['main'] = tl;
+    if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+  }
+})();
+</script>
+</body>
+</html>

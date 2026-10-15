@@ -1,0 +1,27 @@
+<!-- stamp-strike (behind the head): words stamped on the wall above the speaker and struck through. Each word stamps
+     in letter by letter on its name in the display face, huge, the speaker's head breaking the foot of the line; on
+     the negation a stroke strikes each word through in turn and the struck letters dim. The same preset runs a
+     callback later in the video: one word, the same size, the same move.
+     Two identical copies split the type against the wall: light everywhere, ink through mask.png wherever the room
+     behind the speaker is light (mkmask.py), so it reads on light walls and dark furniture alike, never with an
+     outline. The stroke is one colour in both copies. Anything hanging in front of the wall (a ceiling fan) passes in
+     front of the type (front.png, fully open when MASK.front is null). Every per-video value is in fx.js. -->
+<div id="{{ID}}-room" class="{{ID}}-cp" data-layout-allow-overlap>
+  <div id="{{ID}}-lt" class="{{ID}}-cp" data-layout-allow-overlap></div>
+  <div id="{{ID}}-dk" class="{{ID}}-cp" data-layout-allow-overlap></div>
+</div>
+<style>
+#{{ID}} .{{ID}}-cp { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-dk { -webkit-mask-image:url(fx/{{ID}}/mask.png); mask-image:url(fx/{{ID}}/mask.png); }
+/* anything in the room that hangs in front of the wall (a ceiling fan) passes in front of the type: front.png */
+#{{ID}}-room { -webkit-mask-image:url(fx/{{ID}}/front.png); mask-image:url(fx/{{ID}}/front.png); }
+#{{ID}}-dk, #{{ID}}-room { -webkit-mask-size:1080px 1920px; mask-size:1080px 1920px; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; }
+#{{ID}} .{{ID}}-w { position:absolute; left:0; top:0; white-space:nowrap; line-height:1;
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  letter-spacing:-0.02em; color:var(--c-light); }
+#{{ID}}-dk .{{ID}}-w { color:var(--c-ink); }
+#{{ID}} .{{ID}}-t { display:inline-block; white-space:nowrap; }
+#{{ID}} .{{ID}}-ch { display:inline-block; transform-origin:50% 85%; }
+#{{ID}} .{{ID}}-x { position:absolute; left:0; top:0; width:10px; height:10px; border-radius:var(--radius);
+  background:var(--c-neg); transform-origin:0% 50%; }
+</style>

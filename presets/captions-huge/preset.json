@@ -1,0 +1,32 @@
+{
+  "name": "captions-huge",
+  "kind": "device",
+  "layer": "KARAOKE",
+  "list": "KARAOKE[\"huge\"]",
+  "from": "the kit's lo-fi KARAOKE huge windows (modes/LOFI.md, examples/lofi/edit.py)",
+  "source": ["kit modes/LOFI.md KARAOKE", "kit examples/lofi/edit.py KARAOKE"],
+  "does": "The word-by-word captions come in huge for one window: 124 px, two words a line (12 characters at most), still inside the safe zone.",
+  "use_when": "lo-fi and showcase: the script asks for it ('make the captions huge', 'bigger captions'), or one punch line that should fill the band",
+  "inputs": [
+    "the window of the line (at the first word, end after the last)",
+    "STYLE lofi or showcase (word-by-word captions)"
+  ],
+  "constants": {
+    "HUGE_WORDS": 2,
+    "HUGE_CHARS": 12
+  },
+  "notes": {
+    "HUGE_WORDS": "words a line inside the window (the kit default 2); set KARAOKE[\"huge_words\"] only when it differs",
+    "HUGE_CHARS": "characters a line inside the window (the kit default 12)"
+  },
+  "entry": ["@at", "@end"],
+  "generators": [],
+  "needs": [
+    "KARAOKE = dict(huge=[<this window>, ...]); add huge_words / huge_chars only when they differ from 2 / 12"
+  ],
+  "sfx": [],
+  "typical_length": "1-2 s (one line)",
+  "modes": ["lofi", "showcase"],
+  "signature": null,
+  "pairs_with": null
+}

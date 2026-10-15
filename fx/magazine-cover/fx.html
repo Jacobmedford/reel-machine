@@ -1,0 +1,68 @@
+<!-- magazine-cover: a full magazine cover set behind the speaker (layer: behind). A frame draws, the masthead drops
+     in letter by letter in the display face (the head breaks it), a dateline, a barcode, coverlines down the sides,
+     a sticker slaps on. The cover's type is built twice by fx.js: a light copy and an ink copy, each masked to its
+     part of the picture (mask-light.png / mask-ink.png, from mask.py), so every letter splits light/dark against the
+     footage it crosses.
+     Words, layout and beat times are constants at the top of fx.js. -->
+<div class="{{ID}}-cv {{ID}}-split" id="{{ID}}-lt" data-layout-allow-overlap data-layout-allow-occlusion></div>
+<div class="{{ID}}-cv {{ID}}-split" id="{{ID}}-ik" data-layout-allow-overlap data-layout-allow-occlusion></div>
+<div id="{{ID}}-bc" data-layout-allow-overlap data-layout-allow-occlusion>
+  <div id="{{ID}}-bars"></div>
+  <div id="{{ID}}-bcn"><span></span><span></span></div>
+</div>
+<div id="{{ID}}-st" data-layout-allow-overlap data-layout-allow-occlusion>
+  <div id="{{ID}}-sti"><b></b><em></em><b></b></div>
+</div>
+<i id="{{ID}}-probe"></i>
+<style>
+#{{ID}} .{{ID}}-cv { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+/* the split: the ink copy shows where mask-ink.png is opaque, the light copy where mask-light.png is (fx.js drops both
+   masks when INK is false) */
+#{{ID}} .{{ID}}-split { -webkit-mask-size:1080px 1920px; mask-size:1080px 1920px; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; }
+#{{ID}}-ik.{{ID}}-split { -webkit-mask-image:url(fx/{{ID}}/mask-ink.png); mask-image:url(fx/{{ID}}/mask-ink.png); }
+#{{ID}}-lt.{{ID}}-split { -webkit-mask-image:url(fx/{{ID}}/mask-light.png); mask-image:url(fx/{{ID}}/mask-light.png); }
+#{{ID}} .{{ID}}-rule { position:absolute; display:block; background:var(--c-accent); }
+#{{ID}}-ik .{{ID}}-rule { background:var(--c-accent-light); }
+#{{ID}} .{{ID}}-rt { transform-origin:0 0; }
+#{{ID}} .{{ID}}-rb { transform-origin:100% 0; }
+#{{ID}} .{{ID}}-rl { transform-origin:0 0; }
+#{{ID}} .{{ID}}-rr { transform-origin:0 100%; }
+#{{ID}} .{{ID}}-dl { position:absolute; left:0; width:1080px; text-align:center; white-space:nowrap;
+  font:500 21px/1 var(--font-mono); letter-spacing:.24em; text-transform:uppercase;
+  color:color-mix(in srgb, var(--c-light) 84%, transparent); }
+#{{ID}}-ik .{{ID}}-dl { color:color-mix(in srgb, var(--c-ink) 84%, transparent); }
+#{{ID}} .{{ID}}-dlt { display:inline-block; }
+#{{ID}} .{{ID}}-mh { position:absolute; left:0; top:0; width:1080px; text-align:center; white-space:nowrap;
+  font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  font-size:240px; line-height:.8; letter-spacing:-.045em; color:var(--c-light); }
+#{{ID}}-ik .{{ID}}-mh { color:var(--c-ink); }
+#{{ID}} .{{ID}}-mhi { display:inline-block; }
+#{{ID}} .{{ID}}-c { display:inline-block; }
+#{{ID}} .{{ID}}-bl { display:inline-block; width:0; height:0; }
+#{{ID}} .{{ID}}-sky { position:absolute; width:300px; }
+#{{ID}} .{{ID}}-sky.{{ID}}-r { text-align:right; }
+#{{ID}} .{{ID}}-m { overflow:hidden; }
+#{{ID}} .{{ID}}-m.{{ID}}-m0 { margin-bottom:10px; }
+#{{ID}} .{{ID}}-k { display:block; font:500 21px/1.15 var(--font-mono); letter-spacing:.18em; text-transform:uppercase;
+  color:var(--c-light); white-space:nowrap; }
+#{{ID}} .{{ID}}-k::before { content:''; display:block; width:44px; height:5px; margin-bottom:12px; background:var(--c-accent); }
+#{{ID}} .{{ID}}-r .{{ID}}-k::before { margin-left:auto; }
+#{{ID}}-ik .{{ID}}-k { color:var(--c-ink); }
+#{{ID}}-ik .{{ID}}-k::before { background:var(--c-accent-light); }
+#{{ID}} .{{ID}}-t { display:block; font-family:var(--font-text); font-weight:var(--text-weight); font-size:42px;
+  line-height:1.08; letter-spacing:-.03em; color:var(--c-light); white-space:nowrap; }
+#{{ID}}-ik .{{ID}}-t { color:var(--c-ink); }
+#{{ID}}-bc { position:absolute; left:0; top:0; width:160px; padding:12px 12px 9px; box-sizing:border-box;
+  background:var(--c-light); border-radius:min(var(--radius), 4px); }
+#{{ID}}-bars { height:74px; display:flex; align-items:stretch; }
+#{{ID}}-bars i { display:block; flex:none; background:var(--c-ink); }
+#{{ID}}-bcn { display:flex; justify-content:space-between; margin-top:7px; font:500 13px/1 var(--font-mono);
+  letter-spacing:.06em; color:var(--c-ink); text-transform:uppercase; white-space:nowrap; }
+#{{ID}}-st { position:absolute; left:0; top:0; width:164px; height:164px; border-radius:50%; background:var(--c-accent); }
+#{{ID}}-sti { position:absolute; left:0; top:0; width:164px; height:164px; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; color:var(--c-ink); transform:rotate(-12deg); }
+#{{ID}}-sti b { font:500 18px/1 var(--font-mono); letter-spacing:.14em; text-transform:uppercase; white-space:nowrap; }
+#{{ID}}-sti em { font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  font-size:56px; line-height:.95; letter-spacing:-.02em; margin:3px 0 5px; white-space:nowrap; }
+#{{ID}}-probe { position:absolute; left:0; top:0; width:0; height:0; color:var(--c-accent); }
+</style>

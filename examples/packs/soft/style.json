@@ -1,0 +1,110 @@
+{
+  "creator": {
+    "name": "Sample soft",
+    "handle": "",
+    "site": ""
+  },
+  "fonts": {
+    "display": {
+      "family": "Fraunces",
+      "italic": true,
+      "weight": 600
+    },
+    "text": {
+      "family": "DM Sans",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "DM Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Fraunces",
+      "italic": true,
+      "weight": 500
+    }
+  },
+  "colors": {
+    "light": "#FBF6EF",
+    "dark": "#1E2A4A",
+    "ink": "#1E2A4A",
+    "muted_light": "#6C7189",
+    "muted_dark": "rgba(251,246,239,.6)",
+    "hair_light": "#DCD3C6",
+    "hair_dark": "rgba(251,246,239,.2)",
+    "accent": "#F2765A",
+    "accent_on_light": "#C9503A",
+    "negative": "#E86A9A",
+    "negative_on_light": "#A8325E",
+    "positive": "#59B48C",
+    "positive_on_light": "#2F7D5C",
+    "series": [
+      "#F2765A",
+      "#59B48C",
+      "#E86A9A"
+    ],
+    "caption_box": "rgba(30,42,74,.9)",
+    "caption_ink": "#FBF6EF",
+    "caption_dim": "rgba(251,246,239,.45)",
+    "textbox_bg": "#FBF6EF",
+    "textbox_ink": "#1E2A4A"
+  },
+  "grounds": {
+    "grid": true,
+    "radius": 12
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": false,
+      "size": 54,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "size": 68,
+      "y": 1318
+    }
+  },
+  "grade": "contrast(1.02) saturate(0.92) sepia(0.06)",
+  "motion": "calm",
+  "modes": {
+    "hifi": {
+      "hook": "two-line",
+      "captions": "phrases",
+      "emphasis": [
+        "thesis",
+        "big"
+      ],
+      "behind_head": "sometimes",
+      "cards": "often",
+      "camera": "settle",
+      "bw": false,
+      "j_lead": 0.3
+    },
+    "lofi": {
+      "captions": "phrase",
+      "max_words": 3,
+      "max_chars": 20,
+      "text_boxes": true,
+      "overlays": "sometimes",
+      "backdrops": "often",
+      "zooms": false,
+      "bw": false,
+      "j_lead": 0.3
+    },
+    "showcase": {
+      "emphasis_word": "scale",
+      "transitions": [
+        "push",
+        "reveal",
+        "drop"
+      ],
+      "density": "medium",
+      "motif": "",
+      "j_lead": 0.3
+    }
+  }
+}

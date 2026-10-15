@@ -1,0 +1,94 @@
+<!-- comment-cta: the call to action. A text box holds the CTA from A to the end; under it a comment field types the
+     keyword on the speaker's word and posts it, the speaker's reply lands word by word on their words, the comment
+     gets a like, then the thread folds up into the text box. Optional: a profile chip rises over the captions and its
+     Follow button presses on "follow". Generic comment UI in the creator's text-box colours (--c-tb-bg / --c-tb-ink);
+     words, handle and headshot are constants at the top of fx.js. -->
+<div class="cc-cta"></div>
+
+<div class="cc-card cc-field">
+  <div class="cc-av cc-anon"><svg viewBox="0 0 48 48"><circle class="cc-gl" cx="24" cy="19" r="8"/><path class="cc-gl" d="M8 46 C9.5 34 16 29.5 24 29.5 C32 29.5 38.5 34 40 46 Z"/></svg></div>
+  <div class="cc-meta cc-fmeta"><b class="cc-viewer"></b><i>·</i><span class="cc-when"></span></div>
+  <div class="cc-ph"></div>
+  <div class="cc-txt"><span class="cc-typed"></span><span class="cc-caret"></span></div>
+  <div class="cc-send"><i class="cc-on"></i><svg viewBox="0 0 60 60"><path class="cc-arrow" d="M30 42 V19 M20 28 L30 18 L40 28"/></svg></div>
+  <div class="cc-heart"><svg viewBox="0 0 48 48">
+    <path class="cc-hline" d="M24 40 C10 31 6 24 6 17.5 C6 12 10 8 15 8 C19 8 22 10.5 24 14 C26 10.5 29 8 33 8 C38 8 42 12 42 17.5 C42 24 38 31 24 40 Z"/>
+    <path class="cc-hfill" d="M24 40 C10 31 6 24 6 17.5 C6 12 10 8 15 8 C19 8 22 10.5 24 14 C26 10.5 29 8 33 8 C38 8 42 12 42 17.5 C42 24 38 31 24 40 Z"/>
+  </svg></div>
+</div>
+
+<div class="cc-card cc-reply">
+  <div class="cc-av cc-me"></div>
+  <div class="cc-meta"><b class="cc-handle"></b><i>·</i><span class="cc-when"></span></div>
+  <div class="cc-rtxt"></div>
+</div>
+
+<div class="cc-chip">
+  <div class="cc-av cc-me cc-chav"></div>
+  <div class="cc-who"><div class="cc-chandle"></div><div class="cc-sub"></div></div>
+  <div class="cc-btn" data-layout-allow-overlap>
+    <div class="cc-bl cc-b1" data-layout-allow-overlap><svg viewBox="0 0 30 30"><path class="cc-chk" d="M6 15.5 L12.5 22 L24.5 9"/></svg><span></span></div>
+    <div class="cc-bl cc-b0" data-layout-allow-overlap><span></span></div>
+  </div>
+</div>
+<style>
+/* the CTA: the creator's own text box, held to the end */
+#{{ID}} .cc-cta { position:absolute; left:60px; width:960px; top:236px; text-align:center; transform-origin:50% 50%; }
+#{{ID}} .cc-ln { display:inline; font-family:var(--font-text); font-weight:800; font-size:54px; line-height:1.36; letter-spacing:-.025em;
+  color:var(--c-tb-ink); background:var(--c-tb-bg); padding:6px 24px 8px; border-radius:var(--radius);
+  box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+
+/* comment cards */
+#{{ID}} .cc-card { position:absolute; overflow:hidden; transform-origin:50% 0%; background:var(--c-tb-bg);
+  box-shadow:0 14px 34px color-mix(in srgb, var(--c-dark) 24%, transparent); }
+#{{ID}} .cc-field { left:90px; top:412px; width:900px; height:104px; border-radius:min(52px, calc(var(--radius) * 9)); }
+#{{ID}} .cc-reply { left:170px; top:528px; width:820px; height:100px; border-radius:min(26px, calc(var(--radius) * 4)); }
+#{{ID}} .cc-av { position:absolute; left:22px; top:22px; width:60px; height:60px; overflow:hidden; border-radius:50%; }
+#{{ID}} .cc-reply .cc-av { top:20px; }
+#{{ID}} .cc-av svg, #{{ID}} .cc-av img { position:absolute; left:0; top:0; width:100%; height:100%; display:block; object-fit:cover; }
+#{{ID}} .cc-anon { background:color-mix(in srgb, var(--c-tb-ink) 34%, var(--c-tb-bg)); }
+#{{ID}} .cc-anon .cc-gl { fill:var(--c-tb-bg); }
+#{{ID}} .cc-me .cc-ph0 { fill:color-mix(in srgb, var(--c-tb-ink) 13%, var(--c-tb-bg)); }
+#{{ID}} .cc-me .cc-gl { fill:color-mix(in srgb, var(--c-tb-ink) 44%, var(--c-tb-bg)); }
+#{{ID}} .cc-meta { position:absolute; left:104px; top:19px; white-space:nowrap; font-family:var(--font-text); font-weight:500; font-size:23px;
+  line-height:1; letter-spacing:-.005em; color:color-mix(in srgb, var(--c-tb-ink) 55%, var(--c-tb-bg)); }
+#{{ID}} .cc-meta b { font-weight:700; color:var(--c-tb-ink); }
+#{{ID}} .cc-meta i { font-style:normal; padding:0 6px; }
+#{{ID}} .cc-ph { position:absolute; left:104px; top:33px; white-space:nowrap; font-family:var(--font-text); font-weight:500; font-size:33px;
+  line-height:38px; letter-spacing:-.01em; color:color-mix(in srgb, var(--c-tb-ink) 45%, var(--c-tb-bg)); }
+#{{ID}} .cc-txt { position:absolute; left:104px; top:31px; height:42px; white-space:nowrap; font-family:var(--font-text); font-weight:800;
+  font-size:37px; line-height:42px; letter-spacing:.01em; color:var(--c-tb-ink); }
+#{{ID}} .cc-typed span { display:none; }
+#{{ID}} .cc-caret { display:inline-block; width:3px; height:38px; margin-left:3px; vertical-align:-6px; background:var(--c-tb-ink); }
+#{{ID}} .cc-send { position:absolute; right:22px; top:22px; width:60px; height:60px; overflow:hidden; transform-origin:50% 50%;
+  border-radius:min(30px, calc(var(--radius) * 5)); background:color-mix(in srgb, var(--c-tb-ink) 16%, var(--c-tb-bg)); }
+#{{ID}} .cc-on { position:absolute; left:0; top:0; width:60px; height:60px; background:var(--c-tb-ink); }
+#{{ID}} .cc-send svg { position:absolute; left:0; top:0; width:60px; height:60px; display:block; }
+#{{ID}} .cc-arrow { fill:none; stroke:var(--c-tb-bg); stroke-width:4.5; stroke-linecap:round; stroke-linejoin:round; }
+#{{ID}} .cc-heart { position:absolute; right:28px; top:28px; width:48px; height:48px; transform-origin:50% 50%; }
+#{{ID}} .cc-heart svg { display:block; width:48px; height:48px; overflow:visible; }
+#{{ID}} .cc-hline { fill:none; stroke:var(--c-tb-ink); stroke-width:3.4; stroke-linejoin:round; }
+#{{ID}} .cc-hfill { fill:var(--c-accent); stroke:var(--c-accent); stroke-width:3.4; stroke-linejoin:round; }
+#{{ID}} .cc-heart.cc-ink .cc-hfill { fill:var(--c-tb-ink); stroke:var(--c-tb-ink); }
+#{{ID}} .cc-rtxt { position:absolute; left:104px; top:48px; white-space:nowrap; font-family:var(--font-text); font-weight:600; font-size:33px;
+  line-height:38px; letter-spacing:-.015em; color:var(--c-tb-ink); }
+
+/* the optional follow chip: over the captions band's top edge, inside the safe zone */
+#{{ID}} .cc-chip { position:absolute; left:190px; top:1150px; width:700px; height:120px; transform-origin:50% 50%;
+  border-radius:min(60px, calc(var(--radius) * 10)); background:var(--c-tb-bg);
+  box-shadow:0 14px 34px color-mix(in srgb, var(--c-dark) 26%, transparent); }
+#{{ID}} .cc-chav { left:18px; top:18px; width:84px; height:84px; }
+#{{ID}} .cc-who { position:absolute; left:122px; top:0; width:300px; height:120px; }
+#{{ID}} .cc-chandle { position:absolute; left:0; top:40px; white-space:nowrap; font-family:var(--font-text); font-weight:800; font-size:34px;
+  line-height:40px; letter-spacing:-.02em; color:var(--c-tb-ink); }
+#{{ID}} .cc-sub { position:absolute; left:0; top:66px; white-space:nowrap; font-family:var(--font-text); font-weight:500; font-size:25px;
+  line-height:30px; letter-spacing:-.01em; color:color-mix(in srgb, var(--c-tb-ink) 55%, var(--c-tb-bg)); }
+#{{ID}} .cc-btn { position:absolute; right:22px; top:24px; width:236px; height:72px; overflow:hidden; transform-origin:50% 50%;
+  border-radius:min(36px, calc(var(--radius) * 6)); background:var(--c-tb-bg); box-shadow:inset 0 0 0 2.5px var(--c-tb-ink); }
+#{{ID}} .cc-bl { position:absolute; left:0; top:0; width:236px; height:72px; display:flex; align-items:center; justify-content:center; gap:8px;
+  white-space:nowrap; font-family:var(--font-text); font-weight:700; font-size:29px; line-height:1; letter-spacing:-.015em; }
+#{{ID}} .cc-b0 { background:var(--c-tb-ink); color:var(--c-tb-bg); }
+#{{ID}} .cc-b1 { color:var(--c-tb-ink); }
+#{{ID}} .cc-b1 svg { width:28px; height:28px; display:block; }
+#{{ID}} .cc-chk { fill:none; stroke:var(--c-tb-ink); stroke-width:3.6; stroke-linecap:round; stroke-linejoin:round; }
+</style>

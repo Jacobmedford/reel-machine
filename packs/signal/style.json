@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "creator": {
+    "name": "",
+    "handle": "",
+    "site": ""
+  },
+  "checks": {
+    "accent words inside the caption box": "the slab is the accent, so an accent word is set in ink on a light chip inside it (extra.css), never accent on accent"
+  },
+  "fonts": {
+    "display": {
+      "family": "League Gothic",
+      "italic": false,
+      "weight": 400
+    },
+    "text": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 700
+    },
+    "mono": {
+      "family": "IBM Plex Mono",
+      "italic": false,
+      "weight": 500
+    },
+    "caption": {
+      "family": "Barlow Condensed",
+      "italic": false,
+      "weight": 800
+    }
+  },
+  "colors": {
+    "light": "#EBDFBF",
+    "dark": "#232A22",
+    "ink": "#232A22",
+    "muted_light": "#5B6350",
+    "muted_dark": "rgba(235,223,191,.6)",
+    "hair_light": "#C6BB8E",
+    "hair_dark": "rgba(235,223,191,.22)",
+    "accent": "#E2744D",
+    "accent_on_light": "#A3471F",
+    "negative": "#B5739D",
+    "negative_on_light": "#7E3F6A",
+    "positive": "#8F9A79",
+    "positive_on_light": "#3B5549",
+    "series": [
+      "#E2744D",
+      "#8F9A79",
+      "#C6BB8E"
+    ],
+    "caption_box": "#E2744D",
+    "caption_ink": "#232A22",
+    "caption_dim": "rgba(35,42,34,.7)",
+    "textbox_bg": "#E2744D",
+    "textbox_ink": "#232A22"
+  },
+  "grounds": {
+    "grid": true,
+    "radius": 4
+  },
+  "captions": {
+    "hifi": {
+      "box": true,
+      "uppercase": false,
+      "size": 68,
+      "y": 1236
+    },
+    "lofi": {
+      "box": true,
+      "uppercase": false,
+      "size": 70,
+      "y": 1318
+    }
+  },
+  "modes": {
+    "hifi": {
+      "hook": "two-line",
+      "captions": "phrases",
+      "emphasis": [
+        "thesis",
+        "big",
+        "strike"
+      ],
+      "behind_head": "often",
+      "cards": "often",
+      "camera": "zooms",
+      "bw": false,
+      "j_lead": 0.15
+    },
+    "lofi": {
+      "captions": "word-by-word",
+      "max_words": 3,
+      "max_chars": 22,
+      "text_boxes": true,
+      "overlays": "often",
+      "backdrops": "often",
+      "zooms": true,
+      "bw": false,
+      "j_lead": 0.15
+    },
+    "showcase": {
+      "emphasis_word": "slam",
+      "transitions": [
+        "zoom",
+        "push",
+        "drop"
+      ],
+      "density": "high",
+      "motif": "the proof stamp: every figure lands as a big display number in the accent colour behind the head with its mono source line above it, the way the hook's proof line reads",
+      "j_lead": 0.15
+    }
+  },
+  "grade": "sepia(0) contrast(1.12) saturate(1.02) brightness(1) hue-rotate(0deg)",
+  "motion": "punchy",
+  "sound": {
+    "sfx": "dense",
+    "music": "none"
+  },
+  "end_card": false
+}

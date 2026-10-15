@@ -1,0 +1,27 @@
+/* Lo-fi mode (modes/LOFI.md): the speaker never leaves the frame. Real artifacts land on top of them or swap in
+   behind their head, captions light word by word, Instagram-style text boxes carry the hook and the CTA.
+   Inlined after reel.css when edit.STYLE == "lofi". Every colour and font is a token from the style pack. */
+
+/* captions: one line, word by word; spoken words light up, the rest wait dim */
+.kw { position:absolute; left:0; top:1318px; width:1080px; display:flex; justify-content:center; }
+.kc { opacity:0; white-space:nowrap; font-family:var(--font-caption); font-style:var(--caption-style); font-weight:var(--caption-weight);
+      font-size:66px; line-height:1.08; letter-spacing:-.01em; padding:4px 20px 9px; background:var(--c-box); border-radius:var(--radius);
+      color:var(--c-box-dim); }
+/* KARAOKE huge windows: the line comes in huge (two words a line), still inside the safe zone (bottom ~1466) */
+.kc.huge { font-size:124px; padding:2px 26px 12px; }
+
+/* the Instagram-style text box: hook, CTA, chapter labels */
+.nb { position:absolute; left:60px; width:960px; top:236px; text-align:center; opacity:0; }
+.nb .ln { display:inline; font-family:var(--font-text); font-weight:800; font-size:54px; line-height:1.36; letter-spacing:-.025em; color:var(--c-tb-ink);
+          background:var(--c-tb-bg); padding:6px 24px 8px; border-radius:var(--radius); box-decoration-break:clone; -webkit-box-decoration-break:clone; }
+
+/* overlays: the real thing dropped on top of the speaker, flat, no frame, no shadow */
+.ov { position:absolute; opacity:0; object-fit:cover; border-radius:var(--radius); transform-origin:50% 50%; }
+.ov.plain { border-radius:0; }
+
+/* behind the head: a list that builds item by item, and full-bleed backdrops */
+.ls { position:absolute; left:0; width:1080px; text-align:center; font-family:var(--font-caption); font-style:var(--caption-style);
+      font-weight:var(--caption-weight); font-size:72px; line-height:1.1; letter-spacing:-.01em; color:var(--c-light);
+      text-shadow:0 2px 16px rgba(0,0,0,.35); white-space:nowrap; opacity:0; }
+.ls.head { font-size:52px; color:color-mix(in srgb, var(--c-light) 86%, transparent); }
+.bd { position:absolute; left:0; top:0; width:1080px; height:1920px; object-fit:cover; opacity:0; }

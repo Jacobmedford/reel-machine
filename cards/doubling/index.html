@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>doubling</title>
+<link rel="stylesheet" href="brand.css" />
+<link rel="stylesheet" href="card.css" />
+<style>
+  /* Doubling time: a quantity as a square, it fills, a copy slides out beside it (x2), then a clock runs the time
+     the doubling takes. Every colour and font comes from brand.css + card.css; this file only sets size and place.
+     Keep the square's value to 4 characters or fewer so it fits a wide display face. */
+  #cam { transform-origin:540px 700px; }
+  #kick { position:absolute; left:70px; top:262px; line-height:30px; }
+
+  /* the squares: 340px, corners from the pack. A starts centred, B is its duplicate */
+  .sq { position:absolute; top:560px; width:340px; height:340px; }
+  #sqA { left:370px; }
+  #sqB { left:370px; }
+  .sq svg { position:absolute; left:0; top:0; width:340px; height:340px; overflow:visible; }
+  .face { position:absolute; left:0; top:0; width:340px; height:340px; border-radius:var(--radius);
+          display:flex; flex-direction:column; align-items:center; justify-content:space-between; padding:46px 0 50px; }
+  .face .lab { font-size:30px; letter-spacing:.12em; text-transform:uppercase; padding-left:.12em; }
+  .face .val { font-size:108px; }
+  .face.light { color:var(--c-light); }
+  .face.light .lab { color:var(--c-muted-dark); }
+  .face.dark { background:var(--c-light); color:var(--c-ink); }
+  .face.dark .lab { color:var(--c-muted-light); }
+  #outline { stroke:var(--c-light); }
+
+  /* a ring in the ground colour around A: while A and B overlap it reads as the gap between them */
+  .sep { position:absolute; left:-5px; top:-5px; width:350px; height:350px; border:5px solid var(--c-dark); border-radius:calc(var(--radius) + 5px); }
+  #times { position:absolute; left:0; top:336px; width:1080px; text-align:center; font-size:190px; color:var(--c-accent); }
+
+  /* timeline: 0 .. 4.5 units across the pair's outer edges (x 176 .. 904) */
+  #track { position:absolute; left:176px; top:1009px; width:728px; height:2px; background:var(--c-hair-dark); }
+  #fill  { position:absolute; left:176px; top:1008px; width:728px; height:4px; background:var(--c-accent); }
+  .tk { position:absolute; top:1002px; width:2px; height:16px; margin-left:-1px; background:color-mix(in srgb, var(--c-light) 36%, transparent); }
+  #tk5 { top:994px; height:32px; }
+  .tl { position:absolute; top:1034px; width:80px; margin-left:-40px; text-align:center; font-size:30px; color:var(--c-light); }
+  #head { position:absolute; left:176px; top:1010px; width:0; height:0; }
+  #head i { position:absolute; left:-9px; top:-9px; width:18px; height:18px; border-radius:50%; background:var(--c-accent); }
+  #ctr { position:absolute; left:176px; top:938px; width:0; height:44px; }
+  #ctr span { position:absolute; left:0; top:0; transform:translateX(-50%); font-size:40px; line-height:44px; color:var(--c-light); }
+
+  #foot { position:absolute; left:70px; top:1112px; }
+</style>
+</head>
+<body>
+<div id="root" class="ground-dark" data-composition-id="main" data-start="0" data-duration="4.033" data-fps="30" data-width="1080" data-height="1920">
+  <div id="cam" class="layer">
+    <div id="paper" class="layer ground-dark"></div>
+
+    <div id="kick" class="kicker">Newsletter · growing 16.7% a month</div>
+
+    <div id="times" class="display">×2</div>
+
+    <!-- B (the duplicate, a plain filled square: "twice as many") sits under A until the doubling beat -->
+    <div id="sqB" class="sq">
+      <div class="face dark"></div>
+    </div>
+    <div id="sqA" class="sq">
+      <div class="sep"></div>
+      <div class="face light"><div class="lab mono">Subscribers</div><div class="val display">10K</div><div class="lab mono">today</div></div>
+      <div id="fillA" class="face dark"><div class="lab mono">Subscribers</div><div class="val display">10K</div><div class="lab mono">today</div></div>
+      <svg viewBox="0 0 340 340"><rect id="outline" x="0" y="0" width="340" height="340" rx="0" fill="none" stroke-width="3"/></svg>
+    </div>
+
+    <div id="track"></div>
+    <div id="fill"></div>
+    <div id="tk0" class="tk" style="left:176px"></div>
+    <div id="tk1" class="tk" style="left:337.78px"></div>
+    <div id="tk2" class="tk" style="left:499.56px"></div>
+    <div id="tk3" class="tk" style="left:661.33px"></div>
+    <div id="tk4" class="tk" style="left:823.11px"></div>
+    <div id="tk5" class="tk" style="left:904px"></div>
+    <div id="tl0" class="tl mono" style="left:176px">0</div>
+    <div id="tl1" class="tl mono" style="left:337.78px">1</div>
+    <div id="tl2" class="tl mono" style="left:499.56px">2</div>
+    <div id="tl3" class="tl mono" style="left:661.33px">3</div>
+    <div id="tl4" class="tl mono" style="left:823.11px">4</div>
+    <div id="head"><i></i></div>
+    <div id="ctr"><span id="ctrv" class="mono">0.0 mo</span></div>
+
+    <div id="foot" class="foot">Doubling time = ln 2 / ln 1.167 = 4.5 months</div>
+  </div>
+</div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function () {
+  var FPS = 30;
+  var tl = gsap.timeline({ paused: true });
+  function q(t) { return Math.round(t * FPS) / FPS; }
+
+  // tokens: read once at load, never hard-coded
+  function tok(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var C = { accent: tok('--c-accent') };
+  // the square's hairline takes the pack's corner radius (set before draw() measures its length)
+  document.getElementById('outline').setAttribute('rx', Math.min(parseFloat(tok('--radius')) || 0, 170));
+
+  function draw(sel, t0, dur, ease, from) {
+    var p = document.querySelector(sel), L = Math.ceil(p.getTotalLength()) + 2;
+    gsap.set(p, { strokeDasharray: L, strokeDashoffset: L * (from == null ? 1 : from) });
+    tl.to(p, { strokeDashoffset: 0, duration: dur, ease: ease || 'power2.inOut' }, q(t0));
+  }
+
+  // ---- geometry ----
+  var X0 = 176, W = 728, YRS = 4.5, PX = W / YRS;   // timeline 0..4.5 units (months here) over the pair's width
+  var UNIT = ' mo';                                 // counter suffix: keep it short (' mo', ' yrs', ' wks')
+  var SHIFT = 194;                                  // A 370 -> 176, B 370 -> 564 (gap 48)
+
+  // ---- timeline fill clock: linear 8 frames per unit to 4, then eases into 4.5 ----
+  var S = 59 / FPS;            // fill starts frame 59 (1.967, on "every" at 1.96)
+  var I = 8 / FPS;             // one unit = 8 frames: ticks at frames 67, 75, 83, 91
+  var END = S + 5 * I;         // the last half unit eases out over 8 frames -> lands frame 99 (3.300, on "months" at 3.28)
+  function yearsAt(t) {        // pure function of card time
+    if (t <= S) return 0;
+    if (t <= S + 4 * I) return (t - S) / I;
+    if (t >= END) return YRS;
+    var u = (t - S - 4 * I) / I;
+    return 4 + 0.5 * (1 - (1 - u) * (1 - u));      // quad-out, same speed as the linear run at the joint
+  }
+  var ctr = document.getElementById('ctrv');
+  function clockAt(t) {
+    var y = yearsAt(Math.round(t * FPS) / FPS);      // snap to the frame: seek times can be rounded
+    gsap.set('#fill', { scaleX: y / YRS });
+    gsap.set(['#head', '#ctr'], { x: y * PX });
+    var shown = Math.floor(y * 10 + 1e-6) / 10;      // never shows 4.5 before it is there
+    ctr.textContent = shown.toFixed(1) + UNIT;
+  }
+
+  // ---- initial states ----
+  gsap.set('#fill', { scaleX: 0, transformOrigin: '0% 50%' });
+  gsap.set(['#sqB', '#sqA .sep'], { opacity: 0 });
+  gsap.set('#fillA', { clipPath: 'inset(100% 0% 0% 0%)' });
+  gsap.set('#sqA .face.light > *', { opacity: 0, y: 14 });
+  gsap.set('#times', { opacity: 0, scale: 0.72, transformOrigin: '50% 62%' });
+  gsap.set(['#head', '#ctr'], { opacity: 0 });
+  gsap.set(['#tl0', '#tl1', '#tl2', '#tl3', '#tl4'], { opacity: 0.4 });
+  clockAt(0);
+
+  // one slow camera push across the whole card
+  tl.fromTo('#cam', { scale: 1 }, { scale: 1.025, duration: 4.033, ease: 'none' }, 0);
+
+  // frame 0 (first word, 0.04): the square's hairline draws closed in frames 0-10, its text rises in
+  draw('#outline', 0, q(0.333), 'power1.out', 0.86);
+  tl.to('#sqA .face.light > *', { opacity: 1, y: 0, duration: 0.4, ease: 'power3.out', stagger: 0.06 }, q(0.067));
+
+  // the subject word (1.06): the square fills from the bottom, its text flips colour under the fill line
+  tl.to('#fillA', { clipPath: 'inset(0% 0% 0% 0%)', duration: q(0.333), ease: 'power3.out' }, q(0.967));
+  tl.set('#sqA .face.light', { visibility: 'hidden' }, q(1.1));     // fully under the fill by now
+  tl.set('#outline', { visibility: 'hidden' }, q(1.333));             // so A and B are the same 340px
+
+  // "doubling" (1.54): the duplicate slides out right while the pair re-centres, one fluid move
+  tl.set(['#sqB', '#sqA .sep'], { opacity: 1 }, q(1.4));      // the ground-colour ring only matters while they overlap
+  tl.set('#sqA .sep', { opacity: 0 }, q(1.867));
+  tl.to('#sqA', { x: -SHIFT, duration: q(0.467), ease: 'power3.inOut' }, q(1.4));
+  tl.to('#sqB', { x:  SHIFT, duration: q(0.467), ease: 'power3.inOut' }, q(1.4));
+  // x2 lands as B arrives (B rests at 1.867)
+  tl.to('#times', { opacity: 1, duration: 0.12, ease: 'power1.out' }, q(1.7));
+  tl.to('#times', { scale: 1, duration: 0.3, ease: 'back.out(1.4)' }, q(1.7));
+
+  // "every four and a half months" (1.96 -> 3.28): counter + head appear at 0, then the clock runs
+  tl.to(['#head', '#ctr'], { opacity: 1, duration: 0.1, ease: 'power1.out' }, q(1.867));
+  var pr = { t: S };
+  tl.to(pr, { t: END, duration: END - S, ease: 'none', onUpdate: function () { clockAt(pr.t); } }, S);
+
+  // each tick brightens the frame the fill reaches it (clock-tick sound on each)
+  var EPS = 0.3 / FPS;
+  for (var k = 0; k <= 4; k++) {
+    var tk = S + k * I - EPS;
+    tl.set('#tk' + k, { backgroundColor: C.accent }, tk);
+    tl.set('#tl' + k, { opacity: 1 }, tk);
+  }
+  // lands on "months": end tick + counter lock to the accent
+  tl.set('#tk5', { backgroundColor: C.accent }, END - EPS);
+  tl.set('#ctrv', { color: C.accent }, END - EPS);
+
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "name": "mood-curtain",
+  "kind": "fx",
+  "layer": "cam",
+  "from": "kit fx/mood-curtain",
+  "source": [
+    "kit fx/mood-curtain"
+  ],
+  "does": "On the cue word the new look falls top-down like a curtain (the previous look lifts away with a light hem on its edge, the face dark by the second frame), then the vignette closes in and film grain moves every frame until B.",
+  "use_when": "a look change that should feel like a drop ('make it moody', 'the colours go dark', 'and then it hits'), best after a held pause",
+  "inputs": [
+    "a GRADES entry for the new look from the curtain's first frame (or earlier) to B or later",
+    "the cue (T.cue: seconds after A or the spoken word the curtain falls on)"
+  ],
+  "constants": {
+    "FROM": null,
+    "T": {
+      "cue": 0.355,
+      "fall": 0.3,
+      "close": 0.7
+    },
+    "GRAIN": 0.18,
+    "VIG": 1.22
+  },
+  "notes": {
+    "FROM": "null: the copy wears whatever look was on screen the frame before A (read off the timeline), or a CSS filter",
+    "T": "cue is a beat (seconds after A or a word, e.g. 'dark'); fall and close are lengths in seconds",
+    "GRAIN": "0.18 reads as film, not noise, on a phone; keep it under 0.25"
+  },
+  "cues": [
+    "T"
+  ],
+  "generators": [],
+  "needs": [
+    "GRADES: ({@T.cue}, {end}, \"moody\") or another look, starting on the curtain's first frame and running to B or later"
+  ],
+  "sfx": [
+    {
+      "at": "T.cue+0.02",
+      "name": "whoosh-deep",
+      "db": -15,
+      "what": "the curtain drops"
+    },
+    {
+      "at": "T.cue+0.3",
+      "name": "boom-low",
+      "db": -18,
+      "what": "it lands (T.fall after the cue)"
+    }
+  ],
+  "typical_length": "5.6 s (the curtain itself is 0.3 s; the grain and vignette hold to B)",
+  "modes": [
+    "showcase",
+    "hifi"
+  ],
+  "signature": null,
+  "pairs_with": null,
+  "lengths": [
+    "T.fall",
+    "T.close"
+  ]
+}

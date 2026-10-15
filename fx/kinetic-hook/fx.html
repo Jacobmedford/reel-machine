@@ -1,0 +1,51 @@
+<!-- kinetic-hook (behind the head): the hook built on the words. Line one, in the display face, is on screen from
+     frame 0 (the thumbnail); the creator's dark ground cuts in as line two stamps letter by letter; then sans lines
+     push through line masks on their words with the video's own timecode running under them; an optional payoff
+     slams in at the end. kinetic-hook-front carries line one on top of the speaker for the opening frames.
+     Every size here is a maximum: fx.js fits each line to the frame width with the pack's own faces. The upper
+     lines hang from y 405-444, the lower ones stand on y 404-411, so the speaker's head breaks the lower line.
+     Words, keys and times live in fx.js. -->
+<div id="{{ID}}-field" class="ground-dark"></div>
+<div id="{{ID}}-txt" data-layout-allow-overlap>
+  <div id="{{ID}}-o1" class="{{ID}}-m {{ID}}-disp" data-layout-allow-overlap data-layout-allow-overflow><div id="{{ID}}-o1in" class="{{ID}}-in"><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-o2" class="{{ID}}-disp" data-layout-allow-overlap data-layout-allow-overflow><span class="{{ID}}-t"></span></div>
+  <div id="{{ID}}-l1" class="{{ID}}-m {{ID}}-sans" data-layout-allow-overlap data-layout-allow-overflow><div class="{{ID}}-in"><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-l2" class="{{ID}}-m {{ID}}-sans" data-layout-allow-overlap data-layout-allow-overflow><div class="{{ID}}-in"><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-l3" class="{{ID}}-m {{ID}}-sans" data-layout-allow-overlap data-layout-allow-overflow><div class="{{ID}}-in"><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-l4" class="{{ID}}-m {{ID}}-sans" data-layout-allow-overlap data-layout-allow-overflow><div class="{{ID}}-in"><span class="{{ID}}-t"></span></div></div>
+  <div id="{{ID}}-tc" data-layout-allow-overlap></div>
+</div>
+<div id="{{ID}}-d" class="{{ID}}-disp" data-layout-allow-overlap data-layout-allow-overflow>
+  <div id="{{ID}}-d1" class="{{ID}}-dl"><span class="{{ID}}-t {{ID}}-dw"></span></div>
+  <div id="{{ID}}-d2" class="{{ID}}-dl"><span class="{{ID}}-t"><span class="{{ID}}-dw"></span> <span class="{{ID}}-dp"></span></span></div>
+</div>
+<style>
+#{{ID}}-field { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+#{{ID}}-txt { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+/* a line mask: 0.8em tall, cropped to the capitals of any face (cap tops sit at 0.13-0.17em, baselines at 0.83-0.87em) */
+#{{ID}} .{{ID}}-m { position:absolute; left:0; width:1080px; height:0.8em; overflow:hidden; }
+#{{ID}} .{{ID}}-in { display:block; margin-top:-0.1em; line-height:1; white-space:nowrap; will-change:transform; }
+#{{ID}} .{{ID}}-t { display:inline-block; white-space:nowrap; }
+#{{ID}} .{{ID}}-disp { font-family:var(--font-display); font-style:var(--display-style); font-weight:var(--display-weight);
+  letter-spacing:-0.02em; color:var(--c-light); text-align:center; }
+#{{ID}} .{{ID}}-sans .{{ID}}-in { padding-left:56px; font-family:var(--font-text); font-weight:800; letter-spacing:-0.035em;
+  color:var(--c-light); }
+/* line one hangs from y 444, line two (stamped) stands from y 404 */
+#{{ID}}-o1 { top:auto; bottom:1476px; font-size:290px; }
+#{{ID}}-o2 { position:absolute; left:0; top:404px; width:1080px; font-size:400px; line-height:1; white-space:nowrap; }
+#{{ID}} .{{ID}}-ch { display:inline-block; }
+#{{ID}} .{{ID}}-ec { display:inline-block; transform-origin:50% 85%; }
+/* the sans build: L1 and L3 hang from y 405, L2 and L4 stand from y 411 / 409 */
+#{{ID}}-l1, #{{ID}}-l3 { top:auto; bottom:1515px; font-size:200px; }
+#{{ID}}-l2 { top:411px; font-size:241px; }
+#{{ID}}-l4 { top:409px; font-size:300px; }
+#{{ID}}-tc { position:absolute; left:62px; top:664px; font-family:var(--font-mono); font-weight:500; font-size:44px;
+  letter-spacing:0.02em; color:var(--c-light); white-space:nowrap; }
+#{{ID}}-tc .{{ID}}-tcd { color:var(--c-muted-dark); }
+#{{ID}}-tc .{{ID}}-tcf { color:var(--c-accent); }
+/* the payoff: word one alone, then both words (it reflows on the second word, no measuring) */
+#{{ID}}-d { position:absolute; left:0; top:376px; width:1080px; font-size:236px; line-height:1; white-space:nowrap; }
+#{{ID}} .{{ID}}-dl { position:absolute; left:0; top:0; width:1080px; text-align:center; }
+#{{ID}} .{{ID}}-dw { display:inline-block; transform-origin:50% 75%; }
+#{{ID}} .{{ID}}-dp { display:inline-block; color:var(--c-accent); transform-origin:12% 75%; }
+</style>
