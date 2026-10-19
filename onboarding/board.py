@@ -5,7 +5,8 @@ Shows their type, their colours and what each one means, a hook and captions on 
 (hi-fi and lo-fi), and a few library cards rebuilt in their style. Every picture is a frame from the same renderer
 the videos use, so what they approve is what they get.
 Run: PY onboarding/board.py [--clip <one of their videos>] [--cards id,id,id] [--pack <style dir>]
-Writes <pack>/board/: index.html, img/*.jpg, fonts/, files.json (every file to publish with the page).
+Writes <pack>/board/: index.html, img/*.jpg, fonts/, files.json (every file the page needs; for a Claude artifact
+storyboard/artifact.py packs them into the page).
 """
 import glob
 import html
@@ -321,7 +322,7 @@ footer {{ padding-top: 32px; font-size: 16px; line-height: 1.55; max-width: 62ch
     files = sorted(os.path.relpath(p, board) for p in glob.glob(os.path.join(board, "**", "*"), recursive=True)
                    if os.path.isfile(p) and not p.endswith("index.html") and not p.endswith("files.json"))
     json.dump(files, open(os.path.join(board, "files.json"), "w"), indent=1)
-    print(f"BOARD {os.path.join(board, 'index.html')}  ({len(shown)} cards, {len(files)} files to publish with it)")
+    print(f"BOARD {os.path.join(board, 'index.html')}  ({len(shown)} cards, {len(files)} files; for a Claude artifact pack it with storyboard/artifact.py)")
 
 
 if __name__ == "__main__":

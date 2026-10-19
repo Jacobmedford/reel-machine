@@ -111,7 +111,9 @@ How each mode edits, by feel (the `modes` section; `kit/STYLE_PACK.md`):
 their colours and what each means, a frame of their own footage in each mode (the hi-fi hook and captions, the
 lo-fi text box and captions as their `modes.lofi` says, the showcase emphatic word), three cards in their style.
 Show it:
-- With Claude artifacts: publish `board/index.html` with every file listed in `board/files.json` (icon "palette").
+- With Claude artifacts: `python3 storyboard/artifact.py <style dir>/board --out <a scratch folder>`, then publish
+  `<out>/index.html` (icon "palette"). The Artifact tool publishes the HTML alone; packed, the board carries its
+  fonts and frames inside it.
 - Otherwise: run `python3 storyboard/serve.py <style dir>/board` in the background and send them the address.
 
 Ask: "Does this look like you?" Apply what they say to `style.json` and `STYLE.md`, rerun `pack.py build harbor`

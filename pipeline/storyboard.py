@@ -4,11 +4,12 @@
 Every panel is one beat of the reel: its time range, the line they say, real frames snapshotted from the actual
 composition (their footage, the captions, the cards as designed), what moves and what you hear. The page wears the
 creator's own fonts and colours (their style pack). Two ways to review it (SKILL.md, step 6):
-  - Claude: publish it as an artifact with inline comments (capabilities {"comments": {"composer_only": true}})
+  - Claude: pack it with `python3 storyboard/artifact.py <project>`, then publish the packed page as an artifact with
+    inline comments (capabilities {"comments": {"composer_only": true}, "assets": {}})
   - anywhere: `python3 storyboard/serve.py <project>`, notes land in <project>/storyboard/notes.json
 Run: PY pipeline/storyboard.py <project> [--version N] [--no-frames | --list]
      --list prints the beat ids (p01, p02...) and stops: use it to fill NEEDS before any frames exist
-Writes <project>/storyboard/index.html, frames/*.jpg, fonts/ and files.json (every file to publish with the page).
+Writes <project>/storyboard/index.html, frames/*.jpg, fonts/ and files.json (every file the page needs).
 """
 import glob
 import html
@@ -289,7 +290,7 @@ def main():
         fh.write(page)
     files = sorted(f"{d}/{n}" for d in ("frames", "fonts") for n in os.listdir(os.path.join(sb, d)))
     json.dump(files, open(os.path.join(sb, "files.json"), "w"), indent=1)
-    print(f"storyboard v{version}: {len(ps)} beats, {len(times)} frames -> {sb}/index.html (+ {len(files)} files, listed in files.json)")
+    print(f"storyboard v{version}: {len(ps)} beats, {len(times)} frames -> {sb}/index.html (+ {len(files)} files, listed in files.json; for a Claude artifact pack it with storyboard/artifact.py)")
     for p in ps:
         print(f"  {p['id']} {p['tc0']}-{p['tc1']} {p['label']:<34} {len(p['frames'])} frames  {p['line'][:60]}")
     # the message that goes with the link: what the creator has to send, what was generated

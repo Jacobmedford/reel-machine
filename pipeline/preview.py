@@ -15,8 +15,9 @@ before anything else gets made, and the start page in front of them.
              pause of 0.25 s or more inside the video, silencedetect -35 dB d=0.12 on the voice), "leave a note or
              say go".
   hook       render.py <project> <name> --hook renders the hook and writes its stop with page() below.
-Each stop is a folder holding index.html and files.json (every file the page needs, to publish with it). Publish it
-as a Claude artifact with comments (capabilities {"comments": {"composer_only": true}}), or review it locally with
+Each stop is a folder holding index.html and files.json (every file the page needs). Publish it as a Claude artifact
+with comments, packed first by storyboard/artifact.py (the Artifact tool publishes the HTML alone; packed, the page
+carries its fonts and poster, and its video goes to the artifact's asset store), or review it locally with
 python3 storyboard/serve.py <project>/approvals/<stop> (notes land in notes.json there; "go" arrives as beat "all").
 Run: PY pipeline/preview.py <project> start|first-cut
 """
@@ -233,7 +234,8 @@ def first_cut(project):
                       ", ".join(f"{tc(a)} {b - a:.2f} s" for a, b in gaps)))
     if not fresh:
         print(f"WARNING: words.json doesn't match this cut: run PY pipeline/words.py {project}, then this again")
-    print(f"page: {folder}/index.html (+ files.json): publish it with comments, or "
+    print(f"page: {folder}/index.html: for a Claude artifact pack it first, "
+          f"python3 {os.path.join(KIT, 'storyboard', 'artifact.py')} {folder} --out <a scratch folder>; or "
           f"python3 {os.path.join(KIT, 'storyboard', 'serve.py')} {folder}")
     return out
 
@@ -524,7 +526,8 @@ def start(project, examples=None):
     print(f"start page: {len(takes)} take{'s' if len(takes) != 1 else ''} ({length_label(total)}), "
           f"{lines} first line{'s' if lines != 1 else ''}, recommended {picked}, {len(packs)} style"
           f"{'s' if len(packs) != 1 else ''}")
-    print(f"page: {page_path} (+ files.json): publish it with comments, or "
+    print(f"page: {page_path}: for a Claude artifact pack it first, "
+          f"python3 {os.path.join(KIT, 'storyboard', 'artifact.py')} {folder} --out <a scratch folder>; or "
           f"python3 {os.path.join(KIT, 'storyboard', 'serve.py')} {folder}")
     return page_path
 

@@ -322,8 +322,9 @@ def render_hook(project, E, name):
     if said:
         print(f"the hook ends on: \"{said[-1][1]}\" (HOOK_END in edit.py moves it)")
     print(f"times: build {t_build:.1f} s, render {t_render:.1f} s, total {time.time() - t0:.1f} s")
-    print(f"page: {folder}/index.html (+ files.json): publish it with comments, or "
-          f"python3 {os.path.join(os.path.dirname(HERE), 'storyboard', 'serve.py')} {folder}")
+    print(f"page: {folder}/index.html: for a Claude artifact pack it first, "
+          f"python3 {os.path.join(os.path.dirname(HERE), 'storyboard', 'artifact.py')} {folder} --out <a scratch folder>; "
+          f"or python3 {os.path.join(os.path.dirname(HERE), 'storyboard', 'serve.py')} {folder}")
     if got != str(frames):
         sys.exit(f"the hook rendered {got} frames, {frames} expected")
     return final

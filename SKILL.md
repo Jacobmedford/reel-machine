@@ -45,8 +45,9 @@ how cards are built, how sound sits under the voice.
   `REEL_MACHINE_HOME` there instead. Renders in a VM use its CPU: slower, still fine.
 - **Subagents** (an Agent or Task tool): build cards in parallel. None: build them one after another yourself,
   each from the same brief.
-- **Claude artifacts** (an Artifact tool): publish the storyboard and the style board there and read inline
-  comments with ArtifactComments. None: serve them locally with `KIT/storyboard/serve.py`; notes land in a file.
+- **Claude artifacts** (an Artifact tool): publish the storyboard and the style board there, packed first with
+  `KIT/storyboard/artifact.py` (step 6), and read inline comments with ArtifactComments. None: serve them locally
+  with `KIT/storyboard/serve.py`; notes land in a file.
 - **Generators** (optional, see README "Extend it"): an image or video generator (for example the Higgsfield MCP),
   a music or sound one (for example ChatCut, ElevenLabs). Use only what is already connected. Without one, the
   video uses real artifacts and the kit's own sound effects, which is the default anyway.
@@ -215,9 +216,12 @@ No subagents: build the cards yourself one at a time from the same brief.
   `PY KIT/pipeline/storyboard.py <project> --version 1`: every beat with real frames, the line, what moves, what you
   hear, wearing the creator's own fonts and colours. It always answers "what I need from you" at the top.
 - Show it:
-  - **Claude artifacts**: copy `<project>/storyboard/` to a scratch folder and publish its `index.html` with every
-    file in `files.json`, `capabilities` = `{"comments": {"composer_only": true}}`. Republish later versions from
-    the same file path to keep the URL.
+  - **Claude artifacts**: the Artifact tool publishes the HTML file alone, so pack the page first:
+    `python3 KIT/storyboard/artifact.py <project>/storyboard --out <a scratch folder>` puts its fonts and frames
+    inside it and lists any video to upload. Read `<out>/readable.html`, then publish `<out>/index.html` with
+    `capabilities` = `{"comments": {"composer_only": true}, "assets": {}}`. For each file it lists: `upload_asset`
+    to that artifact, then the same command with `--fill <file>=<url as returned>`, and republish. Republish later
+    versions from the same file path (the same `--out`) to keep the URL.
   - **Anywhere else**: run `python3 KIT/storyboard/serve.py <project>` in the background and send
     `http://127.0.0.1:8765`. They leave a note on any beat and press "Looks good: render it" when done.
 - In the same message: what you need from them (each item, its beat, exactly what to send) or "nothing needed

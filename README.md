@@ -256,7 +256,8 @@ fx/                   the showcase effects library (LIBRARY.md), each effect dri
 presets/              effects and cards ready to use by setting a few values (CATALOG.md)
 packs/                the four style packs (harbor, film, signal, terminal) with their open fonts
 audio/sfx/            sound effects, synthesized from scratch for this kit (CC0)
-storyboard/           the start, approval and storyboard pages, their example clips, and a local server
+storyboard/           the start, approval and storyboard pages, their example clips, a local server, and
+                      artifact.py, which packs a page for a Claude artifact
 examples/             a reference edit.py for each mode, and three small sample packs the tests use
 setup/                setup.py and package.py (builds reel-machine.zip)
 dev/                  the kit's own test bench: a drawn stand-in figure, the effects lab, the README images
