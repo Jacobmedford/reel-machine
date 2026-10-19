@@ -265,10 +265,6 @@ tests/                the test suite
 docs/img/             the README images (dev/readme_shots.py regenerates them)
 ```
 
-## Plan the workflow
-
-The [AI systems for coaches guide](https://stackedstrategies.com/blog/ai-systems-for-coaches) from Stacked Strategies includes a free workflow planner. Use it to choose the job, set review steps, and track the time and costs around your content workflow.
-
 ## Credits and licenses
 reel-machine is MIT licensed (see `LICENSE`). It stands on:
 - [HyperFrames](https://github.com/heygen-com/hyperframes) (Apache-2.0): renders the video from HTML. Run through
